@@ -1,14 +1,14 @@
 # LingoLanka QA report
 
 Date: 2026-07-24  
-Environment: Windows, Node.js 24, Vite production build
+Environment: Windows local verification plus GitHub-hosted Ubuntu deployment, Node.js 24, Vite production build
 
 ## Automated commands
 
-- `npm install --no-audit --no-fund` — completed
+- `npm ci --no-audit --no-fund` — completed
 - `npm run lint` — passed
 - `npm run typecheck` — passed
-- `npm run test` — 18 tests passed after correcting test isolation and level allocation
+- `npm run test` — 19 tests passed
 - `npm run build` — passed; PWA service worker and offline precache generated
 
 ## Automated coverage
@@ -45,4 +45,11 @@ The browser pass found and fixed three issues before this report was finalized: 
 
 ## Deployment verification
 
-Local GitHub Pages-equivalent verification passed. Public deployment is blocked until the GitHub CLI account is reauthenticated. After publication, record the workflow run, live HTTPS URL, public HTTP status and final remote console result here.
+Public deployment completed successfully with the `Validate and deploy LingoLanka` workflow:
+
+- Live URL: <https://ashfaaqaf-ai.github.io/lingolanka-language-learning/>
+- Repository: <https://github.com/ashfaaqaf-ai/lingolanka-language-learning>
+- Successful workflow run: <https://github.com/ashfaaqaf-ai/lingolanka-language-learning/actions/runs/30085305565>
+- GitHub-hosted lint, typecheck, 19-test suite, subpath build, Pages artifact upload and deployment all passed.
+- Root page, manifest, service worker, 192 px PWA icon and social image returned HTTP 200.
+- The deployed Vocabulary hash route loaded with 264 entries and no browser console errors or warnings.
