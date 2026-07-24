@@ -12,9 +12,11 @@ import { AppProvider } from "./context/AppContext";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import "./styles.css";
 
-registerSW({
+const updateServiceWorker = registerSW({
   onNeedRefresh() {
-    if (window.confirm("A new LingoLanka version is ready. Update now?")) window.location.reload();
+    if (window.confirm("A new LingoLanka version is ready. Update now?")) {
+      void updateServiceWorker(true);
+    }
   },
   onOfflineReady() {
     window.dispatchEvent(new CustomEvent("lingolanka-offline-ready"));
