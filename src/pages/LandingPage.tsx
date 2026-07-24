@@ -11,9 +11,16 @@ import {
   WifiOff
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useApp } from "../context/AppContext";
 
 export function LandingPage() {
+  const { profile, ready } = useApp();
+
+  if (ready && profile.onboarded) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <main className="landing">
       <header className="landing-nav">

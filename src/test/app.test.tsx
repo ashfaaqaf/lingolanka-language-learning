@@ -6,6 +6,7 @@ import App from "../App";
 import { AppProvider } from "../context/AppContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { WritingCanvas } from "../components/WritingCanvas";
+import { db, defaultProfile, resetDatabase, saveProfile } from "../lib/db";
 
 function renderApp(path = "/") {
   window.location.hash = `#${path}`;
@@ -27,12 +28,86 @@ describe("critical application journeys", () => {
     expect(screen.getByText("ආයුබෝවන්")).toBeInTheDocument();
   });
 
-  it("navigates into onboarding and switches known language", async () => {
+  it("switches every onboarding decision and app navigation into Sinhala", async () => {
     const user = userEvent.setup();
     renderApp("/onboarding");
-    await user.click(screen.getByRole("button", { name: /සිංහල/ }));
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
-    expect(screen.getByText("සිංහල → English")).toBeInTheDocument();
+    try {
+      await user.click(screen.getByRole("button", { name: /සිංහල/ }));
+
+      expect(
+        screen.getByRole("heading", { name: "ඔබට හොඳින් තේරෙන භාෂාව කුමක්ද?" })
+      ).toBeInTheDocument();
+      expect(screen.getByText("පියවර 6 න් 1")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /ආපසු/ })).toBeDisabled();
+
+      await user.click(screen.getByRole("button", { name: /ඉදිරියට/ }));
+      expect(screen.getByText("සිංහල → ඉංග්‍රීසි")).toBeInTheDocument();
+      expect(screen.getByText(/ප්‍රගතිය අහිමි නොකර/)).toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: /ඉදිරියට/ }));
+      expect(
+        screen.getByRole("heading", { name: "ඔබේ වත්මන් ඉංග්‍රීසි දැනුම කෙබඳුද?" })
+      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /සම්පූර්ණ ආරම්භකයෙක්/ })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Complete beginner" })).not.toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /මධ්‍යම මට්ටම/ }));
+
+      await user.click(screen.getByRole("button", { name: /ඉදිරියට/ }));
+      expect(screen.getByRole("button", { name: "දෛනික සංවාද" })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "කියවීම" }));
+
+      await user.click(screen.getByRole("button", { name: /ඉදිරියට/ }));
+      expect(screen.getAllByText("මිනිත්තු")).toHaveLength(4);
+      await user.click(screen.getByRole("button", { name: /15\s*මිනිත්තු/ }));
+
+      await user.click(screen.getByRole("button", { name: /ඉදිරියට/ }));
+      expect(
+        screen.getByRole("heading", { name: "ඔබ ඉගෙනීම ආරම්භ කිරීමට සූදානම්" })
+      ).toBeInTheDocument();
+      expect(screen.getByText("මධ්‍යම මට්ටම")).toBeInTheDocument();
+      expect(screen.getByText("දිනකට මිනිත්තු 15 · ඉගෙනුම් ඉලක්ක 1")).toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: /දැන් ඉගෙනීම අරඹන්න/ }));
+      const navigation = await screen.findByRole("complementary", { name: "ප්‍රධාන මෙනුව" });
+      expect(navigation).toHaveTextContent("වචන මාලාව");
+      expect(navigation).not.toHaveTextContent("Vocabulary");
+    } finally {
+      await resetDatabase();
+    }
+  });
+
+  it("restores saved phone progress instead of restarting onboarding", async () => {
+    await resetDatabase();
+    await saveProfile({
+      ...defaultProfile,
+      onboarded: true,
+      level: "Complete beginner",
+      goals: ["Daily conversation"],
+      settings: {
+        ...defaultProfile.settings,
+        direction: "sinhala-to-english",
+        interfaceLanguage: "si"
+      }
+    });
+    await db.progress.put({
+      id: "saved-phone-lesson",
+      completedAt: new Date().toISOString(),
+      score: 90,
+      xp: 60,
+      minutes: 6,
+      skills: { reading: 20, writing: 10, listening: 20, speaking: 10 }
+    });
+
+    try {
+      renderApp("/");
+      await screen.findByRole("complementary", { name: "ප්‍රධාන මෙනුව" });
+      expect(window.location.hash).toBe("#/dashboard");
+      expect(
+        await screen.findByText(/1 lessons completed for 6 total minutes/)
+      ).toBeInTheDocument();
+    } finally {
+      await resetDatabase();
+    }
   });
 
   it("renders every primary navigation destination", () => {

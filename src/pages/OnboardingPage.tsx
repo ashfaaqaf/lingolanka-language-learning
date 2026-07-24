@@ -2,28 +2,25 @@ import { ArrowLeft, ArrowRight, Check, Languages, Sparkles } from "lucide-react"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-
-const levels = ["Complete beginner", "I know a few words", "Basic", "Intermediate"];
-const goals = [
-  "Everyday conversation",
-  "Reading",
-  "Writing",
-  "Pronunciation",
-  "School",
-  "Work",
-  "Travel",
-  "Friends and family",
-  "Complete mastery"
-];
+import {
+  onboardingCopy,
+  onboardingGoals,
+  onboardingLevels,
+  type InterfaceLanguage
+} from "../data/onboarding";
 
 export function OnboardingPage() {
   const { profile, updateProfile } = useApp();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [known, setKnown] = useState<"en" | "si">(profile.settings.interfaceLanguage);
+  const [known, setKnown] = useState<InterfaceLanguage>(profile.settings.interfaceLanguage);
   const [level, setLevel] = useState(profile.level);
   const [selectedGoals, setSelectedGoals] = useState<string[]>(profile.goals);
   const [dailyTarget, setDailyTarget] = useState(profile.settings.dailyTarget);
+  const copy = onboardingCopy[known];
+  const selectedLevelLabel =
+    onboardingLevels.find((item) => item.value === level)?.label[known] ?? level;
+
   const complete = async () => {
     await updateProfile({
       ...profile,
@@ -39,155 +36,172 @@ export function OnboardingPage() {
     });
     navigate("/dashboard");
   };
+
   return (
-    <main className="onboarding">
+    <main className="onboarding" lang={known}>
       <div className="onboarding-brand">
         <Languages /> LingoLanka
       </div>
       <section className="onboarding-card">
         <div className="step-meta">
-          <span>Step {step} of 6</span>
-          <div className="steps" aria-label={`Step ${step} of 6`}>
+          <span>{copy.stepOf(step)}</span>
+          <div className="steps" aria-label={copy.stepOf(step)}>
             {Array.from({ length: 6 }, (_, index) => (
               <i className={index < step ? "done" : ""} key={index} />
             ))}
           </div>
         </div>
+
         {step === 1 && (
           <div className="step-content">
-            <span className="eyebrow">Let’s begin</span>
-            <h1>Which language do you understand?</h1>
-            <p>This becomes the language of your instructions and feedback.</p>
+            <span className="eyebrow">{copy.beginEyebrow}</span>
+            <h1>{copy.languageQuestion}</h1>
+            <p>{copy.languageHelp}</p>
             <div className="big-options">
-              <button className={known === "en" ? "selected" : ""} onClick={() => setKnown("en")}>
-                <strong>English</strong>
-                <span>I want to learn Sinhala</span>
+              <button
+                type="button"
+                className={known === "en" ? "selected" : ""}
+                aria-pressed={known === "en"}
+                onClick={() => setKnown("en")}
+              >
+                <strong>{copy.english}</strong>
+                <span>{copy.englishChoice}</span>
               </button>
-              <button className={known === "si" ? "selected" : ""} onClick={() => setKnown("si")}>
-                <strong lang="si">සිංහල</strong>
-                <span lang="si">මට ඉංග්‍රීසි ඉගෙන ගන්න ඕනෑ</span>
+              <button
+                type="button"
+                className={known === "si" ? "selected" : ""}
+                aria-pressed={known === "si"}
+                onClick={() => setKnown("si")}
+              >
+                <strong>{copy.sinhala}</strong>
+                <span>{copy.sinhalaChoice}</span>
               </button>
             </div>
           </div>
         )}
+
         {step === 2 && (
           <div className="step-content">
-            <span className="eyebrow">Your course</span>
-            <h1>{known === "en" ? "You’ll learn Sinhala" : "ඔබ ඉංග්‍රීසි ඉගෙන ගනී"}</h1>
+            <span className="eyebrow">{copy.courseEyebrow}</span>
+            <h1>{copy.courseTitle}</h1>
             <div className="course-confirm">
               <Languages />
               <div>
-                <strong>{known === "en" ? "English → සිංහල" : "සිංහල → English"}</strong>
-                <p>
-                  {known === "en"
-                    ? "English guidance with Sinhala practice."
-                    : "සිංහල පැහැදිලි කිරීම් සමඟ ඉංග්‍රීසි පුහුණුව."}
-                </p>
+                <strong>{copy.courseDirection}</strong>
+                <p>{copy.courseHelp}</p>
               </div>
               <Check />
             </div>
-            <p>You can change direction later without losing progress.</p>
+            <p>{copy.directionNote}</p>
           </div>
         )}
+
         {step === 3 && (
           <div className="step-content">
-            <span className="eyebrow">Starting point</span>
-            <h1>{known === "en" ? "What is your current level?" : "ඔබේ වර්තමාන මට්ටම කුමක්ද?"}</h1>
+            <span className="eyebrow">{copy.levelEyebrow}</span>
+            <h1>{copy.levelQuestion}</h1>
             <div className="option-list">
-              {levels.map((item) => (
+              {onboardingLevels.map((item) => (
                 <button
-                  className={level === item ? "selected" : ""}
-                  onClick={() => setLevel(item)}
-                  key={item}
+                  type="button"
+                  className={level === item.value ? "selected" : ""}
+                  aria-pressed={level === item.value}
+                  onClick={() => setLevel(item.value)}
+                  key={item.value}
                 >
-                  {item}
-                  {level === item && <Check />}
+                  {item.label[known]}
+                  {level === item.value && <Check />}
                 </button>
               ))}
             </div>
           </div>
         )}
+
         {step === 4 && (
           <div className="step-content">
-            <span className="eyebrow">Make it yours</span>
-            <h1>
-              {known === "en" ? "What would you like to achieve?" : "ඔබේ ඉගෙනුම් ඉලක්ක මොනවාද?"}
-            </h1>
-            <p>Select as many as you like.</p>
+            <span className="eyebrow">{copy.goalsEyebrow}</span>
+            <h1>{copy.goalsQuestion}</h1>
+            <p>{copy.goalsHelp}</p>
             <div className="chip-options">
-              {goals.map((goal) => (
+              {onboardingGoals.map((goal) => (
                 <button
-                  className={selectedGoals.includes(goal) ? "selected" : ""}
+                  type="button"
+                  className={selectedGoals.includes(goal.value) ? "selected" : ""}
+                  aria-pressed={selectedGoals.includes(goal.value)}
                   onClick={() =>
                     setSelectedGoals((current) =>
-                      current.includes(goal)
-                        ? current.filter((item) => item !== goal)
-                        : [...current, goal]
+                      current.includes(goal.value)
+                        ? current.filter((item) => item !== goal.value)
+                        : [...current, goal.value]
                     )
                   }
-                  key={goal}
+                  key={goal.value}
                 >
-                  {goal}
+                  {goal.label[known]}
                 </button>
               ))}
             </div>
           </div>
         )}
+
         {step === 5 && (
           <div className="step-content">
-            <span className="eyebrow">A gentle rhythm</span>
-            <h1>Choose your daily target</h1>
+            <span className="eyebrow">{copy.targetEyebrow}</span>
+            <h1>{copy.targetQuestion}</h1>
             <div className="big-options four">
               {[5, 10, 15, 20].map((minutes) => (
                 <button
+                  type="button"
                   className={dailyTarget === minutes ? "selected" : ""}
+                  aria-pressed={dailyTarget === minutes}
                   onClick={() => setDailyTarget(minutes)}
                   key={minutes}
                 >
                   <strong>{minutes}</strong>
-                  <span>minutes</span>
+                  <span>{copy.minutes}</span>
                 </button>
               ))}
             </div>
-            <p>No harsh penalties if you miss a day. Small steps still count.</p>
+            <p>{copy.targetHelp}</p>
           </div>
         )}
+
         {step === 6 && (
           <div className="step-content celebration">
             <Sparkles />
-            <span className="eyebrow">Optional placement</span>
-            <h1>You’re ready to learn</h1>
-            <p>
-              Start from Foundations now. You can explore advanced modules at any time, so there is
-              no need to prove what you know.
-            </p>
+            <span className="eyebrow">{copy.readyEyebrow}</span>
+            <h1>{copy.readyTitle}</h1>
+            <p>{copy.readyHelp}</p>
             <div className="course-confirm">
               <Check />
               <div>
-                <strong>{level}</strong>
-                <p>
-                  {dailyTarget} minutes a day · {selectedGoals.length || 1} learning goal
-                  {selectedGoals.length === 1 ? "" : "s"}
-                </p>
+                <strong>{selectedLevelLabel}</strong>
+                <p>{copy.summary(dailyTarget, selectedGoals.length)}</p>
               </div>
             </div>
           </div>
         )}
+
         <div className="onboarding-actions">
           <button
+            type="button"
             className="button ghost"
             disabled={step === 1}
             onClick={() => setStep((value) => value - 1)}
           >
-            <ArrowLeft /> Back
+            <ArrowLeft /> {copy.back}
           </button>
           {step < 6 ? (
-            <button className="button primary" onClick={() => setStep((value) => value + 1)}>
-              Continue <ArrowRight />
+            <button
+              type="button"
+              className="button primary"
+              onClick={() => setStep((value) => value + 1)}
+            >
+              {copy.continue} <ArrowRight />
             </button>
           ) : (
-            <button className="button primary" onClick={complete}>
-              Skip placement & start <ArrowRight />
+            <button type="button" className="button primary" onClick={complete}>
+              {copy.start} <ArrowRight />
             </button>
           )}
         </div>

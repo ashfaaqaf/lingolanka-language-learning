@@ -2376,6 +2376,9 @@ h3 {
   .big-options.four {
     grid-template-columns: 1fr 1fr;
   }
+  .big-options:not(.four) {
+    grid-template-columns: 1fr;
+  }
   .hero .button-row .button {
     width: 100%;
   }
