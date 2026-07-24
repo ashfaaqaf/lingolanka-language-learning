@@ -6,7 +6,9 @@ LingoLanka is a free, privacy-first bilingual language-learning PWA for English 
 
 ## Live website
 
-Deployment is prepared for `https://GITHUB_USERNAME.github.io/lingolanka-language-learning/`. The exact verified URL will be added after GitHub authentication and the first successful Pages workflow.
+[Open LingoLanka](https://ashfaaqaf-ai.github.io/lingolanka-language-learning/)
+
+The production site is published from `main` by the validated GitHub Pages workflow. The public app, manifest, service worker, PWA icon and social card were verified over HTTPS after deployment.
 
 ## Screenshots
 
