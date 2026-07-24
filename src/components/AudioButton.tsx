@@ -1,7 +1,14 @@
 import { Pause, Play, RotateCcw, Square } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { speech } from "../lib/speech";
 import { useApp } from "../context/AppContext";
+import {
+  moveLiquidGlass,
+  pressLiquidGlass,
+  releaseLiquidGlass,
+  resetLiquidGlass
+} from "../lib/liquidGlass";
 
 export function AudioButton({
   text,
@@ -15,6 +22,7 @@ export function AudioButton({
   label?: string;
 }) {
   const { profile } = useApp();
+  const reduceMotion = useReducedMotion();
   const [playback, setPlayback] = useState<"idle" | "playing" | "paused">("idle");
   const [message, setMessage] = useState("Ready to play");
   useEffect(
@@ -76,7 +84,16 @@ export function AudioButton({
   };
 
   return (
-    <span className={`audio-control playback-${playback}`}>
+    <motion.span
+      className={`audio-control liquid-glass playback-${playback}`}
+      onPointerMove={moveLiquidGlass}
+      onPointerDown={pressLiquidGlass}
+      onPointerUp={releaseLiquidGlass}
+      onPointerCancel={resetLiquidGlass}
+      onPointerLeave={resetLiquidGlass}
+      animate={reduceMotion ? undefined : { scale: playback === "playing" ? 1.012 : 1 }}
+      transition={{ type: "spring", stiffness: 420, damping: 30 }}
+    >
       <span className="audio-group" role="group" aria-label="Pronunciation playback controls">
         <button
           className="icon-button audio-play"
@@ -110,6 +127,6 @@ export function AudioButton({
         <i aria-hidden="true" />
         {message}
       </span>
-    </span>
+    </motion.span>
   );
 }

@@ -360,7 +360,7 @@ export function LessonPage() {
   };
   return (
     <div className="lesson-page">
-      <header className="lesson-header">
+      <header className="lesson-header liquid-glass">
         <button className="icon-button" onClick={() => setExit(true)} aria-label="Exit lesson">
           <X />
         </button>

@@ -4,6 +4,12 @@ import { useMemo, useState } from "react";
 import type { Exercise } from "../types";
 import { isCorrectAnswer, shuffleUnique } from "../lib/utils";
 import { AudioButton } from "./AudioButton";
+import {
+  moveLiquidGlass,
+  pressLiquidGlass,
+  releaseLiquidGlass,
+  resetLiquidGlass
+} from "../lib/liquidGlass";
 
 export function ExerciseCard({
   exercise,
@@ -44,8 +50,13 @@ export function ExerciseCard({
     <motion.section
       className={`exercise-card ${
         submitted === null ? "" : submitted ? "submitted-correct" : "submitted-incorrect"
-      }`}
+      } liquid-glass`}
       aria-labelledby={`prompt-${exercise.id}`}
+      onPointerMove={moveLiquidGlass}
+      onPointerDown={pressLiquidGlass}
+      onPointerUp={releaseLiquidGlass}
+      onPointerCancel={resetLiquidGlass}
+      onPointerLeave={resetLiquidGlass}
       initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 360, damping: 30 }}
@@ -77,7 +88,7 @@ export function ExerciseCard({
               <motion.button
                 type="button"
                 key={optionText}
-                className={`choice ${resultClass}`}
+                className={`choice liquid-choice ${resultClass}`}
                 disabled={submitted !== null}
                 onClick={() => setAnswer(optionText)}
                 whileTap={submitted === null && !reduceMotion ? { scale: 0.975 } : undefined}
