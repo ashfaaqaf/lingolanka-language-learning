@@ -66,24 +66,41 @@
 html {
   scroll-behavior: smooth;
   font-size: calc(16px * var(--font-scale));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  overscroll-behavior-y: none;
 }
 body {
   margin: 0;
   min-width: 0;
   min-height: 100vh;
+  min-height: 100svh;
   background: var(--bg);
   color: var(--ink);
   line-height: 1.62;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+#root {
+  min-height: 100vh;
+  min-height: 100svh;
 }
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 button,
-a {
+a,
+input,
+select,
+textarea {
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 button {
   color: inherit;
@@ -179,7 +196,11 @@ h3 {
   gap: 0.52rem;
   font-weight: 750;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   background: var(--surface-2);
 }
 .button:hover:not(:disabled) {
@@ -298,6 +319,8 @@ h3 {
 
 /* Public site */
 .landing {
+  min-height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   background:
     radial-gradient(circle at 88% 5%, rgba(22, 124, 104, 0.12), transparent 28%), var(--bg);
@@ -352,6 +375,9 @@ h3 {
   grid-template-columns: 1.08fr 0.92fr;
   gap: 6rem;
   align-items: center;
+}
+.hero > * {
+  min-width: 0;
 }
 .hero h1 {
   font-size: clamp(3rem, 6vw, 5.9rem);
@@ -458,6 +484,8 @@ h3 {
   max-width: 1240px;
   margin: auto;
   padding: 6rem 2rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
 }
 .direction-section > div:first-child,
 .section-heading {
@@ -558,6 +586,7 @@ h3 {
 /* Onboarding */
 .onboarding {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -711,6 +740,7 @@ h3 {
 /* App shell */
 .app-layout {
   min-height: 100vh;
+  min-height: 100svh;
   padding-left: 260px;
   transition: padding 0.2s;
 }
@@ -780,6 +810,7 @@ h3 {
 }
 .app-main {
   min-height: 100vh;
+  min-height: 100svh;
 }
 .bottom-nav {
   display: none;
@@ -1889,6 +1920,177 @@ h3 {
   gap: 0.7rem;
   align-items: flex-start;
 }
+.install-settings-card {
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+.install-settings-card > div {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.install-settings-card > div > svg {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  color: var(--brand);
+}
+.install-settings-card span {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Phone installation */
+.install-page {
+  width: min(1040px, 100%);
+}
+.install-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  margin-bottom: 1.2rem;
+  color: #fff;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.17), transparent 34%),
+    linear-gradient(130deg, #124f42, #19725f);
+}
+.install-hero h1 {
+  max-width: 720px;
+  margin-bottom: 0.8rem;
+}
+.install-hero > p {
+  max-width: 700px;
+  color: rgba(255, 255, 255, 0.84);
+}
+.install-hero .eyebrow {
+  color: #bce7dc;
+}
+.install-hero .feedback {
+  width: fit-content;
+  margin: 1rem 0 0;
+  color: var(--ink);
+}
+.install-status {
+  width: fit-content;
+  max-width: 100%;
+  margin: 1.4rem 0 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: rgba(0, 0, 0, 0.14);
+}
+.install-status svg {
+  flex: none;
+}
+.install-status strong {
+  display: inline-block;
+  margin-right: 0.25rem;
+}
+.install-status.installed {
+  background: rgba(255, 255, 255, 0.16);
+}
+.install-now {
+  margin-top: 1rem;
+  background: #fff !important;
+  color: #124f42 !important;
+  box-shadow: none !important;
+}
+.install-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+.install-card,
+.install-link-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: clamp(1.2rem, 3vw, 2rem);
+}
+.install-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.install-card-heading h2,
+.install-link-card h2 {
+  margin-bottom: 0;
+}
+.platform-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: #fff;
+}
+.platform-icon.android {
+  background: #1c725e;
+}
+.platform-icon.apple {
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.install-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+.install-steps li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 0.8rem;
+  align-items: start;
+}
+.install-steps li > span {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  color: var(--brand);
+  background: var(--teal-soft);
+  font-weight: 850;
+}
+.install-steps strong {
+  display: block;
+  margin: 0.2rem 0;
+}
+.install-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.install-steps p svg {
+  width: 1rem;
+  height: 1rem;
+  vertical-align: -0.16rem;
+}
+.install-link-card {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.install-url {
+  max-width: 560px;
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
 .info-page {
   width: min(980px, 100%);
 }
@@ -2000,8 +2202,13 @@ h3 {
 }
 
 @media (max-width: 760px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
   .landing-nav {
-    padding: 1rem;
+    padding: max(1rem, calc(env(safe-area-inset-top) + 0.65rem)) 1rem 1rem;
   }
   .landing-nav nav a:not(.button) {
     display: none;
@@ -2027,7 +2234,8 @@ h3 {
   .module-grid,
   .dashboard-grid,
   .split-layout,
-  .info-grid {
+  .info-grid,
+  .install-grid {
     grid-template-columns: 1fr;
   }
   .feature-grid {
@@ -2042,7 +2250,7 @@ h3 {
   .app-layout,
   .nav-collapsed.app-layout {
     padding-left: 0;
-    padding-bottom: 76px;
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
   }
   .sidebar {
     display: none;
@@ -2057,8 +2265,11 @@ h3 {
     padding: 7px 5px env(safe-area-inset-bottom);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    background: var(--surface);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
     border-top: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
+    transform: translateZ(0);
   }
   .bottom-nav a {
     display: flex;
@@ -2070,6 +2281,7 @@ h3 {
     font-size: 0.61rem;
     font-weight: 700;
     border-radius: 10px;
+    min-height: 52px;
   }
   .bottom-nav a.active {
     color: var(--brand);
@@ -2080,7 +2292,8 @@ h3 {
     height: 1.25rem;
   }
   .page {
-    padding: 2rem 1rem 5rem;
+    padding: max(1.5rem, calc(env(safe-area-inset-top) + 1rem)) 1rem
+      calc(2rem + env(safe-area-inset-bottom));
   }
   .page-header {
     align-items: flex-start;
@@ -2088,7 +2301,7 @@ h3 {
     margin-bottom: 1.5rem;
   }
   .page-header h1 {
-    font-size: 2.2rem;
+    font-size: clamp(2rem, 10vw, 2.4rem);
   }
   .dashboard-hero {
     align-items: flex-start;
@@ -2127,6 +2340,17 @@ h3 {
   .conversation-player .card-heading {
     flex-direction: column;
   }
+  .install-hero {
+    border-radius: 22px;
+  }
+  .install-link-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .install-settings-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
   .vocab-list .vocab-card {
     display: block;
   }
@@ -2139,6 +2363,7 @@ h3 {
   .onboarding-card {
     padding: 1.2rem;
     min-height: calc(100vh - 70px);
+    min-height: calc(100svh - 70px);
     border-radius: 20px;
   }
   .step-content {
@@ -2153,6 +2378,14 @@ h3 {
   }
   .hero .button-row .button {
     width: 100%;
+  }
+  .hero .button-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .product-preview {
+    padding: 1.25rem;
+    border-radius: 24px;
   }
   .feature-grid {
     grid-template-columns: 1fr;
@@ -2222,6 +2455,54 @@ h3 {
   }
   .settings-card input[type="range"] {
     width: 100%;
+  }
+  .install-hero {
+    padding: 1.35rem;
+  }
+  .install-status {
+    align-items: flex-start;
+  }
+  .install-link-card .button-row,
+  .install-link-card .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .page {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  .bottom-nav {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  .bottom-nav a {
+    font-size: 0.56rem;
+  }
+  .install-card,
+  .install-link-card {
+    border-radius: 18px;
+    padding: 1rem;
+  }
+}
+
+@media (pointer: coarse) {
+  .button,
+  .nav-link,
+  input:not([type="range"]),
+  select {
+    min-height: 44px;
+  }
+  .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (hover: none) {
+  .button:hover:not(:disabled) {
+    transform: none;
   }
 }
 

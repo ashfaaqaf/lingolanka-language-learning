@@ -2,6 +2,7 @@ import {
   ArrowRight,
   BookOpen,
   Check,
+  Download,
   Headphones,
   Languages,
   Mic2,
@@ -25,6 +26,7 @@ export function LandingPage() {
           </span>
         </Link>
         <nav aria-label="Public navigation">
+          <Link to="/install">Install</Link>
           <Link to="/about">About</Link>
           <Link to="/privacy">Privacy</Link>
           <Link className="button small" to="/onboarding">
@@ -159,6 +161,9 @@ export function LandingPage() {
             Install LingoLanka and keep reading, vocabulary, grammar and writing available after
             your first visit.
           </p>
+          <Link className="button secondary small" to="/install">
+            <Download /> Install on your phone
+          </Link>
         </article>
       </section>
       <footer>
@@ -170,6 +175,7 @@ export function LandingPage() {
         </div>
         <p>Free, open and made with respect for every learner.</p>
         <div>
+          <Link to="/install">Install</Link>
           <Link to="/about">About</Link>
           <Link to="/privacy">Privacy</Link>
         </div>

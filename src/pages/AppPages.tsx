@@ -1306,6 +1306,21 @@ export function SettingsPage() {
         copy="Preferences and progress are stored only in this browser."
       />
       <section className="settings-section">
+        <h2>Install on this device</h2>
+        <div className="settings-card install-settings-card">
+          <div>
+            <Download />
+            <span>
+              <strong>Use LingoLanka like a phone app</strong>
+              <small>Add it to your Android or iPhone home screen for full-screen access.</small>
+            </span>
+          </div>
+          <Link className="button primary" to="/install">
+            View install guide
+          </Link>
+        </div>
+      </section>
+      <section className="settings-section">
         <h2>Course & learning</h2>
         <div className="settings-card">
           <label>

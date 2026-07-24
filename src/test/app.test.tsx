@@ -44,6 +44,24 @@ describe("critical application journeys", () => {
     );
   });
 
+  it("shows complete Android and iPhone home-screen installation instructions", () => {
+    renderApp("/install");
+    expect(screen.getByRole("heading", { name: /Install with Chrome/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Install with Safari/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/Add to Home Screen/i)).toHaveLength(2);
+    expect(screen.getByRole("button", { name: /Copy link/i })).toBeEnabled();
+  });
+
+  it("uses phone-first primary destinations in mobile navigation", () => {
+    renderApp("/dashboard");
+    const mobileNavigation = screen.getByRole("navigation", { name: "Mobile navigation" });
+    expect(mobileNavigation).toHaveTextContent("Home");
+    expect(mobileNavigation).toHaveTextContent("Practice");
+    expect(mobileNavigation).toHaveTextContent("Review");
+    expect(mobileNavigation).toHaveTextContent("Settings");
+    expect(mobileNavigation).not.toHaveTextContent("Writing");
+  });
+
   it("keeps unsupported voice paths usable", () => {
     renderApp("/speaking");
     expect(screen.getByText(/local recording comparison is available/i)).toBeInTheDocument();

@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
+  Download,
   Gauge,
   GraduationCap,
   Headphones,
@@ -37,8 +38,17 @@ const navigation = [
   ["/progress", "Progress", BarChart3],
   ["/achievements", "Achievements", Award],
   ["/settings", "Settings", Settings],
+  ["/install", "Install app", Download],
   ["/about", "About", CircleHelp],
   ["/privacy", "Privacy", ShieldCheck]
+] as const;
+
+const mobileNavigation = [
+  ["/dashboard", "Home", Gauge],
+  ["/learn", "Learn", GraduationCap],
+  ["/practice", "Practice", Sparkles],
+  ["/review", "Review", BookMarked],
+  ["/settings", "Settings", Settings]
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -83,7 +93,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <nav className="bottom-nav" aria-label="Mobile navigation">
-        {navigation.slice(0, 5).map(([to, label, Icon]) => (
+        {mobileNavigation.map(([to, label, Icon]) => (
           <NavLink key={to} to={to} className={({ isActive }) => (isActive ? "active" : "")}>
             <Icon />
             <span>{label}</span>

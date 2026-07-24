@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { AppShell } from "./components/AppShell";
 import { speech } from "./lib/speech";
+import { InstallPage } from "./pages/InstallPage";
 import { LandingPage } from "./pages/LandingPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import {
@@ -155,6 +156,14 @@ export default function App() {
           element={
             <ShellRoute>
               <SettingsPage />
+            </ShellRoute>
+          }
+        />
+        <Route
+          path="/install"
+          element={
+            <ShellRoute>
+              <InstallPage />
             </ShellRoute>
           }
         />

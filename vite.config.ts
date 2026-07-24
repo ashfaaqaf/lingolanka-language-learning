@@ -11,15 +11,19 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["favicon.svg", "icon.svg"],
+      includeAssets: ["favicon.svg", "icon.svg", "apple-touch-icon-180x180.png"],
       manifest: {
+        id: ".",
         name: "LingoLanka — Sinhala & English",
         short_name: "LingoLanka",
         description: "Free, private and offline-friendly Sinhala and English learning.",
         theme_color: "#145c4a",
         background_color: "#fbf7ee",
         display: "standalone",
+        scope: ".",
         start_url: ".",
+        lang: "en",
+        categories: ["education"],
         icons: [
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
           { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
