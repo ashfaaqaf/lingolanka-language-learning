@@ -197,14 +197,18 @@ h3 {
   font-weight: 750;
   cursor: pointer;
   transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   background: var(--surface-2);
 }
 .button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+.button:active:not(:disabled) {
+  transform: scale(0.975);
+  transition-duration: 0.08s;
 }
 .button:disabled {
   opacity: 0.45;
@@ -264,6 +268,13 @@ h3 {
   display: inline-grid;
   place-items: center;
   cursor: pointer;
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.26s ease;
+  will-change: transform;
 }
 .icon-button.subtle {
   width: 34px;
@@ -272,6 +283,11 @@ h3 {
 }
 .icon-button:disabled {
   opacity: 0.35;
+  cursor: not-allowed;
+}
+.icon-button:active:not(:disabled) {
+  transform: scale(0.91);
+  transition-duration: 0.08s;
 }
 .card {
   background: var(--surface);
@@ -294,14 +310,25 @@ h3 {
   padding: 1rem;
   border-radius: 14px;
   margin-top: 1rem;
+  border: 1px solid transparent;
+  box-shadow: 0 12px 32px rgba(15, 40, 31, 0.08);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+.feedback strong {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 .feedback.success {
-  background: #e0f3e8;
-  color: #175b3d;
+  background: color-mix(in srgb, #43a875 18%, var(--surface));
+  color: color-mix(in srgb, #0d6a41 82%, var(--ink));
+  border-color: color-mix(in srgb, #43a875 46%, transparent);
 }
 .feedback.error {
-  background: #fae7e5;
-  color: #873a38;
+  background: color-mix(in srgb, #e16b67 16%, var(--surface));
+  color: color-mix(in srgb, #a12f35 82%, var(--ink));
+  border-color: color-mix(in srgb, #e16b67 44%, transparent);
 }
 .feedback.neutral {
   background: var(--surface-2);
@@ -1127,7 +1154,18 @@ h3 {
 }
 .lesson-page {
   min-height: 100vh;
-  background: var(--surface);
+  background:
+    radial-gradient(
+      circle at 15% 8%,
+      color-mix(in srgb, var(--brand-2) 11%, transparent),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 86% 45%,
+      color-mix(in srgb, var(--amber) 7%, transparent),
+      transparent 28%
+    ),
+    var(--bg);
 }
 .lesson-header {
   height: 76px;
@@ -1138,7 +1176,11 @@ h3 {
   gap: 1.5rem;
   position: sticky;
   top: 0;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(155%);
+  backdrop-filter: blur(22px) saturate(155%);
+  box-shadow: 0 8px 30px rgba(8, 35, 25, 0.06);
+  transform: translateZ(0);
   z-index: 5;
 }
 .lesson-progress {
@@ -1158,11 +1200,32 @@ h3 {
   margin-bottom: 2rem;
 }
 .exercise-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--surface) 89%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
   padding: 2rem;
   border-radius: 24px;
-  box-shadow: var(--shadow);
+  box-shadow:
+    0 24px 70px rgba(11, 42, 31, 0.12),
+    inset 0 1px 0 color-mix(in srgb, #fff 54%, transparent);
+  -webkit-backdrop-filter: blur(26px) saturate(145%);
+  backdrop-filter: blur(26px) saturate(145%);
+  transition:
+    border-color 0.32s ease,
+    box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.exercise-card.submitted-correct {
+  border-color: color-mix(in srgb, #43a875 54%, var(--line));
+  box-shadow:
+    0 26px 74px rgba(29, 126, 82, 0.15),
+    inset 0 1px 0 color-mix(in srgb, #fff 60%, transparent);
+}
+.exercise-card.submitted-incorrect {
+  border-color: color-mix(in srgb, #e16b67 48%, var(--line));
+  box-shadow:
+    0 26px 74px rgba(161, 47, 53, 0.12),
+    inset 0 1px 0 color-mix(in srgb, #fff 60%, transparent);
 }
 .choice-grid {
   display: grid;
@@ -1171,17 +1234,75 @@ h3 {
   margin: 1.5rem 0;
 }
 .choice {
+  min-height: 58px;
   padding: 1.1rem;
   border: 1.5px solid var(--line);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
   border-radius: 14px;
   cursor: pointer;
   text-align: left;
   font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  box-shadow: 0 8px 24px rgba(11, 42, 31, 0.04);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.3s ease,
+    opacity 0.22s ease;
+}
+.choice:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--brand-2) 48%, var(--line));
+  box-shadow: 0 14px 32px rgba(11, 71, 51, 0.1);
 }
 .choice.selected {
   border-color: var(--brand-2);
   background: var(--teal-soft);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--brand-2) 13%, transparent),
+    0 14px 34px rgba(14, 86, 62, 0.1);
+}
+.choice:disabled {
+  cursor: default;
+}
+.choice.answer-correct {
+  opacity: 1;
+  color: color-mix(in srgb, #087344 84%, var(--ink));
+  border-color: #43a875;
+  background: color-mix(in srgb, #43a875 21%, var(--surface));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, #43a875 13%, transparent),
+    0 16px 36px rgba(35, 145, 94, 0.17);
+  animation: answer-correct-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.choice.answer-incorrect {
+  opacity: 1;
+  color: color-mix(in srgb, #a12f35 84%, var(--ink));
+  border-color: #e16b67;
+  background: color-mix(in srgb, #e16b67 20%, var(--surface));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, #e16b67 12%, transparent),
+    0 16px 36px rgba(161, 47, 53, 0.14);
+  animation: answer-incorrect-shake 0.42s ease-out;
+}
+.choice.answer-muted {
+  opacity: 0.5;
+}
+.answer-state {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.answer-state svg {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 .field {
   display: flex;
@@ -1199,6 +1320,20 @@ h3 {
   border-radius: 12px;
   background: var(--surface);
   color: var(--ink);
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.28s ease,
+    background-color 0.22s ease;
+}
+.answer-field.answer-correct input {
+  border-color: #43a875;
+  background: color-mix(in srgb, #43a875 15%, var(--surface));
+  box-shadow: 0 0 0 3px color-mix(in srgb, #43a875 13%, transparent);
+}
+.answer-field.answer-incorrect input {
+  border-color: #e16b67;
+  background: color-mix(in srgb, #e16b67 14%, var(--surface));
+  box-shadow: 0 0 0 3px color-mix(in srgb, #e16b67 12%, transparent);
 }
 .exercise-actions {
   display: flex;
@@ -1370,10 +1505,105 @@ h3 {
   justify-content: space-between;
   margin: 1rem 0;
 }
+.audio-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  box-shadow:
+    0 14px 40px rgba(8, 35, 25, 0.09),
+    inset 0 1px 0 color-mix(in srgb, #fff 52%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
 .audio-group {
   display: inline-flex;
-  gap: 0.25rem;
+  gap: 0.38rem;
   align-items: center;
+}
+.audio-control .icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+}
+.audio-control .audio-play {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--brand-2) 78%, transparent);
+  background: linear-gradient(145deg, var(--brand-2), var(--brand));
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 28%, transparent);
+}
+.audio-control .icon-button:not(.audio-play):not(:disabled):hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface-2) 82%, transparent);
+}
+.audio-status {
+  min-width: 8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+.audio-status i {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--muted);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-2) 40%, transparent);
+}
+.playback-playing .audio-status {
+  color: var(--brand-2);
+}
+.playback-playing .audio-status i {
+  background: var(--brand-2);
+  animation: audio-status-pulse 1.45s ease-out infinite;
+}
+.playback-paused .audio-status i {
+  background: var(--amber);
+}
+
+@keyframes answer-correct-pop {
+  0% {
+    transform: scale(0.985);
+  }
+  48% {
+    transform: scale(1.018);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes answer-incorrect-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  28% {
+    transform: translateX(-5px);
+  }
+  55% {
+    transform: translateX(4px);
+  }
+  78% {
+    transform: translateX(-2px);
+  }
+}
+
+@keyframes audio-status-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-2) 42%, transparent);
+  }
+  75%,
+  100% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--brand-2) 0%, transparent);
+  }
 }
 .character-picker {
   display: flex;
@@ -2415,6 +2645,20 @@ h3 {
   .exercise-card,
   .completion-card {
     padding: 1.2rem;
+  }
+  .exercise-card .audio-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .audio-status {
+    min-width: 0;
+    flex: 1;
+  }
+  .exercise-actions {
+    gap: 0.65rem;
+  }
+  .exercise-actions .button {
+    flex: 1;
   }
   .alphabet-grid {
     grid-template-columns: repeat(2, 1fr);

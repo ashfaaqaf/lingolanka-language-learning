@@ -1,4 +1,5 @@
-import { Check, HelpCircle, Lightbulb, RotateCcw } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Check, CheckCircle2, HelpCircle, Lightbulb, RotateCcw, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Exercise } from "../types";
 import { isCorrectAnswer, shuffleUnique } from "../lib/utils";
@@ -11,6 +12,7 @@ export function ExerciseCard({
   exercise: Exercise;
   onAnswered?: (correct: boolean) => void;
 }) {
+  const reduceMotion = useReducedMotion();
   const options = useMemo(
     () =>
       shuffleUnique([
@@ -24,6 +26,8 @@ export function ExerciseCard({
   const [answer, setAnswer] = useState("");
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [hint, setHint] = useState(false);
+  const isCorrectOption = (option: string) =>
+    isCorrectAnswer(option, exercise.correctAnswer, exercise.acceptedAlternatives);
   const submit = () => {
     const correct = isCorrectAnswer(answer, exercise.correctAnswer, exercise.acceptedAlternatives);
     setSubmitted(correct);
@@ -35,8 +39,17 @@ export function ExerciseCard({
     "true-false",
     "reading-comprehension"
   ].includes(exercise.type);
+
   return (
-    <section className="exercise-card" aria-labelledby={`prompt-${exercise.id}`}>
+    <motion.section
+      className={`exercise-card ${
+        submitted === null ? "" : submitted ? "submitted-correct" : "submitted-incorrect"
+      }`}
+      aria-labelledby={`prompt-${exercise.id}`}
+      initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 360, damping: 30 }}
+    >
       <span className="eyebrow">{exercise.type.replaceAll("-", " ")}</span>
       <h2 id={`prompt-${exercise.id}`}>{exercise.prompt}</h2>
       <p>{exercise.instructions}</p>
@@ -45,19 +58,54 @@ export function ExerciseCard({
       )}
       {choiceMode ? (
         <div className="choice-grid">
-          {options.map((option) => (
-            <button
-              key={String(option)}
-              className={`choice ${answer === option ? "selected" : ""}`}
-              disabled={submitted !== null}
-              onClick={() => setAnswer(String(option))}
-            >
-              {String(option)}
-            </button>
-          ))}
+          {options.map((option) => {
+            const optionText = String(option);
+            const correctOption = isCorrectOption(optionText);
+            const selectedOption = answer === optionText;
+            const resultClass =
+              submitted === null
+                ? selectedOption
+                  ? "selected"
+                  : ""
+                : correctOption
+                  ? "answer-correct"
+                  : selectedOption
+                    ? "answer-incorrect"
+                    : "answer-muted";
+
+            return (
+              <motion.button
+                type="button"
+                key={optionText}
+                className={`choice ${resultClass}`}
+                disabled={submitted !== null}
+                onClick={() => setAnswer(optionText)}
+                whileTap={submitted === null && !reduceMotion ? { scale: 0.975 } : undefined}
+                transition={{ type: "spring", stiffness: 500, damping: 32 }}
+              >
+                <span>{optionText}</span>
+                {submitted !== null && correctOption && (
+                  <span className="answer-state">
+                    <CheckCircle2 aria-hidden="true" />
+                    <span className="sr-only">Correct answer</span>
+                  </span>
+                )}
+                {submitted === false && selectedOption && !correctOption && (
+                  <span className="answer-state">
+                    <XCircle aria-hidden="true" />
+                    <span className="sr-only">Your answer was incorrect</span>
+                  </span>
+                )}
+              </motion.button>
+            );
+          })}
         </div>
       ) : (
-        <label className="field">
+        <label
+          className={`field answer-field ${
+            submitted === null ? "" : submitted ? "answer-correct" : "answer-incorrect"
+          }`}
+        >
           Your answer
           <input
             lang={exercise.targetLanguage}
@@ -71,15 +119,16 @@ export function ExerciseCard({
         </label>
       )}
       <div className="exercise-actions">
-        <button className="button ghost" onClick={() => setHint((shown) => !shown)}>
+        <button type="button" className="button ghost" onClick={() => setHint((shown) => !shown)}>
           <Lightbulb /> Hint
         </button>
         {submitted === null ? (
-          <button className="button primary" disabled={!answer} onClick={submit}>
+          <button type="button" className="button primary" disabled={!answer} onClick={submit}>
             <Check /> Check answer
           </button>
         ) : (
           <button
+            type="button"
             className="button secondary"
             onClick={() => {
               setAnswer("");
@@ -90,17 +139,38 @@ export function ExerciseCard({
           </button>
         )}
       </div>
-      {hint && (
-        <p className="hint">
-          <HelpCircle /> {exercise.hint || "Look at the meaning and sound together."}
-        </p>
-      )}
-      {submitted !== null && (
-        <div className={`feedback ${submitted ? "success" : "error"}`} role="status">
-          <strong>{submitted ? "Correct — well done!" : "Not yet — try once more."}</strong>
-          <span>{exercise.explanation}</span>
-        </div>
-      )}
-    </section>
+      <AnimatePresence initial={false}>
+        {hint && (
+          <motion.p
+            className="hint"
+            initial={reduceMotion ? false : { opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
+          >
+            <HelpCircle /> {exercise.hint || "Look at the meaning and sound together."}
+          </motion.p>
+        )}
+      </AnimatePresence>
+      <AnimatePresence initial={false}>
+        {submitted !== null && (
+          <motion.div
+            className={`feedback ${submitted ? "success" : "error"}`}
+            role="status"
+            initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 6, scale: 0.98 }}
+            transition={
+              reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 28 }
+            }
+          >
+            <strong>
+              {submitted ? <CheckCircle2 aria-hidden="true" /> : <XCircle aria-hidden="true" />}
+              {submitted ? "Correct — well done!" : "Not yet — try once more."}
+            </strong>
+            <span>{exercise.explanation}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.section>
   );
 }
