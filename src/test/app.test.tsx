@@ -119,6 +119,38 @@ describe("critical application journeys", () => {
     );
   });
 
+  it("offers a genuine first lesson when the current course has no progress", async () => {
+    await resetDatabase();
+    try {
+      renderApp("/dashboard");
+      expect(await screen.findByText("Start learning · Foundations")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /Start first lesson/i })).toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: /Continue lesson/i })).not.toBeInTheDocument();
+    } finally {
+      await resetDatabase();
+    }
+  });
+
+  it("only says continue after a lesson in the current course has been completed", async () => {
+    await resetDatabase();
+    await saveProfile({ ...defaultProfile, onboarded: true });
+    await db.progress.put({
+      id: "english-to-sinhala-lesson-1",
+      completedAt: new Date().toISOString(),
+      score: 90,
+      xp: 20,
+      minutes: 8,
+      skills: { reading: 5, writing: 5, listening: 5, speaking: 5 }
+    });
+    try {
+      renderApp("/dashboard");
+      expect(await screen.findByText("Continue learning · Foundations")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /Continue lesson/i })).toBeInTheDocument();
+    } finally {
+      await resetDatabase();
+    }
+  });
+
   it("places pronunciation practice before the regular lessons", async () => {
     const user = userEvent.setup();
     renderApp("/learn");
@@ -219,7 +251,10 @@ describe("critical application journeys", () => {
       expect(screen.getByRole("alertdialog")).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: "Reset permanently" }));
 
-      expect(await screen.findByText(/All local progress and preferences were reset/i)).toBeInTheDocument();
+      expect(
+        await screen.findByRole("heading", { name: "Which language do you understand best?" })
+      ).toBeInTheDocument();
+      expect(window.location.hash).toBe("#/onboarding");
       expect(await db.progress.count()).toBe(0);
       expect((await loadProfile()).name).toBe("");
     } finally {

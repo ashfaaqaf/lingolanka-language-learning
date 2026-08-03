@@ -71,6 +71,7 @@ function Header({
 
 export function DashboardPage() {
   const { profile, progress, vocabularyStates } = useApp();
+  const interfaceLanguage = profile.settings.interfaceLanguage;
   const totalXp = progress.reduce((sum, record) => sum + record.xp, 0);
   const minutes = progress.reduce((sum, record) => sum + record.minutes, 0);
   const streak = calculateStreak(progress.map((record) => record.completedAt));
@@ -81,6 +82,8 @@ export function DashboardPage() {
   const lessons = course.levels.flatMap((level) =>
     level.modules.flatMap((module) => module.lessons)
   );
+  const currentCourseLessonIds = new Set(lessons.map((lesson) => lesson.id));
+  const hasStartedCurrentCourse = progress.some((record) => currentCourseLessonIds.has(record.id));
   const next =
     lessons.find((lesson) => !progress.some((item) => item.id === lesson.id)) ?? lessons[0]!;
   const skills = progress.reduce(
@@ -110,12 +113,23 @@ export function DashboardPage() {
       />
       <section className="dashboard-hero">
         <div>
-          <span className="eyebrow">Continue learning · Foundations</span>
+          <span className="eyebrow">
+            {interfaceLanguage === "si"
+              ? `${hasStartedCurrentCourse ? "ඉගෙනීම දිගටම කරගෙන යන්න" : "ඉගෙනීම අරඹන්න"} · පදනම`
+              : `${hasStartedCurrentCourse ? "Continue learning" : "Start learning"} · Foundations`}
+          </span>
           <h2>{next.title}</h2>
           <p>{next.description}</p>
           <div className="button-row">
             <Link className="button light" to={`/lesson/${next.id}`}>
-              <Play /> Continue lesson
+              <Play />
+              {interfaceLanguage === "si"
+                ? hasStartedCurrentCourse
+                  ? "පාඩම දිගටම කරගෙන යන්න"
+                  : "පළමු පාඩම අරඹන්න"
+                : hasStartedCurrentCourse
+                  ? "Continue lesson"
+                  : "Start first lesson"}
             </Link>
             <span>
               <Clock /> {next.minutes} min
@@ -1471,6 +1485,7 @@ export function AchievementsPage() {
 
 export function SettingsPage() {
   const { profile, updateProfile, refresh } = useApp();
+  const navigate = useNavigate();
   const [feedback, setFeedback] = useState<{
     message: string;
     tone: "success" | "error" | "neutral";
@@ -1545,10 +1560,7 @@ export function SettingsPage() {
       await resetDatabase();
       await refresh();
       setConfirmReset(false);
-      setFeedback({
-        message: "All local progress and preferences were reset.",
-        tone: "success"
-      });
+      navigate("/onboarding", { replace: true });
     } catch {
       setFeedback({
         message: "Progress could not be reset. Please close other LingoLanka tabs and try again.",
