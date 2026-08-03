@@ -86,135 +86,273 @@ export function DashboardPage() {
   const hasStartedCurrentCourse = progress.some((record) => currentCourseLessonIds.has(record.id));
   const next =
     lessons.find((lesson) => !progress.some((item) => item.id === lesson.id)) ?? lessons[0]!;
-  const skills = progress.reduce(
-    (result, record) => ({
-      reading: result.reading + record.skills.reading,
-      writing: result.writing + record.skills.writing,
-      listening: result.listening + record.skills.listening,
-      speaking: result.speaking + record.skills.speaking
-    }),
-    { reading: 0, writing: 0, listening: 0, speaking: 0 }
+  const completedIds = new Set(progress.map((item) => item.id));
+  const courseCompleted = lessons.filter((lesson) => completedIds.has(lesson.id)).length;
+  const coursePercent = Math.round((courseCompleted / lessons.length) * 100);
+  const dailyPercent = Math.round(
+    Math.min(100, (todayMinutes / profile.settings.dailyTarget) * 100)
   );
+  const wordsLearned = vocabularyStates.filter((item) => item.learned).length;
+  const copy =
+    interfaceLanguage === "si"
+      ? {
+          eyebrow: "අද",
+          greeting: `ආයුබෝවන්, ${profile.name || "ඉගෙනුම් මිතුරා"}`,
+          intro: "අද කළ යුතු දේ පැහැදිලිව දකින්න. එක් කුඩා පාඩමකින් අරඹමු.",
+          personalise: "සැකසුම්",
+          focus: hasStartedCurrentCourse ? "ඉගෙනීම දිගටම කරගෙන යන්න" : "ඉගෙනීම අරඹන්න",
+          foundation: "පදනම",
+          continueLesson: hasStartedCurrentCourse ? "පාඩම දිගටම කරන්න" : "පළමු පාඩම අරඹන්න",
+          lessonReady: "ඔබේ ඊළඟ පාඩම සූදානම්",
+          courseProgress: "පාඨමාලා ප්‍රගතිය",
+          planEyebrow: "අද සැලැස්ම",
+          planTitle: "කුඩා පියවර තුනක්",
+          planCopy: "දිනපතා පාඩමක්, කෙටි පුනරීක්ෂණයක් සහ හඬ පුහුණුවක්.",
+          learn: "ඊළඟ පාඩම",
+          learnCopy: `${next.minutes} මිනිත්තු · නව වචන සහ හඬ`,
+          review: "වචන 5ක් පුනරීක්ෂණය",
+          reviewCopy: "අමාරු වචන මතක තබා ගන්න",
+          speak: "හඬ නඟා කියන්න",
+          speakCopy: "පෞද්ගලික හඬ පුහුණුවක්",
+          start: "අරඹන්න",
+          goal: "අද ඉලක්කය",
+          goalCopy: `මිනිත්තු ${profile.settings.dailyTarget}ක මෘදු ඉලක්කයක්`,
+          rhythm: "ඉගෙනුම් රිද්මය",
+          days: "දින",
+          xp: "මුළු XP",
+          words: "ඉගෙනගත් වචන",
+          week: "මෙම සතිය",
+          activity: "ඉගෙනුම් ක්‍රියාකාරකම්",
+          private: "ඔබේ ප්‍රගතිය මෙම උපාංගයේ පමණක් සුරකියි.",
+          quick: "ඉක්මන් පුහුණුව",
+          quickTitle: "දැන් පුහුණු වීමට එකක් තෝරන්න"
+        }
+      : {
+          eyebrow: "Today",
+          greeting: `${greeting()}, ${profile.name || "learner"}`,
+          intro: "See exactly what to do next. Start with one small, useful lesson.",
+          personalise: "Settings",
+          focus: hasStartedCurrentCourse ? "Continue learning" : "Start learning",
+          foundation: "Foundations",
+          continueLesson: hasStartedCurrentCourse ? "Continue lesson" : "Start first lesson",
+          lessonReady: "Your next lesson is ready",
+          courseProgress: "Course progress",
+          planEyebrow: "Today’s plan",
+          planTitle: "Three small steps",
+          planCopy: "One lesson, a quick review and a little speaking practice.",
+          learn: "Next lesson",
+          learnCopy: `${next.minutes} min · new words and sound`,
+          review: "Review 5 words",
+          reviewCopy: "Keep difficult words in memory",
+          speak: "Say it out loud",
+          speakCopy: "A private speaking warm-up",
+          start: "Start",
+          goal: "Today’s goal",
+          goalCopy: `A gentle ${profile.settings.dailyTarget}-minute target`,
+          rhythm: "Learning rhythm",
+          days: "days",
+          xp: "Total XP",
+          words: "Words learned",
+          week: "This week",
+          activity: "Learning activity",
+          private: "Your progress stays on this device.",
+          quick: "Quick practice",
+          quickTitle: "Choose one skill to practise now"
+        };
   return (
-    <div className="page dashboard-page">
-      <Header
-        eyebrow="Your learning space"
-        title={`${greeting()}, ${profile.name || "learner"}`}
-        copy={
-          profile.settings.direction === "english-to-sinhala"
-            ? "You’re building Sinhala, one useful connection at a time."
-            : "ඔබ ප්‍රයෝජනවත් සම්බන්ධතා හරහා ඉංග්‍රීසි ගොඩනඟයි."
-        }
-        action={
-          <Link className="button secondary" to="/settings">
-            <Settings2 /> Personalise
-          </Link>
-        }
-      />
-      <section className="dashboard-hero">
+    <div className="page dashboard-page redesigned-dashboard">
+      <header className="today-header">
         <div>
-          <span className="eyebrow">
-            {interfaceLanguage === "si"
-              ? `${hasStartedCurrentCourse ? "ඉගෙනීම දිගටම කරගෙන යන්න" : "ඉගෙනීම අරඹන්න"} · පදනම`
-              : `${hasStartedCurrentCourse ? "Continue learning" : "Start learning"} · Foundations`}
-          </span>
-          <h2>{next.title}</h2>
-          <p>{next.description}</p>
-          <div className="button-row">
-            <Link className="button light" to={`/lesson/${next.id}`}>
-              <Play />
-              {interfaceLanguage === "si"
-                ? hasStartedCurrentCourse
-                  ? "පාඩම දිගටම කරගෙන යන්න"
-                  : "පළමු පාඩම අරඹන්න"
-                : hasStartedCurrentCourse
-                  ? "Continue lesson"
-                  : "Start first lesson"}
-            </Link>
-            <span>
-              <Clock /> {next.minutes} min
-            </span>
-          </div>
+          <span className="eyebrow">{copy.eyebrow}</span>
+          <h1>{copy.greeting}</h1>
+          <p>{copy.intro}</p>
         </div>
-        <ProgressRing
-          value={Math.round(Math.min(100, (todayMinutes / profile.settings.dailyTarget) * 100))}
-          label="daily goal"
-        />
-      </section>
-      <section className="stat-grid">
-        <article>
-          <Flame />
-          <span>Current streak</span>
-          <strong>{streak.current} days</strong>
-          <small>Best: {streak.longest}</small>
-        </article>
-        <article>
-          <Sparkles />
-          <span>Total XP</span>
-          <strong>{totalXp}</strong>
-          <small>Level {Math.floor(totalXp / 300) + 1}</small>
-        </article>
-        <article>
-          <BookOpen />
-          <span>Lessons</span>
-          <strong>{progress.length}</strong>
-          <small>of {lessons.length} completed</small>
-        </article>
-        <article>
-          <Languages />
-          <span>Words learned</span>
-          <strong>{vocabularyStates.filter((item) => item.learned).length}</strong>
-          <small>{vocabularyStates.filter((item) => item.difficult).length} marked difficult</small>
-        </article>
-      </section>
-      <div className="dashboard-grid">
-        <section className="card">
-          <div className="card-heading">
-            <div>
-              <span className="eyebrow">This week</span>
-              <h2>Learning activity</h2>
-            </div>
-            <strong>{minutes} min total</strong>
-          </div>
-          <WeeklyChart progress={progress} />
-          <p className="accessible-summary">
-            Text summary:{" "}
-            {progress.length
-              ? `${progress.length} lessons completed for ${minutes} total minutes.`
-              : "No study sessions recorded yet."}
-          </p>
-        </section>
-        <section className="card">
-          <span className="eyebrow">Skill balance</span>
-          <h2>Growing together</h2>
-          {Object.entries(skills).map(([skill, value]) => (
-            <div className="skill-row" key={skill}>
-              <span>{skill}</span>
-              <div>
-                <i style={{ width: `${Math.min(100, value)}%` }} />
+        <Link className="button secondary" to="/settings">
+          <Settings2 /> {copy.personalise}
+        </Link>
+      </header>
+
+      <div className="today-layout">
+        <div className="today-main">
+          <section className="focus-card">
+            <div className="focus-card-copy">
+              <span className="eyebrow">
+                {copy.focus} · {copy.foundation}
+              </span>
+              <small>{copy.lessonReady}</small>
+              <h2>{next.title}</h2>
+              <p>{next.description}</p>
+              <div className="focus-actions">
+                <Link className="button light large" to={`/lesson/${next.id}`}>
+                  <Play aria-hidden="true" /> {copy.continueLesson}
+                </Link>
+                <span>
+                  <Clock aria-hidden="true" /> {next.minutes} min
+                </span>
               </div>
-              <strong>{Math.min(100, value)}%</strong>
+              <div
+                className="course-meter"
+                aria-label={`${copy.courseProgress}: ${coursePercent}%`}
+              >
+                <span>
+                  <strong>{copy.courseProgress}</strong>
+                  <small>
+                    {courseCompleted}/{lessons.length}
+                  </small>
+                </span>
+                <div>
+                  <i style={{ width: `${coursePercent}%` }} />
+                </div>
+              </div>
             </div>
-          ))}
-        </section>
-      </div>
-      <section className="quick-grid">
-        {(
-          [
-            ["5-minute review", "/review"],
-            ["Sound practice", "/listening"],
-            ["Trace a letter", "/writing"],
-            ["Role-play", "/conversations"]
-          ] as const
-        ).map(([label, to]) => (
-          <Link className="quick-card" to={to} key={label}>
-            <Sparkles />
-            <span>{label}</span>
-            <ChevronRight />
+            <div className="focus-word" aria-hidden="true">
+              <span lang={profile.settings.direction === "english-to-sinhala" ? "si" : "en"}>
+                {profile.settings.direction === "english-to-sinhala" ? "ආ" : "Hi"}
+              </span>
+              <small>{course.title}</small>
+            </div>
+          </section>
+
+          <section className="daily-plan">
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">{copy.planEyebrow}</span>
+                <h2>{copy.planTitle}</h2>
+                <p>{copy.planCopy}</p>
+              </div>
+              <strong>1 / 3</strong>
+            </div>
+            <div className="mission-grid">
+              <Link className="mission-card featured" to={`/lesson/${next.id}`}>
+                <span className="mission-icon">
+                  <BookOpen aria-hidden="true" />
+                </span>
+                <div>
+                  <strong>{copy.learn}</strong>
+                  <small>{copy.learnCopy}</small>
+                </div>
+                <span>
+                  {copy.start}
+                  <ChevronRight aria-hidden="true" />
+                </span>
+              </Link>
+              <Link className="mission-card" to="/review">
+                <span className="mission-icon">
+                  <Sparkles aria-hidden="true" />
+                </span>
+                <div>
+                  <strong>{copy.review}</strong>
+                  <small>{copy.reviewCopy}</small>
+                </div>
+                <ChevronRight aria-hidden="true" />
+              </Link>
+              <Link className="mission-card" to="/speaking">
+                <span className="mission-icon">
+                  <Mic2 aria-hidden="true" />
+                </span>
+                <div>
+                  <strong>{copy.speak}</strong>
+                  <small>{copy.speakCopy}</small>
+                </div>
+                <ChevronRight aria-hidden="true" />
+              </Link>
+            </div>
+          </section>
+
+          <CoursePreview course={course} progressIds={completedIds} />
+
+          <section className="quick-practice-section">
+            <div className="section-heading compact">
+              <div>
+                <span className="eyebrow">{copy.quick}</span>
+                <h2>{copy.quickTitle}</h2>
+              </div>
+            </div>
+            <div className="quick-grid">
+              {(
+                (interfaceLanguage === "si"
+                  ? [
+                      ["මිනිත්තු 5 පුනරීක්ෂණය", "/review"],
+                      ["හඬ පුහුණුව", "/listening"],
+                      ["අකුරක් ලියන්න", "/writing"],
+                      ["සංවාද පුහුණුව", "/conversations"]
+                    ]
+                  : [
+                      ["5-minute review", "/review"],
+                      ["Sound practice", "/listening"],
+                      ["Trace a letter", "/writing"],
+                      ["Role-play", "/conversations"]
+                    ]) as ReadonlyArray<readonly [string, string]>
+              ).map(([label, to]) => (
+                <Link className="quick-card" to={to} key={label}>
+                  <Sparkles aria-hidden="true" />
+                  <span>{label}</span>
+                  <ChevronRight aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside className="today-sidebar" aria-label={copy.goal}>
+          <section className="goal-card card">
+            <ProgressRing value={dailyPercent} label={copy.goal} />
+            <div>
+              <span className="eyebrow">{copy.goal}</span>
+              <h2>
+                {todayMinutes}/{profile.settings.dailyTarget} min
+              </h2>
+              <p>{copy.goalCopy}</p>
+            </div>
+          </section>
+          <section className="rhythm-card card">
+            <span className="eyebrow">{copy.rhythm}</span>
+            <div className="rhythm-stat">
+              <Flame aria-hidden="true" />
+              <span>
+                <strong>
+                  {streak.current} {copy.days}
+                </strong>
+                <small>Best {streak.longest}</small>
+              </span>
+            </div>
+            <div className="rhythm-stat">
+              <Sparkles aria-hidden="true" />
+              <span>
+                <strong>{totalXp}</strong>
+                <small>{copy.xp}</small>
+              </span>
+            </div>
+            <div className="rhythm-stat">
+              <Languages aria-hidden="true" />
+              <span>
+                <strong>{wordsLearned}</strong>
+                <small>{copy.words}</small>
+              </span>
+            </div>
+          </section>
+          <section className="weekly-card card">
+            <div className="card-heading">
+              <div>
+                <span className="eyebrow">{copy.week}</span>
+                <h2>{copy.activity}</h2>
+              </div>
+              <strong>{minutes} min</strong>
+            </div>
+            <WeeklyChart progress={progress} />
+            <p className="accessible-summary">
+              {progress.length
+                ? `${progress.length} lessons completed for ${minutes} total minutes.`
+                : "No study sessions recorded yet."}
+            </p>
+          </section>
+          <Link className="privacy-promise" to="/privacy">
+            <ShieldCheck aria-hidden="true" />
+            <span>{copy.private}</span>
+            <ChevronRight aria-hidden="true" />
           </Link>
-        ))}
-      </section>
-      <CoursePreview course={course} progressIds={new Set(progress.map((item) => item.id))} />
+        </aside>
+      </div>
     </div>
   );
 }
@@ -294,20 +432,77 @@ export function LearnPage() {
   const { profile, progress } = useApp();
   const course = courses.find((item) => item.id === profile.settings.direction) ?? courses[0]!;
   const learningSinhala = profile.settings.direction === "english-to-sinhala";
+  const interfaceLanguage = profile.settings.interfaceLanguage;
+  const completedIds = new Set(progress.map((item) => item.id));
+  const allLessons = course.levels.flatMap((level) =>
+    level.modules.flatMap((module) => module.lessons)
+  );
+  const completedCount = allLessons.filter((lesson) => completedIds.has(lesson.id)).length;
+  const nextLesson = allLessons.find((lesson) => !completedIds.has(lesson.id)) ?? allLessons[0]!;
+  const copy =
+    interfaceLanguage === "si"
+      ? {
+          eyebrow: "ඉගෙනුම් මාර්ගය",
+          title: course.title,
+          intro: "ඔබේ වේගයෙන් පියවරෙන් පියවර ඉදිරියට යන්න. කිසිදු පාඩමක් අගුළු දමා නැත.",
+          completed: "සම්පූර්ණයි",
+          next: "ඊළඟ පාඩම",
+          continue: "ඊළඟ පාඩම අරඹන්න",
+          level: "මට්ටම",
+          lessons: "පාඩම්",
+          unit: "ඒකකය",
+          lesson: "පාඩම",
+          current: "දැන් ඉගෙන ගන්න",
+          done: "අවසන්",
+          open: "විවෘත"
+        }
+      : {
+          eyebrow: "Learning path",
+          title: course.title,
+          intro: "Move forward one useful step at a time. Every lesson stays open at your pace.",
+          completed: "complete",
+          next: "Next lesson",
+          continue: "Start next lesson",
+          level: "Level",
+          lessons: "lessons",
+          unit: "Unit",
+          lesson: "Lesson",
+          current: "Learn now",
+          done: "Complete",
+          open: "Open"
+        };
   return (
-    <div className="page">
-      <Header
-        eyebrow="Curriculum"
-        title={course.title}
-        copy="Five progressive levels. Explore freely, repeat any lesson, and learn without lockouts."
-      />
+    <div className="page learning-path-page">
+      <header className="path-hero">
+        <div>
+          <span className="eyebrow">{copy.eyebrow}</span>
+          <h1>{copy.title}</h1>
+          <p>{copy.intro}</p>
+          <div className="path-hero-actions">
+            <Link className="button primary large" to={`/lesson/${nextLesson.id}`}>
+              <Play aria-hidden="true" /> {copy.continue}
+            </Link>
+            <span>
+              <strong>{completedCount}</strong> / {allLessons.length} {copy.lessons}
+            </span>
+          </div>
+        </div>
+        <div className="path-compass" aria-label={`${completedCount} ${copy.completed}`}>
+          <span>{Math.round((completedCount / allLessons.length) * 100)}%</span>
+          <small>{copy.completed}</small>
+        </div>
+      </header>
       <section className="pronunciation-entry-card">
-        <div className="pronunciation-entry-icon"><Headphones aria-hidden="true" /></div>
+        <div className="pronunciation-entry-icon">
+          <Headphones aria-hidden="true" />
+        </div>
         <div>
           <span className="eyebrow">
             {learningSinhala ? "Recommended first" : "පළමුව මෙය කරන්න"}
           </span>
-          <h2>{learningSinhala ? "Pronunciation & reading starter" : "උච්චාරණ හා කියවීමේ ආරම්භය"}</h2>
+          <h2>
+            {learningSinhala ? "Pronunciation & reading starter" : "උච්චාරණ හා කියවීමේ ආරම්භය"}
+          </h2>
           <p>
             {learningSinhala
               ? "Learn how the new sounds feel before Lesson 1. Every example has normal and slow audio plus an easy say-it-like cue."
@@ -315,44 +510,89 @@ export function LearnPage() {
           </p>
         </div>
         <Link className="button primary large" to="/pronunciation">
-          {learningSinhala ? "Start with sounds" : "හඬ සමඟ අරඹන්න"} <ChevronRight aria-hidden="true" />
+          {learningSinhala ? "Start with sounds" : "හඬ සමඟ අරඹන්න"}{" "}
+          <ChevronRight aria-hidden="true" />
         </Link>
       </section>
-      {course.levels.map((level) => (
-        <section className="level-section" key={level.id}>
-          <div className="level-marker">{level.id}</div>
-          <div>
-            <span className="eyebrow">Level {level.id}</span>
-            <h2>{level.name}</h2>
-            <div className="module-grid">
-              {level.modules.map((module) => (
-                <article className="card module-card" key={module.id}>
+      <div className="learning-journey">
+        {course.levels.map((level) => {
+          const levelLessons = level.modules.flatMap((module) => module.lessons);
+          const levelCompleted = levelLessons.filter((lesson) =>
+            completedIds.has(lesson.id)
+          ).length;
+          return (
+            <section className="journey-level" key={level.id}>
+              <header className="level-banner">
+                <span className="level-number">{level.id}</span>
+                <div>
                   <span>
-                    {module.lessons.length} lessons · +{module.rewardXp} XP
+                    {copy.level} {level.id}
                   </span>
-                  <h3>{module.title}</h3>
-                  <p lang="si">{module.titleSi}</p>
-                  <p>{module.overview}</p>
-                  <div className="module-lessons">
-                    {module.lessons.map((lesson) => (
-                      <Link to={`/lesson/${lesson.id}`} key={lesson.id}>
-                        {progress.some((item) => item.id === lesson.id) ? <Check /> : <Play />}
+                  <h2>{level.name}</h2>
+                </div>
+                <strong>
+                  {levelCompleted}/{levelLessons.length}
+                </strong>
+              </header>
+              <div className="journey-units">
+                {level.modules.map((module, moduleIndex) => {
+                  const moduleDone = module.lessons.filter((lesson) =>
+                    completedIds.has(lesson.id)
+                  ).length;
+                  return (
+                    <article className="journey-unit" key={module.id}>
+                      <header>
+                        <div>
+                          <span className="eyebrow">
+                            {copy.unit} {moduleIndex + 1}
+                          </span>
+                          <h3>{module.title}</h3>
+                          <p lang="si">{module.titleSi}</p>
+                        </div>
                         <span>
-                          <strong>{lesson.title}</strong>
-                          <small>{lesson.minutes} min</small>
+                          {moduleDone}/{module.lessons.length} · +{module.rewardXp} XP
                         </span>
-                      </Link>
-                    ))}
-                  </div>
-                  <Link className="button secondary" to={`/lesson/${module.lessons[0]?.id}`}>
-                    Start module
-                  </Link>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      ))}
+                      </header>
+                      <p>{module.overview}</p>
+                      <div className="journey-track">
+                        {module.lessons.map((lesson, lessonIndex) => {
+                          const done = completedIds.has(lesson.id);
+                          const current = lesson.id === nextLesson.id;
+                          return (
+                            <Link
+                              className={`journey-lesson ${done ? "done" : current ? "current" : "open"}`}
+                              to={`/lesson/${lesson.id}`}
+                              key={lesson.id}
+                            >
+                              <span className="journey-node">
+                                {done ? (
+                                  <Check aria-hidden="true" />
+                                ) : current ? (
+                                  <Play aria-hidden="true" />
+                                ) : (
+                                  lessonIndex + 1
+                                )}
+                              </span>
+                              <span className="journey-lesson-copy">
+                                <small>
+                                  {copy.lesson} {lessonIndex + 1} · {lesson.minutes} min
+                                </small>
+                                <strong>{lesson.title}</strong>
+                                <span>{done ? copy.done : current ? copy.current : copy.open}</span>
+                              </span>
+                              <ChevronRight aria-hidden="true" />
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -985,7 +1225,9 @@ export function ConversationsPage() {
       await new Promise<void>((resolve) => {
         const started = speech.speak(text, {
           lang: "si-LK",
-          rate: slow ? Math.max(0.55, profile.settings.speechRate * 0.72) : profile.settings.speechRate,
+          rate: slow
+            ? Math.max(0.55, profile.settings.speechRate * 0.72)
+            : profile.settings.speechRate,
           pitch: profile.settings.speechPitch,
           volume: profile.settings.speechVolume,
           voiceName: profile.settings.sinhalaVoice,
@@ -1207,7 +1449,9 @@ function createPracticeExercise(mode: PracticeMode, direction: LearningDirection
     return {
       id: `practice-${direction}-sentences`,
       type: "word-order",
-      prompt: toSinhala ? `Build this sentence: ${example.english}` : `මෙම වාක්‍යය සාදන්න: ${example.sinhala}`,
+      prompt: toSinhala
+        ? `Build this sentence: ${example.english}`
+        : `මෙම වාක්‍යය සාදන්න: ${example.sinhala}`,
       instructions: toSinhala
         ? "Listen, then type the complete Sinhala sentence. Copying it once is good practice."
         : "හඬ අසා සම්පූර්ණ ඉංග්‍රීසි වාක්‍යය ලියන්න. එක් වරක් පිටපත් කිරීමත් හොඳ පුහුණුවක්.",
@@ -1295,6 +1539,41 @@ export function PracticePage() {
             : "Each category opens a different activity. Choose the skill you want to practise now."
         }
       />
+      <section className="practice-featured" aria-labelledby="practice-featured-title">
+        <div className="practice-featured-copy">
+          <span className="eyebrow">
+            {interfaceLanguage === "si"
+              ? "අද නිර්දේශය · මිනිත්තු 5"
+              : "Recommended today · 5 minutes"}
+          </span>
+          <h2 id="practice-featured-title">
+            {interfaceLanguage === "si" ? "කුඩා මිශ්‍ර පුහුණුවක් කරන්න" : "Try a quick skill mix"}
+          </h2>
+          <p>
+            {interfaceLanguage === "si"
+              ? "වචන, වාක්‍ය සහ හඬ එකම කෙටි පුහුණුවකින් නැවත මතක් කරගන්න. වැරදුණත් දඬුවමක් නැහැ—නැවත උත්සාහ කරන්න."
+              : "Refresh words, sentences and sound in one short session. There are no hearts or lockouts—repeat anything freely."}
+          </p>
+        </div>
+        <button className="button primary" onClick={() => setSearchParams({ mode: "mixed" })}>
+          <Play aria-hidden="true" />
+          {interfaceLanguage === "si" ? "මිශ්‍ර පුහුණුව අරඹන්න" : "Start quick mix"}
+        </button>
+      </section>
+      <div className="practice-promise" role="note">
+        <span>
+          <ShieldCheck aria-hidden="true" />
+          {interfaceLanguage === "si" ? "දඬුවම් නැහැ" : "No penalties"}
+        </span>
+        <span>
+          <Languages aria-hidden="true" />
+          {interfaceLanguage === "si" ? "භාෂා දෙකෙන්ම උපදෙස්" : "Bilingual guidance"}
+        </span>
+        <span>
+          <Sparkles aria-hidden="true" />
+          {interfaceLanguage === "si" ? "අසීරු දේ නැවත කරන්න" : "Repeat difficult skills"}
+        </span>
+      </div>
       <div className="practice-grid">
         {practiceModes.map((mode) => (
           <button
@@ -1651,20 +1930,44 @@ export function SettingsPage() {
       <section className="settings-section">
         <h2>Appearance & accessibility</h2>
         <div className="settings-card">
-          <label>
+          <div className="theme-setting">
             <span>
-              <strong>Theme</strong>
-              <small>Light, dark or match your device.</small>
+              <strong>{settings.interfaceLanguage === "si" ? "පෙනුම" : "Theme"}</strong>
+              <small>
+                {settings.interfaceLanguage === "si"
+                  ? "ඔබගේ උපාංගයට ගැළපෙන හෝ කැමති පෙනුම තෝරන්න."
+                  : "Choose a look or let LingoLanka match your device."}
+              </small>
             </span>
-            <select
-              value={settings.theme}
-              onChange={(event) => patch({ theme: event.target.value as typeof settings.theme })}
+            <div
+              className="theme-picker"
+              role="group"
+              aria-label={settings.interfaceLanguage === "si" ? "පෙනුම තෝරන්න" : "Choose theme"}
             >
-              {["system", "light", "dark"].map((value) => (
-                <option key={value}>{value}</option>
-              ))}
-            </select>
-          </label>
+              {(["system", "light", "dark"] as const).map((value) => {
+                const labels = {
+                  system: settings.interfaceLanguage === "si" ? "උපාංගයට අනුව" : "Device",
+                  light: settings.interfaceLanguage === "si" ? "ආලෝක" : "Daylight",
+                  dark: settings.interfaceLanguage === "si" ? "අඳුරු" : "Night"
+                };
+                return (
+                  <button
+                    type="button"
+                    className={`theme-option ${settings.theme === value ? "active" : ""}`}
+                    aria-pressed={settings.theme === value}
+                    onClick={() => patch({ theme: value })}
+                    key={value}
+                  >
+                    <span className={`theme-swatch ${value}`} aria-hidden="true">
+                      <i />
+                      <i />
+                    </span>
+                    <strong>{labels[value]}</strong>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <label>
             <span>
               <strong>Text size</strong>

@@ -69,7 +69,7 @@ describe("critical application journeys", () => {
 
       await user.click(screen.getByRole("button", { name: /දැන් ඉගෙනීම අරඹන්න/ }));
       const navigation = await screen.findByRole("complementary", { name: "ප්‍රධාන මෙනුව" });
-      expect(navigation).toHaveTextContent("වචන මාලාව");
+      expect(navigation).toHaveTextContent("වචන පොත");
       expect(navigation).not.toHaveTextContent("Vocabulary");
     } finally {
       await resetDatabase();
@@ -113,10 +113,15 @@ describe("critical application journeys", () => {
   it("renders every primary navigation destination", () => {
     renderApp("/dashboard");
     expect(screen.getByRole("complementary", { name: "Main navigation" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Vocabulary/ })).toHaveAttribute(
+    expect(screen.getAllByRole("link", { name: "Learning path" })[0]).toHaveAttribute(
+      "href",
+      "#/learn"
+    );
+    expect(screen.getAllByRole("link", { name: "Wordbook" })[0]).toHaveAttribute(
       "href",
       "#/vocabulary"
     );
+    expect(screen.getByRole("heading", { name: "Three small steps" })).toBeInTheDocument();
   });
 
   it("offers a genuine first lesson when the current course has no progress", async () => {
@@ -188,11 +193,11 @@ describe("critical application journeys", () => {
   it("downloads a real progress backup from settings", async () => {
     const user = userEvent.setup();
     let downloadedName = "";
-    const click = vi
-      .spyOn(HTMLAnchorElement.prototype, "click")
-      .mockImplementation(function (this: HTMLAnchorElement) {
-        downloadedName = this.download;
-      });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+      this: HTMLAnchorElement
+    ) {
+      downloadedName = this.download;
+    });
 
     try {
       renderApp("/settings");
@@ -265,10 +270,12 @@ describe("critical application journeys", () => {
   it("uses phone-first primary destinations in mobile navigation", () => {
     renderApp("/dashboard");
     const mobileNavigation = screen.getByRole("navigation", { name: "Mobile navigation" });
-    expect(mobileNavigation).toHaveTextContent("Home");
+    expect(mobileNavigation).toHaveTextContent("Today");
+    expect(mobileNavigation).toHaveTextContent("Learning path");
     expect(mobileNavigation).toHaveTextContent("Practice");
-    expect(mobileNavigation).toHaveTextContent("Review");
-    expect(mobileNavigation).toHaveTextContent("Settings");
+    expect(mobileNavigation).toHaveTextContent("Wordbook");
+    expect(mobileNavigation).toHaveTextContent("Progress");
+    expect(mobileNavigation).not.toHaveTextContent("Settings");
     expect(mobileNavigation).not.toHaveTextContent("Writing");
   });
 

@@ -1,7 +1,6 @@
 import {
   Award,
   BarChart3,
-  BookMarked,
   BookOpen,
   ChevronLeft,
   ChevronRight,
@@ -24,38 +23,70 @@ import { useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 
-const navigation = [
-  ["/dashboard", { en: "Dashboard", si: "ඉගෙනුම් පුවරුව" }, Gauge],
-  ["/learn", { en: "Learn", si: "පාඩම්" }, GraduationCap],
+const primaryNavigation = [
+  ["/dashboard", { en: "Today", si: "අද" }, Gauge],
+  ["/learn", { en: "Learning path", si: "ඉගෙනුම් මාර්ගය" }, GraduationCap],
+  ["/practice", { en: "Practice", si: "පුහුණුව" }, Sparkles],
+  ["/vocabulary", { en: "Wordbook", si: "වචන පොත" }, Library],
+  ["/progress", { en: "Progress", si: "ප්‍රගතිය" }, BarChart3]
+] as const;
+
+const skillNavigation = [
   ["/alphabet", { en: "Alphabet", si: "අක්ෂර" }, SpellCheck2],
   ["/writing", { en: "Writing", si: "ලිවීම" }, PenTool],
   ["/listening", { en: "Listening", si: "සවන්දීම" }, Headphones],
   ["/speaking", { en: "Speaking", si: "කතා කිරීම" }, Mic2],
-  ["/vocabulary", { en: "Vocabulary", si: "වචන මාලාව" }, Library],
   ["/grammar", { en: "Grammar", si: "ව්‍යාකරණ" }, BookOpen],
-  ["/conversations", { en: "Conversations", si: "සංවාද" }, MessageCircle],
-  ["/practice", { en: "Practice", si: "පුහුණුව" }, Sparkles],
-  ["/review", { en: "Review", si: "පුනරීක්ෂණය" }, BookMarked],
-  ["/progress", { en: "Progress", si: "ප්‍රගතිය" }, BarChart3],
-  ["/achievements", { en: "Achievements", si: "ජයග්‍රහණ" }, Award],
+  ["/conversations", { en: "Conversations", si: "සංවාද" }, MessageCircle]
+] as const;
+
+const utilityNavigation = [
+  ["/achievements", { en: "Milestones", si: "ජයග්‍රහණ" }, Award],
   ["/settings", { en: "Settings", si: "සැකසුම්" }, Settings],
   ["/install", { en: "Install app", si: "යෙදුම ස්ථාපනය" }, Download],
   ["/about", { en: "About", si: "අප ගැන" }, CircleHelp],
   ["/privacy", { en: "Privacy", si: "පෞද්ගලිකත්වය" }, ShieldCheck]
 ] as const;
 
-const mobileNavigation = [
-  ["/dashboard", { en: "Home", si: "මුල් පිටුව" }, Gauge],
-  ["/learn", { en: "Learn", si: "පාඩම්" }, GraduationCap],
-  ["/practice", { en: "Practice", si: "පුහුණුව" }, Sparkles],
-  ["/review", { en: "Review", si: "පුනරීක්ෂණය" }, BookMarked],
-  ["/settings", { en: "Settings", si: "සැකසුම්" }, Settings]
-] as const;
+const mobileNavigation = primaryNavigation;
+
+type Language = "en" | "si";
+type NavigationGroup = typeof primaryNavigation | typeof skillNavigation | typeof utilityNavigation;
+
+function NavigationSection({
+  label,
+  items,
+  language,
+  collapsed
+}: {
+  label: string;
+  items: NavigationGroup;
+  language: Language;
+  collapsed: boolean;
+}) {
+  return (
+    <div className="nav-section">
+      {!collapsed && <span className="nav-section-label">{label}</span>}
+      {items.map(([to, labels, Icon]) => (
+        <NavLink
+          key={to}
+          to={to}
+          className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          title={collapsed ? labels[language] : undefined}
+        >
+          <Icon aria-hidden="true" />
+          <span>{labels[language]}</span>
+        </NavLink>
+      ))}
+    </div>
+  );
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { profile } = useApp();
   const [collapsed, setCollapsed] = useState(false);
   const language = profile.settings.interfaceLanguage;
+  const learningSinhala = profile.settings.direction === "english-to-sinhala";
   const text =
     language === "si"
       ? {
@@ -64,7 +95,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           mobileNavigation: "ජංගම මෙනුව",
           home: "LingoLanka මුල් පිටුව",
           expand: "මෙනුව විවෘත කරන්න",
-          collapse: "මෙනුව හකුළන්න"
+          collapse: "මෙනුව හකුළන්න",
+          daily: "දිනපතා ඉගෙනීම",
+          studios: "කුසලතා පුහුණුව",
+          more: "තවත්",
+          direction: learningSinhala ? "ඉංග්‍රීසි සිට සිංහල" : "සිංහල සිට ඉංග්‍රීසි"
         }
       : {
           skip: "Skip to main content",
@@ -72,7 +107,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           mobileNavigation: "Mobile navigation",
           home: "LingoLanka home",
           expand: "Expand navigation",
-          collapse: "Collapse navigation"
+          collapse: "Collapse navigation",
+          daily: "Daily learning",
+          studios: "Skill studios",
+          more: "More",
+          direction: learningSinhala ? "English to Sinhala" : "Sinhala to English"
         };
 
   return (
@@ -89,18 +128,33 @@ export function AppShell({ children }: { children: ReactNode }) {
             LingoLanka<small>සිංහල · English</small>
           </span>
         </NavLink>
+        {!collapsed && (
+          <div className="course-pill">
+            <span>{learningSinhala ? "EN" : "සිං"}</span>
+            <ChevronRight aria-hidden="true" />
+            <strong>{learningSinhala ? "සිං" : "EN"}</strong>
+            <small>{text.direction}</small>
+          </div>
+        )}
         <nav>
-          {navigation.map(([to, labels, Icon]) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-              title={collapsed ? labels[language] : undefined}
-            >
-              <Icon aria-hidden="true" />
-              <span>{labels[language]}</span>
-            </NavLink>
-          ))}
+          <NavigationSection
+            label={text.daily}
+            items={primaryNavigation}
+            language={language}
+            collapsed={collapsed}
+          />
+          <NavigationSection
+            label={text.studios}
+            items={skillNavigation}
+            language={language}
+            collapsed={collapsed}
+          />
+          <NavigationSection
+            label={text.more}
+            items={utilityNavigation}
+            language={language}
+            collapsed={collapsed}
+          />
         </nav>
         <button
           className="collapse-button"
@@ -117,7 +171,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <nav className="bottom-nav" aria-label={text.mobileNavigation}>
         {mobileNavigation.map(([to, labels, Icon]) => (
           <NavLink key={to} to={to} className={({ isActive }) => (isActive ? "active" : "")}>
-            <Icon />
+            <Icon aria-hidden="true" />
             <span>{labels[language]}</span>
           </NavLink>
         ))}
