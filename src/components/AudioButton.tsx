@@ -23,8 +23,42 @@ export function AudioButton({
 }) {
   const { profile } = useApp();
   const reduceMotion = useReducedMotion();
+  const audioCopy =
+    profile.settings.interfaceLanguage === "si"
+      ? {
+          ready: "හඬ ඇසීමට සූදානම්",
+          playing: "උච්චාරණය වාදනය වේ",
+          playingSlowly: "මන්දගාමීව වාදනය වේ",
+          complete: "හඬ අවසන්",
+          unavailable: "මෙම උපකරණයේ හඬ වාදනය කළ නොහැක",
+          resumed: "හඬ නැවත ආරම්භ කළා",
+          paused: "හඬ නවතා ඇත",
+          stopped: "හඬ අවසන් කළා",
+          group: "උච්චාරණ හඬ පාලන",
+          play: "හඬ අසන්න",
+          playSlowly: "මන්දගාමී හඬ අසන්න",
+          resume: "හඬ නැවත අරඹන්න",
+          pause: "හඬ තාවකාලිකව නවතන්න",
+          stop: "හඬ අවසන් කරන්න"
+        }
+      : {
+          ready: "Ready to play",
+          playing: "Playing pronunciation",
+          playingSlowly: "Playing slowly",
+          complete: "Playback complete",
+          unavailable: "Audio is unavailable on this device",
+          resumed: "Playback resumed",
+          paused: "Playback paused",
+          stopped: "Playback stopped",
+          group: "Pronunciation playback controls",
+          play: "Play",
+          playSlowly: "Play slowly",
+          resume: "Resume speech",
+          pause: "Pause speech",
+          stop: "Stop speech"
+        };
   const [playback, setPlayback] = useState<"idle" | "playing" | "paused">("idle");
-  const [message, setMessage] = useState("Ready to play");
+  const [message, setMessage] = useState(audioCopy.ready);
   useEffect(
     () => () => {
       speech.stop(false);
@@ -42,23 +76,23 @@ export function AudioButton({
       voiceName: language === "si" ? settings.sinhalaVoice : settings.englishVoice,
       onStart: () => {
         setPlayback("playing");
-        setMessage(slow ? "Playing slowly" : "Playing pronunciation");
+        setMessage(slow ? audioCopy.playingSlowly : audioCopy.playing);
       },
       onEnd: () => {
         setPlayback("idle");
-        setMessage("Playback complete");
+        setMessage(audioCopy.complete);
       },
       onError: () => {
         setPlayback("idle");
-        setMessage("Audio is unavailable on this device");
+        setMessage(audioCopy.unavailable);
       }
     });
     if (ok) {
       setPlayback("playing");
-      setMessage(slow ? "Playing slowly" : "Playing pronunciation");
+      setMessage(slow ? audioCopy.playingSlowly : audioCopy.playing);
     } else {
       setPlayback("idle");
-      setMessage("Audio is unavailable on this device");
+      setMessage(audioCopy.unavailable);
     }
   };
 
@@ -66,21 +100,21 @@ export function AudioButton({
     if (playback === "paused") {
       if (speech.resume()) {
         setPlayback("playing");
-        setMessage("Playback resumed");
+        setMessage(audioCopy.resumed);
       }
       return;
     }
 
     if (speech.pause()) {
       setPlayback("paused");
-      setMessage("Playback paused");
+      setMessage(audioCopy.paused);
     }
   };
 
   const stop = () => {
     speech.stop();
     setPlayback("idle");
-    setMessage("Playback stopped");
+    setMessage(audioCopy.stopped);
   };
 
   return (
@@ -94,13 +128,13 @@ export function AudioButton({
       animate={reduceMotion ? undefined : { scale: playback === "playing" ? 1.012 : 1 }}
       transition={{ type: "spring", stiffness: 420, damping: 30 }}
     >
-      <span className="audio-group" role="group" aria-label="Pronunciation playback controls">
+      <span className="audio-group" role="group" aria-label={audioCopy.group}>
         <button
           className="icon-button audio-play"
           type="button"
           onClick={play}
           aria-pressed={playback === "playing"}
-          aria-label={label ?? `${slow ? "Play slowly" : "Play"}: ${text}`}
+          aria-label={label ?? `${slow ? audioCopy.playSlowly : audioCopy.play}: ${text}`}
         >
           {slow ? <RotateCcw aria-hidden="true" /> : <Play aria-hidden="true" />}
         </button>
@@ -109,7 +143,7 @@ export function AudioButton({
           type="button"
           disabled={playback === "idle"}
           onClick={togglePause}
-          aria-label={playback === "paused" ? "Resume speech" : "Pause speech"}
+          aria-label={playback === "paused" ? audioCopy.resume : audioCopy.pause}
         >
           {playback === "paused" ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
         </button>
@@ -118,7 +152,7 @@ export function AudioButton({
           type="button"
           disabled={playback === "idle"}
           onClick={stop}
-          aria-label="Stop speech"
+          aria-label={audioCopy.stop}
         >
           <Square aria-hidden="true" />
         </button>

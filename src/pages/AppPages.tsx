@@ -37,8 +37,9 @@ import {
   vocabulary
 } from "../data/content";
 import { db, exportBackup, importBackup, loadProfile, resetDatabase } from "../lib/db";
+import { speech } from "../lib/speech";
 import { calculateStreak, scheduleReview, todayKey, type ReviewRating } from "../lib/utils";
-import type { AlphabetEntry, VocabularyState } from "../types";
+import type { AlphabetEntry, Exercise, LearningDirection, VocabularyState } from "../types";
 import { AudioButton } from "../components/AudioButton";
 import { ExerciseCard } from "../components/ExerciseCard";
 import { ProgressRing } from "../components/ProgressRing";
@@ -278,6 +279,7 @@ function CoursePreview({
 export function LearnPage() {
   const { profile, progress } = useApp();
   const course = courses.find((item) => item.id === profile.settings.direction) ?? courses[0]!;
+  const learningSinhala = profile.settings.direction === "english-to-sinhala";
   return (
     <div className="page">
       <Header
@@ -285,6 +287,23 @@ export function LearnPage() {
         title={course.title}
         copy="Five progressive levels. Explore freely, repeat any lesson, and learn without lockouts."
       />
+      <section className="pronunciation-entry-card">
+        <div className="pronunciation-entry-icon"><Headphones aria-hidden="true" /></div>
+        <div>
+          <span className="eyebrow">
+            {learningSinhala ? "Recommended first" : "පළමුව මෙය කරන්න"}
+          </span>
+          <h2>{learningSinhala ? "Pronunciation & reading starter" : "උච්චාරණ හා කියවීමේ ආරම්භය"}</h2>
+          <p>
+            {learningSinhala
+              ? "Learn how the new sounds feel before Lesson 1. Every example has normal and slow audio plus an easy say-it-like cue."
+              : "පළමු පාඩමට පෙර ඉංග්‍රීසි හඬ පුහුණු වන්න. සෑම උදාහරණයකටම සාමාන්‍ය හා මන්දගාමී හඬ සහ සරල උච්චාරණ ඉඟියක් ඇත."}
+          </p>
+        </div>
+        <Link className="button primary large" to="/pronunciation">
+          {learningSinhala ? "Start with sounds" : "හඬ සමඟ අරඹන්න"} <ChevronRight aria-hidden="true" />
+        </Link>
+      </section>
       {course.levels.map((level) => (
         <section className="level-section" key={level.id}>
           <div className="level-marker">{level.id}</div>
@@ -614,7 +633,7 @@ export function ListeningPage() {
       <Header
         eyebrow="Listening practice"
         title="Hear the useful details"
-        copy="Device-supported voices vary by browser. The written phrase is always available."
+        copy="Use the normal and slow buttons, repeat the phrase once, then move to the next one."
       />
       <section className="card listening-card">
         <Headphones />
@@ -665,11 +684,14 @@ export function SpeakingPage() {
 
 export function VocabularyPage() {
   const { vocabularyStates, updateVocabularyState } = useApp();
+  const [pageSearchParams] = useSearchParams();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState(() => pageSearchParams.get("category") ?? "All");
   const [difficulty, setDifficulty] = useState("All");
-  const [stateFilter, setStateFilter] = useState("All");
-  const [mode, setMode] = useState<"cards" | "list" | "flashcard">("cards");
+  const [stateFilter, setStateFilter] = useState(() => pageSearchParams.get("state") ?? "All");
+  const [mode, setMode] = useState<"cards" | "list" | "flashcard">(() =>
+    pageSearchParams.get("view") === "flashcard" ? "flashcard" : "cards"
+  );
   const [flashIndex, setFlashIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const stateMap = useMemo(
@@ -918,6 +940,7 @@ export function GrammarPage() {
 }
 
 export function ConversationsPage() {
+  const { profile } = useApp();
   const [selected, setSelected] = useState(conversations[0]!);
   const [translation, setTranslation] = useState(true);
   const [role, setRole] = useState("A");
@@ -926,11 +949,16 @@ export function ConversationsPage() {
     for (const line of selected.lines) {
       const text = line.sinhala;
       await new Promise<void>((resolve) => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "si-LK";
-        utterance.rate = slow ? 0.72 : 1;
-        utterance.onend = () => resolve();
-        window.speechSynthesis.speak(utterance);
+        const started = speech.speak(text, {
+          lang: "si-LK",
+          rate: slow ? Math.max(0.55, profile.settings.speechRate * 0.72) : profile.settings.speechRate,
+          pitch: profile.settings.speechPitch,
+          volume: profile.settings.speechVolume,
+          voiceName: profile.settings.sinhalaVoice,
+          onEnd: resolve,
+          onError: resolve
+        });
+        if (!started) resolve();
       });
     }
   };
@@ -1020,72 +1048,220 @@ export function ConversationsPage() {
   );
 }
 
-const practiceModes = [
-  ["Daily challenge", "A balanced five-minute mix", Target, "mixed"],
-  ["Quick review", "Revisit recent vocabulary", RotateCcw, "review"],
-  ["Flashcards", "Recall before revealing", BookOpen, "flashcards"],
-  ["Listening practice", "Hear and identify phrases", Headphones, "listening"],
-  ["Speaking practice", "Repeat and compare privately", Mic2, "speaking"],
-  ["Writing practice", "Trace useful characters", PenTool, "writing"],
-  ["Sentence builder", "Put words in order", Languages, "sentences"],
-  ["Vocabulary matching", "Connect both languages", Grid2X2, "matching"],
-  ["Difficult words", "Focus on marked words", Star, "difficult"],
-  ["Bookmarked words", "Practise favourites", Heart, "bookmarked"],
-  ["Random mixed practice", "A surprise learning set", Sparkles, "random"],
-  ["Alphabet review", "Recognise scripts and sounds", Languages, "alphabet"],
-  ["Grammar review", "Strengthen useful patterns", BookOpen, "grammar"]
+type PracticeMode = "mixed" | "sentences" | "matching" | "random";
+
+interface PracticeModeDefinition {
+  id: string;
+  title: { en: string; si: string };
+  copy: { en: string; si: string };
+  icon: typeof Target;
+  route?: string;
+}
+
+const practiceModes: PracticeModeDefinition[] = [
+  {
+    id: "mixed",
+    title: { en: "Daily challenge", si: "දෛනික අභියෝගය" },
+    copy: { en: "Listen, read and choose", si: "අසා, කියවා, තෝරන්න" },
+    icon: Target
+  },
+  {
+    id: "review",
+    title: { en: "Quick review", si: "ඉක්මන් පුනරීක්ෂණය" },
+    copy: { en: "Review words due today", si: "අද නැවත බැලිය යුතු වචන" },
+    icon: RotateCcw,
+    route: "/review"
+  },
+  {
+    id: "flashcards",
+    title: { en: "Flashcards", si: "මතක කාඩ්පත්" },
+    copy: { en: "Recall, reveal and repeat", si: "මතකයෙන් කියා පිළිතුර බලන්න" },
+    icon: BookOpen,
+    route: "/vocabulary?view=flashcard"
+  },
+  {
+    id: "listening",
+    title: { en: "Listening practice", si: "සවන්දීමේ පුහුණුව" },
+    copy: { en: "Normal and slow pronunciation", si: "සාමාන්‍ය හා මන්දගාමී උච්චාරණය" },
+    icon: Headphones,
+    route: "/listening"
+  },
+  {
+    id: "speaking",
+    title: { en: "Speaking practice", si: "කථන පුහුණුව" },
+    copy: { en: "Listen, repeat and compare", si: "අසා, නැවත කියා, සසඳන්න" },
+    icon: Mic2,
+    route: "/speaking"
+  },
+  {
+    id: "writing",
+    title: { en: "Writing practice", si: "ලිවීමේ පුහුණුව" },
+    copy: { en: "Trace letters with your finger", si: "ඇඟිල්ලෙන් අකුරු අඳින්න" },
+    icon: PenTool,
+    route: "/writing"
+  },
+  {
+    id: "sentences",
+    title: { en: "Sentence builder", si: "වාක්‍ය ගොඩනැගීම" },
+    copy: { en: "Build one useful sentence", si: "ප්‍රයෝජනවත් වාක්‍යයක් සකසන්න" },
+    icon: Languages
+  },
+  {
+    id: "matching",
+    title: { en: "Vocabulary matching", si: "වචන ගැලපීම" },
+    copy: { en: "Connect meanings across languages", si: "භාෂා දෙකේ අර්ථ ගලපන්න" },
+    icon: Grid2X2
+  },
+  {
+    id: "difficult",
+    title: { en: "Difficult words", si: "අමාරු වචන" },
+    copy: { en: "Practise words you marked", si: "ඔබ ලකුණු කළ වචන පුහුණු වන්න" },
+    icon: Star,
+    route: "/vocabulary?view=flashcard&state=Difficult"
+  },
+  {
+    id: "bookmarked",
+    title: { en: "Bookmarked words", si: "සුරැකි වචන" },
+    copy: { en: "Practise your favourites", si: "ප්‍රියතම වචන පුහුණු වන්න" },
+    icon: Heart,
+    route: "/vocabulary?view=flashcard&state=Favourites"
+  },
+  {
+    id: "random",
+    title: { en: "Surprise practice", si: "අහඹු පුහුණුව" },
+    copy: { en: "Try a different word each time", si: "සෑම වරකම වෙනස් වචනයක්" },
+    icon: Sparkles
+  },
+  {
+    id: "alphabet",
+    title: { en: "Alphabet & sounds", si: "අකුරු හා හඬ" },
+    copy: { en: "Hear every letter and trace it", si: "සෑම අකුරක්ම අසා ලියන්න" },
+    icon: Languages,
+    route: "/alphabet"
+  },
+  {
+    id: "grammar",
+    title: { en: "Grammar patterns", si: "ව්‍යාකරණ රටා" },
+    copy: { en: "Learn useful word order", si: "ප්‍රයෝජනවත් පද පිළිවෙළ ඉගෙන ගන්න" },
+    icon: BookOpen,
+    route: "/grammar"
+  }
 ] as const;
+
+function createPracticeExercise(mode: PracticeMode, direction: LearningDirection): Exercise {
+  const toSinhala = direction === "english-to-sinhala";
+  const modeIndex = mode === "matching" ? 8 : mode === "random" ? 17 : mode === "sentences" ? 5 : 0;
+  const word = vocabulary[modeIndex] ?? vocabulary[0]!;
+  const answer = toSinhala ? word.sinhala : word.english;
+  const source = toSinhala ? word.english : word.sinhala;
+  const distractors = vocabulary
+    .slice(modeIndex + 1, modeIndex + 4)
+    .map((item) => (toSinhala ? item.sinhala : item.english));
+
+  if (mode === "sentences") {
+    const example = grammarTopics[0]!.examples[0]!;
+    return {
+      id: `practice-${direction}-sentences`,
+      type: "word-order",
+      prompt: toSinhala ? `Build this sentence: ${example.english}` : `මෙම වාක්‍යය සාදන්න: ${example.sinhala}`,
+      instructions: toSinhala
+        ? "Listen, then type the complete Sinhala sentence. Copying it once is good practice."
+        : "හඬ අසා සම්පූර්ණ ඉංග්‍රීසි වාක්‍යය ලියන්න. එක් වරක් පිටපත් කිරීමත් හොඳ පුහුණුවක්.",
+      correctAnswer: toSinhala ? example.sinhala : example.english,
+      acceptedAlternatives: [],
+      distractors: [],
+      hint: example.breakdown,
+      explanation: `${example.english} ↔ ${example.sinhala}`,
+      audioText: toSinhala ? example.sinhala : example.english,
+      difficulty: "foundation",
+      xp: 10,
+      sourceLanguage: toSinhala ? "en" : "si",
+      targetLanguage: toSinhala ? "si" : "en"
+    };
+  }
+
+  const titles = {
+    mixed: toSinhala ? "Listen and choose the Sinhala word" : "හඬ අසා ඉංග්‍රීසි වචනය තෝරන්න",
+    matching: toSinhala ? `Match the meaning: ${source}` : `අර්ථය ගලපන්න: ${source}`,
+    random: toSinhala ? `Surprise word: ${source}` : `අහඹු වචනය: ${source}`
+  };
+
+  return {
+    id: `practice-${direction}-${mode}`,
+    type: mode === "mixed" || mode === "random" ? "audio-choice" : "multiple-choice",
+    prompt: titles[mode],
+    instructions: toSinhala
+      ? "Tap the sound, say it once, choose an answer, then check it."
+      : "හඬ අසා එක් වරක් කියන්න. පිළිතුර තෝරා පසුව පරීක්ෂා කරන්න.",
+    correctAnswer: answer,
+    acceptedAlternatives: [],
+    distractors,
+    hint: word.transliteration ?? "",
+    explanation: `${word.english} ↔ ${word.sinhala}`,
+    audioText: answer,
+    difficulty: "foundation",
+    xp: 10,
+    sourceLanguage: toSinhala ? "en" : "si",
+    targetLanguage: toSinhala ? "si" : "en"
+  };
+}
 
 export function PracticePage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { profile } = useApp();
   const active = searchParams.get("mode");
-  const sample = courses[0]!.levels[0]!.modules[0]!.lessons[0]!.exercises[0]!;
-  if (active === "speaking")
+  const interfaceLanguage = profile.settings.interfaceLanguage;
+  const selectedMode = practiceModes.find((mode) => mode.id === active);
+  const customMode = ["mixed", "sentences", "matching", "random"].includes(active ?? "")
+    ? (active as PracticeMode)
+    : null;
+  const exercise = customMode
+    ? createPracticeExercise(customMode, profile.settings.direction)
+    : null;
+
+  if (selectedMode && exercise)
     return (
       <div className="page narrow-page">
         <button className="button ghost" onClick={() => setSearchParams({})}>
-          ← Practice hub
-        </button>
-        <SpeakingPractice />
-      </div>
-    );
-  if (active === "writing")
-    return (
-      <div className="page narrow-page">
-        <button className="button ghost" onClick={() => setSearchParams({})}>
-          ← Practice hub
-        </button>
-        <WritingCanvas />
-      </div>
-    );
-  if (active)
-    return (
-      <div className="page narrow-page">
-        <button className="button ghost" onClick={() => setSearchParams({})}>
-          ← Practice hub
+          ← {interfaceLanguage === "si" ? "පුහුණු මධ්‍යස්ථානය" : "Practice hub"}
         </button>
         <Header
-          eyebrow="Active practice"
-          title={practiceModes.find((mode) => mode[3] === active)?.[0] ?? "Mixed practice"}
-          copy="Complete the activity, retry freely, then choose another mode."
+          eyebrow={interfaceLanguage === "si" ? "ක්‍රියාකාරී පුහුණුව" : "Active practice"}
+          title={selectedMode.title[interfaceLanguage]}
+          copy={selectedMode.copy[interfaceLanguage]}
         />
-        <ExerciseCard exercise={{ ...sample, id: `${sample.id}-${active}` }} />
+        <div className="practice-how-to">
+          <strong>{interfaceLanguage === "si" ? "කරන ආකාරය" : "What to do"}</strong>
+          <span>{interfaceLanguage === "si" ? "1. අසන්න" : "1. Listen"}</span>
+          <span>{interfaceLanguage === "si" ? "2. පිළිතුරු දෙන්න" : "2. Answer"}</span>
+          <span>{interfaceLanguage === "si" ? "3. ඉඟිය බලන්න" : "3. Use the hint"}</span>
+        </div>
+        <ExerciseCard key={exercise.id} exercise={exercise} />
       </div>
     );
   return (
     <div className="page">
       <Header
-        eyebrow="Choose your focus"
-        title="Practice hub"
-        copy="Every mode opens a working, repeatable activity."
+        eyebrow={interfaceLanguage === "si" ? "පුහුණුව තෝරන්න" : "Choose your focus"}
+        title={interfaceLanguage === "si" ? "පුහුණු මධ්‍යස්ථානය" : "Practice hub"}
+        copy={
+          interfaceLanguage === "si"
+            ? "සෑම කාණ්ඩයක්ම වෙනස් පුහුණුවක් විවෘත කරයි. ඔබට කැමති එකෙන් අරඹන්න."
+            : "Each category opens a different activity. Choose the skill you want to practise now."
+        }
       />
       <div className="practice-grid">
-        {practiceModes.map(([title, copy, Icon, mode]) => (
-          <button className="practice-card" onClick={() => setSearchParams({ mode })} key={mode}>
-            <Icon />
+        {practiceModes.map((mode) => (
+          <button
+            className="practice-card"
+            onClick={() => (mode.route ? navigate(mode.route) : setSearchParams({ mode: mode.id }))}
+            key={mode.id}
+          >
+            <mode.icon />
             <div>
-              <h2>{title}</h2>
-              <p>{copy}</p>
+              <h2>{mode.title[interfaceLanguage]}</h2>
+              <p>{mode.copy[interfaceLanguage]}</p>
             </div>
             <ChevronRight />
           </button>

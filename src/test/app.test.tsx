@@ -119,6 +119,32 @@ describe("critical application journeys", () => {
     );
   });
 
+  it("places pronunciation practice before the regular lessons", async () => {
+    const user = userEvent.setup();
+    renderApp("/learn");
+
+    await user.click(screen.getByRole("link", { name: /Start with sounds/i }));
+
+    expect(
+      await screen.findByRole("heading", { name: /Hear Sinhala before you study it/i })
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/Say it like/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: /Start Lesson 1/i })).toBeEnabled();
+  });
+
+  it("opens genuinely different practice categories", async () => {
+    const user = userEvent.setup();
+    renderApp("/practice");
+
+    await user.click(screen.getByRole("button", { name: /Daily challenge/i }));
+    expect(await screen.findByText(/Listen and choose the Sinhala word/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /Practice hub/i }));
+    await user.click(screen.getByRole("button", { name: /Vocabulary matching/i }));
+    expect(await screen.findByText(/Match the meaning/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Listen and choose the Sinhala word/i)).not.toBeInTheDocument();
+  });
+
   it("shows complete Android and iPhone home-screen installation instructions", () => {
     renderApp("/install");
     expect(screen.getByRole("heading", { name: /Install with Chrome/i })).toBeInTheDocument();

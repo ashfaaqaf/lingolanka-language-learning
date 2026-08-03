@@ -30,6 +30,17 @@ Object.defineProperty(window, "speechSynthesis", {
   },
   writable: true
 });
+Object.defineProperty(HTMLMediaElement.prototype, "play", {
+  value: vi.fn(function (this: HTMLMediaElement) {
+    queueMicrotask(() => this.onplay?.(new Event("play")));
+    return Promise.resolve();
+  }),
+  writable: true
+});
+Object.defineProperty(HTMLMediaElement.prototype, "pause", {
+  value: vi.fn(),
+  writable: true
+});
 Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
   value: vi.fn(() => ({
     setTransform: vi.fn(),

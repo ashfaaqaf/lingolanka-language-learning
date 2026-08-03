@@ -67,6 +67,24 @@ export function ExerciseCard({
       {exercise.audioText && (
         <AudioButton text={exercise.audioText} language={exercise.targetLanguage} />
       )}
+      {exercise.hint && (
+        <div className="pronunciation-support">
+          <HelpCircle aria-hidden="true" />
+          <div>
+            <span>
+              {exercise.targetLanguage === "si"
+                ? "Pronunciation help · Say it like"
+                : "උච්චාරණ උදව් · මෙලෙස කියවන්න"}
+            </span>
+            <strong>{exercise.hint}</strong>
+            <small>
+              {exercise.targetLanguage === "si"
+                ? "Tap the sound, listen once, then repeat before answering."
+                : "හඬ ඔබා එක් වරක් අසා, පිළිතුරු දීමට පෙර නැවත කියන්න."}
+            </small>
+          </div>
+        </div>
+      )}
       {choiceMode ? (
         <div className="choice-grid">
           {options.map((option) => {
@@ -131,7 +149,7 @@ export function ExerciseCard({
       )}
       <div className="exercise-actions">
         <button type="button" className="button ghost" onClick={() => setHint((shown) => !shown)}>
-          <Lightbulb /> Hint
+          <Lightbulb /> {exercise.targetLanguage === "si" ? "How to answer" : "පිළිතුරු දෙන ආකාරය"}
         </button>
         {submitted === null ? (
           <button type="button" className="button primary" disabled={!answer} onClick={submit}>
@@ -158,7 +176,10 @@ export function ExerciseCard({
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
           >
-            <HelpCircle /> {exercise.hint || "Look at the meaning and sound together."}
+            <HelpCircle />
+            {exercise.targetLanguage === "si"
+              ? "Listen first. Read every option slowly. Choose the one that matches the word, then check it."
+              : "පළමුව හඬ අසන්න. සෑම පිළිතුරක්ම සෙමින් කියවන්න. ගැලපෙන එක තෝරා පරීක්ෂා කරන්න."}
           </motion.p>
         )}
       </AnimatePresence>

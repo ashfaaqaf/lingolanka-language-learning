@@ -5,6 +5,7 @@ import { speech } from "./lib/speech";
 import { InstallPage } from "./pages/InstallPage";
 import { LandingPage } from "./pages/LandingPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
+import { PronunciationPage } from "./pages/PronunciationPage";
 import {
   AboutPage,
   AchievementsPage,
@@ -59,6 +60,14 @@ export default function App() {
           element={
             <ShellRoute>
               <LearnPage />
+            </ShellRoute>
+          }
+        />
+        <Route
+          path="/pronunciation"
+          element={
+            <ShellRoute>
+              <PronunciationPage />
             </ShellRoute>
           }
         />

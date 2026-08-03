@@ -7,6 +7,8 @@ import {
   sinhalaAlphabet,
   vocabulary
 } from "../data/content";
+import audioManifest from "../data/audioManifest.json";
+import { englishPronunciation, sinhalaPronunciation } from "../data/pronunciation";
 
 describe("curriculum content", () => {
   it("ships both learning directions and forty complete lessons", () => {
@@ -50,5 +52,19 @@ describe("curriculum content", () => {
       )
     );
     expect(types.size).toBeGreaterThanOrEqual(8);
+  });
+
+  it("packages audio for the curriculum and pronunciation starter", () => {
+    const manifest = audioManifest as Record<string, string>;
+    expect(
+      vocabulary.every(
+        (word) => manifest[`en:${word.english}`] && manifest[`si:${word.sinhala}`]
+      )
+    ).toBe(true);
+    expect(
+      [...englishPronunciation, ...sinhalaPronunciation].every(
+        (item) => manifest[`${item.language}:${item.text}`]
+      )
+    ).toBe(true);
   });
 });

@@ -33,7 +33,7 @@ describe("lesson interactions", () => {
     vi.clearAllMocks();
   });
 
-  it("makes pronunciation playback controls visibly functional", async () => {
+  it("plays packaged pronunciation audio with working controls", async () => {
     const user = userEvent.setup();
     renderWithApp(<AudioButton text="Hello" language="en" />);
 
@@ -45,23 +45,35 @@ describe("lesson interactions", () => {
     expect(stop).toBeDisabled();
 
     await user.click(play);
-    expect(window.speechSynthesis.speak).toHaveBeenCalledOnce();
+    expect(HTMLMediaElement.prototype.play).toHaveBeenCalledOnce();
+    expect(window.speechSynthesis.speak).not.toHaveBeenCalled();
     expect(screen.getByText("Playing pronunciation")).toBeInTheDocument();
     expect(pause).toBeEnabled();
     expect(stop).toBeEnabled();
 
     await user.click(pause);
-    expect(window.speechSynthesis.pause).toHaveBeenCalledOnce();
+    expect(HTMLMediaElement.prototype.pause).toHaveBeenCalledOnce();
     expect(screen.getByText("Playback paused")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Resume speech" }));
-    expect(window.speechSynthesis.resume).toHaveBeenCalledOnce();
+    expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2);
     expect(screen.getByText("Playback resumed")).toBeInTheDocument();
 
     await user.click(stop);
-    expect(window.speechSynthesis.cancel).toHaveBeenCalled();
+    expect(HTMLMediaElement.prototype.pause).toHaveBeenCalledTimes(2);
     expect(screen.getByText("Playback stopped")).toBeInTheDocument();
     expect(stop).toBeDisabled();
+  });
+
+  it("falls back to the device voice for text outside the audio pack", async () => {
+    const user = userEvent.setup();
+    renderWithApp(<AudioButton text="A phrase outside the pronunciation pack" language="en" />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Play: A phrase outside the pronunciation pack" })
+    );
+
+    expect(window.speechSynthesis.speak).toHaveBeenCalledOnce();
   });
 
   it("marks the correct option green and a selected wrong option red", async () => {
