@@ -414,6 +414,7 @@ export function LessonPage() {
             <ExerciseCard
               key={exercise.id}
               exercise={exercise}
+              guided
               onAnswered={(isCorrect) => {
                 setAnswered(true);
                 if (isCorrect) setCorrect((value) => value + 1);

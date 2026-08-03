@@ -44,6 +44,12 @@ export interface Exercise {
   xp: number;
   sourceLanguage: "en" | "si";
   targetLanguage: "en" | "si";
+  learningSupport?: {
+    english: string;
+    sinhala: string;
+    transliteration?: string;
+  };
+  optionPronunciations?: Record<string, string>;
 }
 
 export interface Lesson {

@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "../context/AppContext";
 import { AudioButton } from "../components/AudioButton";
 import { ExerciseCard } from "../components/ExerciseCard";
+import { courses } from "../data/content";
+import { db, defaultProfile, saveProfile } from "../lib/db";
 import { speech } from "../lib/speech";
 import type { Exercise } from "../types";
 
@@ -28,9 +30,44 @@ const choiceExercise: Exercise = {
 };
 
 describe("lesson interactions", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     speech.stop(false);
     vi.clearAllMocks();
+    await db.profile.clear();
+  });
+
+  it("teaches a new word before asking a complete beginner to answer", () => {
+    const firstExercise = courses[0]!.levels[0]!.modules[0]!.lessons[0]!.exercises[0]!;
+    renderWithApp(<ExerciseCard exercise={firstExercise} guided />);
+
+    expect(
+      screen.getByRole("region", { name: "Meet the word before you answer" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Word you already know")).toBeInTheDocument();
+    expect(screen.getByText("Word you are learning")).toBeInTheDocument();
+    expect(screen.getByText("Say “āyubōvan” out loud.")).toBeInTheDocument();
+    expect(screen.getByText("What to do now")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "ආයුබෝවන්, āyubōvan" })
+    ).toBeInTheDocument();
+  });
+
+  it("uses Sinhala guidance and controls when Sinhala is the interface language", async () => {
+    await saveProfile({
+      ...defaultProfile,
+      onboarded: true,
+      settings: {
+        ...defaultProfile.settings,
+        direction: "sinhala-to-english",
+        interfaceLanguage: "si"
+      }
+    });
+    const firstExercise = courses[1]!.levels[0]!.modules[0]!.lessons[0]!.exercises[0]!;
+    renderWithApp(<ExerciseCard exercise={firstExercise} guided />);
+
+    expect(await screen.findByText("පළමුව මෙය ඉගෙන ගන්න")).toBeInTheDocument();
+    expect(screen.getByText("දැන් කළ යුතු දේ")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "පිළිතුර පරීක්ෂා කරන්න" })).toBeDisabled();
   });
 
   it("plays packaged pronunciation audio with working controls", async () => {
@@ -94,7 +131,7 @@ describe("lesson interactions", () => {
     expect(correct).toHaveTextContent("Correct answer");
     expect(screen.getByRole("status")).toHaveTextContent("Not yet");
 
-    await user.click(screen.getByRole("button", { name: /Retry/i }));
+    await user.click(screen.getByRole("button", { name: /Try again/i }));
     await user.click(correct!);
     await user.click(screen.getByRole("button", { name: /Check answer/i }));
 

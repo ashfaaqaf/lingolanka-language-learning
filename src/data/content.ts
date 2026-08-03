@@ -378,10 +378,10 @@ function makeExercise(index: number, direction: LearningDirection, word: Vocabul
   const toSinhala = direction === "english-to-sinhala";
   const answer = toSinhala ? word.sinhala : word.english;
   const source = toSinhala ? word.english : word.sinhala;
-  const alternatives = vocabulary
+  const alternativeWords = vocabulary
     .filter((item) => item.id !== word.id)
-    .slice(index + 1, index + 4)
-    .map((item) => (toSinhala ? item.sinhala : item.english));
+    .slice(index + 1, index + 4);
+  const alternatives = alternativeWords.map((item) => (toSinhala ? item.sinhala : item.english));
   const types: Exercise["type"][] = [
     "multiple-choice",
     "translation-input",
@@ -392,11 +392,20 @@ function makeExercise(index: number, direction: LearningDirection, word: Vocabul
     "audio-choice",
     "reading-comprehension"
   ];
+  const beginnerTypes: Exercise["type"][] = ["multiple-choice", "audio-choice"];
+  const type =
+    index < 14
+      ? (beginnerTypes[index % beginnerTypes.length] ?? "multiple-choice")
+      : (types[index % types.length] ?? "multiple-choice");
   return {
     id: `ex-${direction}-${index}`,
-    type: types[index % types.length] ?? "multiple-choice",
-    prompt: `${toSinhala ? "Translate" : "පරිවර්තනය කරන්න"}: ${source}`,
-    instructions: toSinhala ? "Choose or enter the best answer." : "හොඳම පිළිතුර තෝරන්න හෝ ලියන්න.",
+    type,
+    prompt: toSinhala
+      ? `Which Sinhala word means “${source}”?`
+      : `“${source}” යන්නෙහි ඉංග්‍රීසි අර්ථය කුමක්ද?`,
+    instructions: toSinhala
+      ? "Use the example above. Then choose or enter the matching answer."
+      : "ඉහත උදාහරණය භාවිත කරන්න. ඉන්පසු ගැළපෙන පිළිතුර තෝරන්න හෝ ලියන්න.",
     correctAnswer: answer,
     acceptedAlternatives: [],
     distractors: alternatives,
@@ -406,7 +415,19 @@ function makeExercise(index: number, direction: LearningDirection, word: Vocabul
     difficulty: index < 8 ? "foundation" : index < 14 ? "beginner" : "elementary",
     xp: 10,
     sourceLanguage: toSinhala ? "en" : "si",
-    targetLanguage: toSinhala ? "si" : "en"
+    targetLanguage: toSinhala ? "si" : "en",
+    learningSupport: {
+      english: word.english,
+      sinhala: word.sinhala,
+      transliteration: word.transliteration
+    },
+    optionPronunciations: toSinhala
+      ? Object.fromEntries(
+          [word, ...alternativeWords]
+            .filter((item) => item.transliteration)
+            .map((item) => [item.sinhala, item.transliteration!])
+        )
+      : undefined
   };
 }
 
