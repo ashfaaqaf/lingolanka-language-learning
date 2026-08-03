@@ -2035,6 +2035,242 @@ h3 {
 .writing-tool {
   margin-top: 1rem;
 }
+.writing-tutorial {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid color-mix(in srgb, var(--brand-2) 28%, var(--line));
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 92%, transparent), transparent),
+    color-mix(in srgb, var(--teal-soft) 58%, var(--surface));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 62%, transparent),
+    0 18px 48px color-mix(in srgb, var(--brand) 11%, transparent);
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+}
+.writing-tutorial::before {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -70px;
+  top: -90px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 16%, transparent);
+  filter: blur(10px);
+  pointer-events: none;
+}
+.tutorial-heading {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.tutorial-heading h3 {
+  margin: 0.15rem 0 0.35rem;
+  font-size: clamp(1.25rem, 3vw, 1.65rem);
+}
+.tutorial-heading p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.tutorial-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+.button.compact {
+  min-height: 44px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.8rem;
+}
+.tutorial-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(210px, 0.72fr) minmax(260px, 1.28fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+.letter-shape-preview {
+  position: relative;
+  display: grid;
+  min-height: 250px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--brand-2) 35%, var(--line));
+  border-radius: 18px;
+  background:
+    linear-gradient(color-mix(in srgb, var(--line) 38%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 38%, transparent) 1px, transparent 1px),
+    color-mix(in srgb, var(--surface) 84%, transparent);
+  background-size: 50% 50%;
+}
+.tutorial-letter {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0.2em;
+  font-size: clamp(7rem, 20vw, 10rem);
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+}
+.tutorial-letter.ghost {
+  color: color-mix(in srgb, var(--brand-2) 13%, transparent);
+}
+.tutorial-letter.reveal {
+  color: var(--brand-2);
+  filter: drop-shadow(0 9px 18px color-mix(in srgb, var(--brand) 18%, transparent));
+  animation: letter-shape-reveal 4.8s cubic-bezier(0.22, 0.8, 0.2, 1) both;
+}
+.tutorial-pen {
+  position: absolute;
+  left: 10%;
+  top: 16%;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--amber) 70%, var(--line));
+  border-radius: 50%;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 92%, var(--amber));
+  box-shadow: 0 9px 24px color-mix(in srgb, var(--brand) 20%, transparent);
+  animation: tutorial-guide-pen 4.8s cubic-bezier(0.22, 0.8, 0.2, 1) both;
+}
+.tutorial-progress {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.8rem;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 72%, transparent);
+}
+.tutorial-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand-2), var(--amber));
+  transform-origin: left;
+  animation: tutorial-progress-fill 4.8s linear both;
+}
+.letter-shape-preview.paused .tutorial-letter.reveal,
+.letter-shape-preview.paused .tutorial-pen,
+.letter-shape-preview.paused .tutorial-progress span {
+  animation-play-state: paused;
+}
+.tutorial-steps-label {
+  display: block;
+  margin: 0 0 0.65rem;
+  font-size: 0.82rem;
+}
+.tutorial-steps {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.tutorial-steps li {
+  display: grid;
+  grid-template-columns: 30px 22px 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 58px;
+  padding: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.tutorial-steps li > svg {
+  color: var(--brand-2);
+}
+.tutorial-step-number {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--brand);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.tutorial-shape-note {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.tutorial-ready {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem -1.5rem -1.5rem;
+  padding: 0.85rem 1.5rem;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--brand-2) 14%, transparent);
+  font-size: 0.82rem;
+}
+.tutorial-ready svg {
+  color: var(--brand-2);
+}
+@keyframes letter-shape-reveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.55;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+@keyframes tutorial-guide-pen {
+  0% {
+    left: 8%;
+    top: 15%;
+    transform: rotate(-8deg) scale(0.9);
+  }
+  34% {
+    left: 66%;
+    top: 28%;
+    transform: rotate(5deg) scale(1);
+  }
+  68% {
+    left: 34%;
+    top: 62%;
+    transform: rotate(-3deg) scale(1);
+  }
+  100% {
+    left: 78%;
+    top: 72%;
+    transform: rotate(5deg) scale(0.94);
+  }
+}
+@keyframes tutorial-progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
 .writing-toolbar {
   display: flex;
   gap: 0.45rem;
@@ -3074,6 +3310,21 @@ h3 {
   .vocab-list .vocab-card {
     display: block;
   }
+  .tutorial-heading {
+    flex-direction: column;
+  }
+  .tutorial-controls {
+    width: 100%;
+  }
+  .tutorial-controls .button {
+    flex: 1;
+  }
+  .tutorial-layout {
+    grid-template-columns: 1fr;
+  }
+  .letter-shape-preview {
+    min-height: 230px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -3155,6 +3406,23 @@ h3 {
   }
   .trace-canvas {
     height: 300px;
+  }
+  .writing-tutorial {
+    padding: 1rem;
+    border-radius: 18px;
+  }
+  .tutorial-letter {
+    font-size: 8rem;
+  }
+  .tutorial-ready {
+    margin: 0.9rem -1rem -1rem;
+    padding: 0.8rem 1rem;
+  }
+  .tutorial-steps li {
+    grid-template-columns: 28px 1fr;
+  }
+  .tutorial-steps li > svg {
+    display: none;
   }
   .writing-footer {
     flex-direction: column;

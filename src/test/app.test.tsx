@@ -171,10 +171,22 @@ describe("critical application journeys", () => {
 
   it("exposes writing undo, redo, clear and self-check controls", () => {
     render(<WritingCanvas />);
+    expect(screen.getByRole("heading", { name: "How to write this letter" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Replay tutorial/ })).toBeEnabled();
+    expect(screen.getByText("Three beginner steps")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Undo stroke" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Redo stroke" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Clear drawing" })).toBeEnabled();
     expect(screen.getByRole("button", { name: /Self-check/ })).toBeEnabled();
+  });
+
+  it("shows the full writing tutorial and controls in Sinhala when selected", () => {
+    render(<WritingCanvas character="A" characterLanguage="en" interfaceLanguage="si" />);
+    expect(screen.getByRole("heading", { name: "මෙම අකුර ලියන ආකාරය" })).toBeInTheDocument();
+    expect(screen.getByText("ආරම්භක පියවර තුන")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "නැවත පෙන්වන්න" })).toBeEnabled();
+    expect(screen.getByLabelText("අකුර ලියන ප්‍රදේශය")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /ඔබම පරීක්ෂා කරන්න/ })).toBeEnabled();
   });
 
   it("records a pointer stroke without crashing", () => {

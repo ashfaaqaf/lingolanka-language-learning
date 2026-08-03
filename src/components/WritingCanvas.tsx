@@ -1,5 +1,7 @@
 import { Check, Eye, EyeOff, Redo2, RotateCcw, Undo2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { writingToolCopy, type WritingInterfaceLanguage } from "../data/writingTutorial";
+import { WritingTutorial } from "./WritingTutorial";
 
 interface Point {
   x: number;
@@ -8,18 +10,23 @@ interface Point {
 
 export function WritingCanvas({
   character = "අ",
+  characterLanguage = "si",
+  interfaceLanguage = "en",
   onComplete
 }: {
   character?: string;
+  characterLanguage?: "en" | "si";
+  interfaceLanguage?: WritingInterfaceLanguage;
   onComplete?: () => void;
 }) {
+  const copy = writingToolCopy[interfaceLanguage];
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [strokes, setStrokes] = useState<Point[][]>([]);
   const [redo, setRedo] = useState<Point[][]>([]);
   const [drawing, setDrawing] = useState(false);
   const [guide, setGuide] = useState(true);
   const [width, setWidth] = useState(8);
-  const [message, setMessage] = useState("Trace the character, then use self-check.");
+  const [message, setMessage] = useState(copy.initialMessage);
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -82,19 +89,25 @@ export function WritingCanvas({
   const check = () => {
     const points = strokes.reduce((sum, stroke) => sum + stroke.length, 0);
     const coverage = Math.min(100, Math.round(points / 2.2));
-    setMessage(
-      coverage > 55
-        ? `Good tracing coverage: about ${coverage}%. This is guidance, not handwriting recognition.`
-        : `Coverage is about ${coverage}%. Try a slower, fuller trace.`
-    );
+    setMessage(coverage > 55 ? copy.goodCoverage(coverage) : copy.lowCoverage(coverage));
     if (coverage > 55) onComplete?.();
   };
   return (
-    <section className="writing-tool" aria-label={`Writing practice for ${character}`}>
+    <section
+      className="writing-tool"
+      aria-label={`${copy.practiceLabel} ${character}`}
+      lang={interfaceLanguage}
+    >
+      <WritingTutorial
+        key={`${character}-${interfaceLanguage}`}
+        character={character}
+        characterLanguage={characterLanguage}
+        interfaceLanguage={interfaceLanguage}
+      />
       <div className="writing-toolbar">
         <button
           className="icon-button"
-          aria-label="Undo stroke"
+          aria-label={copy.undo}
           disabled={!strokes.length}
           onClick={() => {
             const last = strokes.at(-1);
@@ -106,7 +119,7 @@ export function WritingCanvas({
         </button>
         <button
           className="icon-button"
-          aria-label="Redo stroke"
+          aria-label={copy.redo}
           disabled={!redo.length}
           onClick={() => {
             const last = redo.at(-1);
@@ -118,7 +131,7 @@ export function WritingCanvas({
         </button>
         <button
           className="icon-button"
-          aria-label="Clear drawing"
+          aria-label={copy.clear}
           onClick={() => {
             setStrokes([]);
             setRedo([]);
@@ -128,13 +141,13 @@ export function WritingCanvas({
         </button>
         <button
           className="icon-button"
-          aria-label={guide ? "Hide guide" : "Show guide"}
+          aria-label={guide ? copy.hideGuide : copy.showGuide}
           onClick={() => setGuide((shown) => !shown)}
         >
           {guide ? <EyeOff /> : <Eye />}
         </button>
         <label>
-          Stroke{" "}
+          {copy.stroke}{" "}
           <input
             type="range"
             min="3"
@@ -151,12 +164,12 @@ export function WritingCanvas({
         onPointerMove={move}
         onPointerUp={() => setDrawing(false)}
         onPointerCancel={() => setDrawing(false)}
-        aria-label="Drawing canvas"
+        aria-label={copy.canvas}
       />
       <div className="writing-footer">
         <p aria-live="polite">{message}</p>
         <button className="button primary" onClick={check}>
-          <Check /> Self-check
+          <Check /> {copy.selfCheck}
         </button>
       </div>
     </section>

@@ -468,6 +468,7 @@ export function LessonPage() {
 
 export function AlphabetPage() {
   const { profile } = useApp();
+  const interfaceLanguage = profile.settings.interfaceLanguage;
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [selected, setSelected] = useState<AlphabetEntry | null>(null);
@@ -557,7 +558,12 @@ export function AlphabetPage() {
             </div>
             <AudioButton text={selected.character} language={selected.language} />
             <AudioButton text={selected.character} language={selected.language} slow />
-            <WritingCanvas character={selected.character} />
+            <WritingCanvas
+              key={selected.id}
+              character={selected.character}
+              characterLanguage={selected.language}
+              interfaceLanguage={interfaceLanguage}
+            />
           </aside>
         </div>
       )}
@@ -567,6 +573,7 @@ export function AlphabetPage() {
 
 export function WritingPage() {
   const { profile } = useApp();
+  const interfaceLanguage = profile.settings.interfaceLanguage;
   const entries =
     profile.settings.direction === "english-to-sinhala" ? sinhalaAlphabet : englishAlphabet;
   const [index, setIndex] = useState(0);
@@ -574,9 +581,13 @@ export function WritingPage() {
   return (
     <div className="page narrow-page">
       <Header
-        eyebrow="Guided writing"
-        title="Trace with confidence"
-        copy="Use mouse, touch or stylus. Coverage feedback is guidance, not handwriting recognition."
+        eyebrow={interfaceLanguage === "si" ? "මඟපෙන්වන ලිවීම" : "Guided writing"}
+        title={interfaceLanguage === "si" ? "විශ්වාසයෙන් අකුරු ලියමු" : "Trace with confidence"}
+        copy={
+          interfaceLanguage === "si"
+            ? "මුලින් අකුර ලියන ආකාරය බලන්න. ඉන්පසු ඇඟිල්ල, මවුසය හෝ ස්ටයිලසය භාවිතයෙන් ලියන්න."
+            : "Watch the letter tutorial first, then practise with your finger, mouse or stylus."
+        }
       />
       <div className="character-picker">
         {entries.slice(0, 16).map((item, itemIndex) => (
@@ -584,6 +595,8 @@ export function WritingPage() {
             className={itemIndex === index ? "selected" : ""}
             onClick={() => setIndex(itemIndex)}
             key={item.id}
+            lang={item.language}
+            aria-label={`${interfaceLanguage === "si" ? "අකුර තෝරන්න" : "Choose letter"} ${item.character}`}
           >
             {item.character}
           </button>
@@ -601,19 +614,25 @@ export function WritingPage() {
             <AudioButton text={entry.character} language={entry.language} />
           </div>
         </div>
-        <WritingCanvas character={entry.character} onComplete={() => undefined} />
+        <WritingCanvas
+          key={entry.id}
+          character={entry.character}
+          characterLanguage={entry.language}
+          interfaceLanguage={interfaceLanguage}
+          onComplete={() => undefined}
+        />
         <div className="button-row end">
           <button
             className="button secondary"
             onClick={() => setIndex((value) => Math.max(0, value - 1))}
           >
-            Previous
+            {interfaceLanguage === "si" ? "පෙර අකුර" : "Previous"}
           </button>
           <button
             className="button primary"
             onClick={() => setIndex((value) => (value + 1) % entries.length)}
           >
-            Save & next
+            {interfaceLanguage === "si" ? "සුරකින්න සහ ඊළඟට" : "Save & next"}
           </button>
         </div>
       </section>
