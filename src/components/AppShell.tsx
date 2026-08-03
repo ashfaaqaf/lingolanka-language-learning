@@ -19,9 +19,16 @@ import {
   Sparkles,
   SpellCheck2
 } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useState, type ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import {
+  moveLiquidGlass,
+  pressLiquidGlass,
+  releaseLiquidGlass,
+  resetLiquidGlass
+} from "../lib/liquidGlass";
 
 const primaryNavigation = [
   ["/dashboard", { en: "Today", si: "අද" }, Gauge],
@@ -85,6 +92,8 @@ function NavigationSection({
 export function AppShell({ children }: { children: ReactNode }) {
   const { profile } = useApp();
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+  const reduceMotion = useReducedMotion() || profile.settings.reducedMotion;
   const language = profile.settings.interfaceLanguage;
   const learningSinhala = profile.settings.direction === "english-to-sinhala";
   const text =
@@ -119,7 +128,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       <a className="skip-link" href="#main-content">
         {text.skip}
       </a>
-      <aside className="sidebar" aria-label={text.mainNavigation}>
+      <aside
+        className="sidebar liquid-glass"
+        aria-label={text.mainNavigation}
+        onPointerMove={moveLiquidGlass}
+        onPointerDown={pressLiquidGlass}
+        onPointerUp={releaseLiquidGlass}
+        onPointerCancel={resetLiquidGlass}
+        onPointerLeave={resetLiquidGlass}
+      >
         <NavLink to="/" className="app-brand" aria-label={text.home}>
           <span className="brand-mark">
             <Languages />
@@ -166,9 +183,32 @@ export function AppShell({ children }: { children: ReactNode }) {
         </button>
       </aside>
       <main id="main-content" className="app-main">
-        {children}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={location.pathname}
+            className="route-stage"
+            initial={reduceMotion ? false : { opacity: 0, y: 10, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -5, filter: "blur(2px)" }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 420, damping: 38, mass: 0.7 }
+            }
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
-      <nav className="bottom-nav" aria-label={text.mobileNavigation}>
+      <nav
+        className="bottom-nav liquid-glass"
+        aria-label={text.mobileNavigation}
+        onPointerMove={moveLiquidGlass}
+        onPointerDown={pressLiquidGlass}
+        onPointerUp={releaseLiquidGlass}
+        onPointerCancel={resetLiquidGlass}
+        onPointerLeave={resetLiquidGlass}
+      >
         {mobileNavigation.map(([to, labels, Icon]) => (
           <NavLink key={to} to={to} className={({ isActive }) => (isActive ? "active" : "")}>
             <Icon aria-hidden="true" />

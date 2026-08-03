@@ -41,14 +41,15 @@ export function WritingCanvas({
     if (!context) return;
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, rect.width, rect.height);
+    const theme = getComputedStyle(document.documentElement);
     if (guide) {
-      context.fillStyle = "rgba(20,92,74,.12)";
+      context.fillStyle = theme.getPropertyValue("--draw-guide").trim() || "rgb(83 103 213 / 0.14)";
       context.font = `${Math.min(rect.width, rect.height) * 0.72}px "Noto Sans Sinhala", sans-serif`;
       context.textAlign = "center";
       context.textBaseline = "middle";
       context.fillText(character, rect.width / 2, rect.height / 2);
     }
-    context.strokeStyle = "#167c68";
+    context.strokeStyle = theme.getPropertyValue("--draw-ink").trim() || "#4b60cf";
     context.lineWidth = width;
     context.lineCap = "round";
     context.lineJoin = "round";

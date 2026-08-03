@@ -22,7 +22,7 @@ export function AudioButton({
   label?: string;
 }) {
   const { profile } = useApp();
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() || profile.settings.reducedMotion;
   const audioCopy =
     profile.settings.interfaceLanguage === "si"
       ? {

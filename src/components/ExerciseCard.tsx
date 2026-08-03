@@ -66,7 +66,7 @@ export function ExerciseCard({
   onAnswered?: (correct: boolean) => void;
 }) {
   const { profile } = useApp();
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() || profile.settings.reducedMotion;
   const interfaceLanguage = profile.settings.interfaceLanguage;
   const isSinhalaUi = interfaceLanguage === "si";
   const copy = isSinhalaUi

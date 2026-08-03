@@ -17,8 +17,8 @@ export default defineConfig({
         name: "LingoLanka — Sinhala & English",
         short_name: "LingoLanka",
         description: "Free, private and offline-friendly Sinhala and English learning.",
-        theme_color: "#145c4a",
-        background_color: "#fbf7ee",
+        theme_color: "#4353b8",
+        background_color: "#f7f6f2",
         display: "standalone",
         scope: ".",
         start_url: ".",
@@ -27,7 +27,12 @@ export default defineConfig({
         icons: [
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
           { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
-          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }
+          {
+            src: "maskable-icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable"
+          }
         ]
       },
       workbox: {

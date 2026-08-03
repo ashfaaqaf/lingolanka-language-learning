@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { MotionConfig } from "framer-motion";
 import { AppShell } from "./components/AppShell";
+import { useApp } from "./context/AppContext";
 import { speech } from "./lib/speech";
 import { InstallPage } from "./pages/InstallPage";
 import { LandingPage } from "./pages/LandingPage";
@@ -41,8 +43,13 @@ function ShellRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const { profile } = useApp();
+
   return (
-    <>
+    <MotionConfig
+      reducedMotion={profile.settings.reducedMotion ? "always" : "user"}
+      transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.78 }}
+    >
       <RouteSpeechStopper />
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -202,6 +209,6 @@ export default function App() {
           }
         />
       </Routes>
-    </>
+    </MotionConfig>
   );
 }
