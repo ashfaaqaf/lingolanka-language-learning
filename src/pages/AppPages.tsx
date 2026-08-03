@@ -1077,6 +1077,16 @@ interface PracticeModeDefinition {
   route?: string;
 }
 
+function readFileText(file: File): Promise<string> {
+  if (typeof file.text === "function") return file.text();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(reader.error ?? new Error("Unable to read file"));
+    reader.readAsText(file);
+  });
+}
+
 const practiceModes: PracticeModeDefinition[] = [
   {
     id: "mixed",
@@ -1461,36 +1471,91 @@ export function AchievementsPage() {
 
 export function SettingsPage() {
   const { profile, updateProfile, refresh } = useApp();
-  const [message, setMessage] = useState("");
+  const [feedback, setFeedback] = useState<{
+    message: string;
+    tone: "success" | "error" | "neutral";
+  } | null>(null);
+  const [busyAction, setBusyAction] = useState<"export" | "import" | "reset" | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
   const settingsQueue = useRef(Promise.resolve());
   const settings = profile.settings;
   const patch = (value: Partial<typeof settings>) => {
-    settingsQueue.current = settingsQueue.current.then(async () => {
-      const current = await loadProfile();
-      await updateProfile({ ...current, settings: { ...current.settings, ...value } });
-    });
+    settingsQueue.current = settingsQueue.current
+      .catch(() => undefined)
+      .then(async () => {
+        const current = await loadProfile();
+        await updateProfile({ ...current, settings: { ...current.settings, ...value } });
+      });
     return settingsQueue.current;
   };
   const download = async () => {
-    const backup = await exportBackup(profile);
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `lingolanka-backup-${todayKey()}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    setMessage("Progress export downloaded.");
+    setBusyAction("export");
+    setFeedback({ message: "Preparing your progress backup…", tone: "neutral" });
+    try {
+      await settingsQueue.current;
+      const latestProfile = await loadProfile();
+      const backup = await exportBackup(latestProfile);
+      const blob = new Blob([JSON.stringify(backup, null, 2)], {
+        type: "application/json;charset=utf-8"
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `lingolanka-backup-${todayKey()}.json`;
+      anchor.style.display = "none";
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+      setFeedback({
+        message: "Progress exported. Look in your browser's Downloads folder.",
+        tone: "success"
+      });
+    } catch {
+      setFeedback({
+        message: "The backup could not be downloaded. Please try again.",
+        tone: "error"
+      });
+    } finally {
+      setBusyAction(null);
+    }
   };
   const upload = async (file: File) => {
+    setBusyAction("import");
+    setFeedback({ message: "Checking your backup file…", tone: "neutral" });
     try {
-      await importBackup(JSON.parse(await file.text()) as unknown);
+      if (file.size > 5 * 1024 * 1024) throw new Error("Backup file is too large");
+      await settingsQueue.current;
+      await importBackup(JSON.parse(await readFileText(file)) as unknown);
       await refresh();
-      setMessage("Validated progress imported successfully.");
+      setFeedback({ message: "Progress imported successfully.", tone: "success" });
     } catch {
-      setMessage("This file is not a valid LingoLanka backup. Nothing was changed.");
+      setFeedback({
+        message: "This is not a valid LingoLanka backup. Nothing was changed.",
+        tone: "error"
+      });
+    } finally {
+      setBusyAction(null);
+    }
+  };
+  const resetAll = async () => {
+    setBusyAction("reset");
+    try {
+      await settingsQueue.current;
+      await resetDatabase();
+      await refresh();
+      setConfirmReset(false);
+      setFeedback({
+        message: "All local progress and preferences were reset.",
+        tone: "success"
+      });
+    } catch {
+      setFeedback({
+        message: "Progress could not be reset. Please close other LingoLanka tabs and try again.",
+        tone: "error"
+      });
+    } finally {
+      setBusyAction(null);
     }
   };
   return (
@@ -1676,29 +1741,46 @@ export function SettingsPage() {
             never stored here.
           </p>
           <div className="button-row">
-            <button className="button secondary" onClick={download}>
-              <Download /> Export progress
+            <button
+              className="button secondary"
+              type="button"
+              disabled={busyAction !== null}
+              onClick={() => void download()}
+            >
+              <Download /> {busyAction === "export" ? "Preparing export…" : "Export progress"}
             </button>
-            <button className="button secondary" onClick={() => fileRef.current?.click()}>
-              <Upload /> Import progress
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="application/json"
-              hidden
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) void upload(file);
-              }}
-            />
-            <button className="button danger" onClick={() => setConfirmReset(true)}>
+            <label
+              className={`button secondary file-picker-button${busyAction !== null ? " disabled" : ""}`}
+            >
+              <Upload /> {busyAction === "import" ? "Importing…" : "Import progress"}
+              <input
+                className="native-file-input"
+                type="file"
+                accept=".json,application/json"
+                aria-label="Choose LingoLanka backup file"
+                disabled={busyAction !== null}
+                onChange={(event) => {
+                  const input = event.currentTarget;
+                  const file = input.files?.[0];
+                  if (!file) return;
+                  void upload(file).finally(() => {
+                    input.value = "";
+                  });
+                }}
+              />
+            </label>
+            <button
+              className="button danger"
+              type="button"
+              disabled={busyAction !== null}
+              onClick={() => setConfirmReset(true)}
+            >
               <RotateCcw /> Reset all progress
             </button>
           </div>
-          {message && (
-            <p role="status" className="feedback neutral">
-              {message}
+          {feedback && (
+            <p role="status" className={`feedback ${feedback.tone}`}>
+              {feedback.message}
             </p>
           )}
         </div>
@@ -1714,16 +1796,18 @@ export function SettingsPage() {
             <div className="button-row">
               <button
                 className="button danger"
-                onClick={async () => {
-                  await resetDatabase();
-                  await refresh();
-                  setConfirmReset(false);
-                  setMessage("Local progress was reset.");
-                }}
+                type="button"
+                disabled={busyAction === "reset"}
+                onClick={() => void resetAll()}
               >
-                Reset permanently
+                {busyAction === "reset" ? "Resetting…" : "Reset permanently"}
               </button>
-              <button className="button secondary" onClick={() => setConfirmReset(false)}>
+              <button
+                className="button secondary"
+                type="button"
+                disabled={busyAction === "reset"}
+                onClick={() => setConfirmReset(false)}
+              >
                 Cancel
               </button>
             </div>

@@ -95,6 +95,12 @@ export async function importBackup(value: unknown): Promise<UserProfile> {
 }
 
 export async function resetDatabase(): Promise<void> {
-  await db.delete();
-  await db.open();
+  await db.transaction("rw", db.profile, db.progress, db.vocabularyStates, db.reviews, async () => {
+    await Promise.all([
+      db.profile.clear(),
+      db.progress.clear(),
+      db.vocabularyStates.clear(),
+      db.reviews.clear()
+    ]);
+  });
 }

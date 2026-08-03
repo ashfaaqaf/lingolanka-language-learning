@@ -6,6 +6,11 @@ import { afterEach, vi } from "vitest";
 afterEach(() => cleanup());
 
 Object.defineProperty(window, "scrollTo", { value: vi.fn(), writable: true });
+Object.defineProperty(URL, "createObjectURL", {
+  value: vi.fn(() => "blob:lingolanka-test-backup"),
+  writable: true
+});
+Object.defineProperty(URL, "revokeObjectURL", { value: vi.fn(), writable: true });
 Object.defineProperty(window, "matchMedia", {
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false,

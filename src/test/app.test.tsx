@@ -1,12 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HashRouter } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import App from "../App";
 import { AppProvider } from "../context/AppContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { WritingCanvas } from "../components/WritingCanvas";
-import { db, defaultProfile, resetDatabase, saveProfile } from "../lib/db";
+import { db, defaultProfile, loadProfile, resetDatabase, saveProfile } from "../lib/db";
 
 function renderApp(path = "/") {
   window.location.hash = `#${path}`;
@@ -151,6 +151,80 @@ describe("critical application journeys", () => {
     expect(screen.getByRole("heading", { name: /Install with Safari/i })).toBeInTheDocument();
     expect(screen.getAllByText(/Add to Home Screen/i)).toHaveLength(2);
     expect(screen.getByRole("button", { name: /Copy link/i })).toBeEnabled();
+  });
+
+  it("downloads a real progress backup from settings", async () => {
+    const user = userEvent.setup();
+    let downloadedName = "";
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(function (this: HTMLAnchorElement) {
+        downloadedName = this.download;
+      });
+
+    try {
+      renderApp("/settings");
+      await user.click(screen.getByRole("button", { name: /Export progress/i }));
+
+      expect(await screen.findByText(/Progress exported/i)).toBeInTheDocument();
+      expect(downloadedName).toMatch(/^lingolanka-backup-\d{4}-\d{2}-\d{2}\.json$/);
+      expect(URL.createObjectURL).toHaveBeenCalledOnce();
+    } finally {
+      click.mockRestore();
+    }
+  });
+
+  it("imports a validated progress backup from the native file picker", async () => {
+    const user = userEvent.setup();
+    await resetDatabase();
+    const backup = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      profile: { ...defaultProfile, name: "Imported learner", onboarded: true },
+      progress: [],
+      vocabularyStates: [],
+      reviews: []
+    };
+
+    try {
+      renderApp("/settings");
+      const file = new File([JSON.stringify(backup)], "lingolanka-backup.json", {
+        type: "application/json"
+      });
+      await user.upload(screen.getByLabelText("Choose LingoLanka backup file"), file);
+
+      expect(await screen.findByText("Progress imported successfully.")).toBeInTheDocument();
+      expect((await loadProfile()).name).toBe("Imported learner");
+    } finally {
+      await resetDatabase();
+    }
+  });
+
+  it("resets progress after explicit confirmation", async () => {
+    const user = userEvent.setup();
+    await resetDatabase();
+    await saveProfile({ ...defaultProfile, name: "Reset learner", onboarded: true });
+    await db.progress.put({
+      id: "reset-me",
+      completedAt: new Date().toISOString(),
+      score: 80,
+      xp: 20,
+      minutes: 5,
+      skills: { reading: 5, writing: 5, listening: 5, speaking: 5 }
+    });
+
+    try {
+      renderApp("/settings");
+      await user.click(screen.getByRole("button", { name: /Reset all progress/i }));
+      expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Reset permanently" }));
+
+      expect(await screen.findByText(/All local progress and preferences were reset/i)).toBeInTheDocument();
+      expect(await db.progress.count()).toBe(0);
+      expect((await loadProfile()).name).toBe("");
+    } finally {
+      await resetDatabase();
+    }
   });
 
   it("uses phone-first primary destinations in mobile navigation", () => {
