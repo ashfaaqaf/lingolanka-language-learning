@@ -54,11 +54,11 @@ export const sinhalaPronunciation: PronunciationItem[] = [
     id: "si-hello",
     text: "ආයුබෝවන්",
     language: "si",
-    sayLike: "aa-yu-boo-van",
+    sayLike: "ā-yu-bō-van",
     meaningEn: "hello",
     meaningSi: "ආචාර කිරීම",
-    tipEn: "Say it in four calm parts, then join them together.",
-    tipSi: "කොටස් හතරකින් කියා පසුව එකට සම්බන්ධ කරන්න."
+    tipEn: "Keep ā and bō long: ā · yu · bō · van.",
+    tipSi: "ā සහ bō හඬ දිගට තබා ā · yu · bō · van ලෙස කියන්න."
   },
   {
     id: "si-thanks",

@@ -6,7 +6,7 @@ LingoLanka is a free, privacy-first bilingual language-learning PWA for English 
 
 ## Live website
 
-[Open LingoLanka](https://ashfaaqaf-ai.github.io/lingolanka-language-learning/)
+[Open LingoLanka](https://ashfaaqaf.github.io/lingolanka-language-learning/)
 
 The production site is published from `main` by the validated GitHub Pages workflow. The public app, manifest, service worker, PWA icon and social card were verified over HTTPS after deployment.
 
@@ -19,7 +19,7 @@ The finished application includes a responsive public landing page, onboarding, 
 - Two independent learning paths with five levels, eight modules per course and 40 lessons total
 - 264 bilingual vocabulary entries, 12 grammar guides and 12 role-play conversations
 - Sinhala script and English alphabet/phonics libraries
-- Device-supported English and Sinhala speech synthesis with normal/slow playback
+- Bundled native-speaker Sinhala pronunciation plus English audio with normal/slow playback
 - Browser speech recognition where available; private local recording fallback
 - Mouse, touch and stylus tracing with guide, undo/redo and honest coverage feedback
 - Eight exercise formats, instant feedback and repeatable lessons
@@ -83,7 +83,9 @@ LingoLanka uses a consistent readable scholarly convention: long vowels use macr
 
 ## Voice and browser compatibility
 
-Speech is honestly labelled device-supported pronunciation. `si-LK` voices and Sinhala recognition are not available on every platform. Recognition scoring is approximate word overlap, not accent science. Unsupported recognition falls back to local recording, replay and self-assessment; audio is never uploaded or stored permanently.
+Curriculum pronunciation is packaged with the app so it works consistently across phones and browsers. Sinhala clips use Sinhala Unicode input and a Sinhala-specific native-speaker research voice; see [AUDIO_ATTRIBUTION.md](AUDIO_ATTRIBUTION.md). Text outside the packaged library uses a device voice only when its language actually matches. The app never lets a default English voice pretend to pronounce Sinhala.
+
+Sinhala recognition is not available on every platform. Recognition scoring is approximate word overlap, not accent science. Unsupported recognition falls back to local recording, replay and self-assessment; audio is never uploaded or stored permanently.
 
 Modern Chrome, Edge, Firefox and Safari support the core app. Speech recognition support is strongest in Chromium browsers. Canvas practice supports pointer events across mouse, touch and stylus.
 

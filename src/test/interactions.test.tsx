@@ -47,9 +47,7 @@ describe("lesson interactions", () => {
     expect(screen.getByText("Word you are learning")).toBeInTheDocument();
     expect(screen.getByText("Say “āyubōvan” out loud.")).toBeInTheDocument();
     expect(screen.getByText("What to do now")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "ආයුබෝවන්, āyubōvan" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ආයුබෝවන්, āyubōvan" })).toBeInTheDocument();
   });
 
   it("uses Sinhala guidance and controls when Sinhala is the interface language", async () => {
@@ -111,6 +109,16 @@ describe("lesson interactions", () => {
     );
 
     expect(window.speechSynthesis.speak).toHaveBeenCalledOnce();
+  });
+
+  it("does not mispronounce unpackaged Sinhala with an incompatible default voice", async () => {
+    const user = userEvent.setup();
+    renderWithApp(<AudioButton text="සිංහල හඬ පරීක්ෂාව" language="si" />);
+
+    await user.click(screen.getByRole("button", { name: "Play: සිංහල හඬ පරීක්ෂාව" }));
+
+    expect(window.speechSynthesis.speak).not.toHaveBeenCalled();
+    expect(screen.getByText("Audio is unavailable on this device")).toBeInTheDocument();
   });
 
   it("marks the correct option green and a selected wrong option red", async () => {

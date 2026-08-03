@@ -8,6 +8,6 @@ The core content is practical and internally consistent, but a qualified bilingu
 - Regional variation in common family terms and spoken question endings
 - Transliteration treatment of prenasalised consonants and the `n̆d` readable approximation
 - Medical vocabulary: confirm it remains strictly everyday communication and not clinical advice
-- Speech-synthesis pronunciation on the major operating-system Sinhala voices
+- Native-audio spot checks across alphabet sounds, short and long vowels, prenasalised consonants, questions and full phrases
 
 Do not move these notes into the learner interface. Submit corrections with context and preserve all record IDs where possible.

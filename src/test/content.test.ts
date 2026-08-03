@@ -8,6 +8,7 @@ import {
   vocabulary
 } from "../data/content";
 import audioManifest from "../data/audioManifest.json";
+import audioProvenance from "../data/audioProvenance.json";
 import { englishPronunciation, sinhalaPronunciation } from "../data/pronunciation";
 
 describe("curriculum content", () => {
@@ -57,14 +58,26 @@ describe("curriculum content", () => {
   it("packages audio for the curriculum and pronunciation starter", () => {
     const manifest = audioManifest as Record<string, string>;
     expect(
-      vocabulary.every(
-        (word) => manifest[`en:${word.english}`] && manifest[`si:${word.sinhala}`]
-      )
+      vocabulary.every((word) => manifest[`en:${word.english}`] && manifest[`si:${word.sinhala}`])
     ).toBe(true);
     expect(
       [...englishPronunciation, ...sinhalaPronunciation].every(
         (item) => manifest[`${item.language}:${item.text}`]
       )
     ).toBe(true);
+  });
+
+  it("ships every declared audio file with traceable Sinhala provenance", () => {
+    const manifest = audioManifest as Record<string, string>;
+    const audioFiles = Object.values(manifest);
+    const sinhalaEntries = Object.keys(manifest).filter((key) => key.startsWith("si:"));
+
+    expect(new Set(audioFiles).size).toBe(audioFiles.length);
+    expect(audioFiles.every((filename) => /^(?:en|si)-[a-f0-9]{16}\.mp3$/.test(filename))).toBe(
+      true
+    );
+    expect(audioProvenance.sinhala.locale).toBe("si-LK");
+    expect(audioProvenance.sinhala.input).toContain("Sinhala Unicode");
+    expect(audioProvenance.sinhala.clipCount).toBe(sinhalaEntries.length);
   });
 });

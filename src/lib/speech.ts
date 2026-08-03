@@ -111,18 +111,27 @@ class SpeechService {
 
     try {
       this.loadVoices();
+      const targetLanguage = options.lang.toLowerCase();
+      const targetLanguageRoot = targetLanguage.split("-")[0];
+      const compatibleVoices = this.voices.filter(
+        (voice) => voice.lang.toLowerCase().split("-")[0] === targetLanguageRoot
+      );
+      const selectedVoice =
+        compatibleVoices.find((voice) => voice.name === options.voiceName) ??
+        compatibleVoices.find((voice) => voice.lang.toLowerCase() === targetLanguage) ??
+        compatibleVoices[0] ??
+        null;
+
+      // A browser default voice is commonly English. Allowing it to read Sinhala
+      // produces convincing-looking but incorrect pronunciation, so fail honestly.
+      if (targetLanguageRoot === "si" && !selectedVoice) return false;
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = options.lang;
       utterance.rate = options.rate ?? 1;
       utterance.pitch = options.pitch ?? 1;
       utterance.volume = options.volume ?? 1;
-      utterance.voice =
-        this.voices.find((voice) => voice.name === options.voiceName) ??
-        this.voices.find((voice) => voice.lang.toLowerCase() === options.lang.toLowerCase()) ??
-        this.voices.find((voice) =>
-          voice.lang.toLowerCase().startsWith(options.lang.slice(0, 2).toLowerCase())
-        ) ??
-        null;
+      utterance.voice = selectedVoice;
 
       this.activeUtterance = utterance;
       this.activeOnEnd = options.onEnd ?? null;

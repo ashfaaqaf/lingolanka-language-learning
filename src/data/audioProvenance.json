@@ -1,0 +1,16 @@
+{
+  "sinhala": {
+    "locale": "si-LK",
+    "engine": "Dialog–University of Moratuwa SinhalaVITS",
+    "voice": "Female Voice 2",
+    "input": "Sinhala Unicode text from audioManifest.json",
+    "source": "https://huggingface.co/spaces/dialoglk/SinhalaVITS",
+    "modelLicense": "MPL-2.0",
+    "clipCount": 310
+  },
+  "english": {
+    "locale": "en",
+    "input": "English text from audioManifest.json",
+    "clipCount": 307
+  }
+}
