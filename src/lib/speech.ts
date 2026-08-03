@@ -72,6 +72,7 @@ class SpeechService {
     try {
       const audio = new Audio(source);
       audio.preload = "auto";
+      audio.muted = false;
       audio.playbackRate = Math.min(1.5, Math.max(0.5, options.rate ?? 1));
       audio.volume = Math.min(1, Math.max(0, options.volume ?? 1));
       audio.preservesPitch = true;
@@ -96,6 +97,7 @@ class SpeechService {
       };
       audio.onerror = handleAudioFailure;
 
+      audio.load();
       const playResult = audio.play();
       playResult?.catch(handleAudioFailure);
       return true;

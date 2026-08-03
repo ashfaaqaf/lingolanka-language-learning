@@ -27,6 +27,7 @@ export function AudioButton({
     profile.settings.interfaceLanguage === "si"
       ? {
           ready: "හඬ ඇසීමට සූදානම්",
+          loading: "උච්චාරණ හඬ පූරණය වේ",
           playing: "උච්චාරණය වාදනය වේ",
           playingSlowly: "මන්දගාමීව වාදනය වේ",
           complete: "හඬ අවසන්",
@@ -43,6 +44,7 @@ export function AudioButton({
         }
       : {
           ready: "Ready to play",
+          loading: "Loading pronunciation",
           playing: "Playing pronunciation",
           playingSlowly: "Playing slowly",
           complete: "Playback complete",
@@ -57,7 +59,9 @@ export function AudioButton({
           pause: "Pause speech",
           stop: "Stop speech"
         };
-  const [playback, setPlayback] = useState<"idle" | "playing" | "paused">("idle");
+  const [playback, setPlayback] = useState<"idle" | "loading" | "playing" | "paused">(
+    "idle"
+  );
   const [message, setMessage] = useState(audioCopy.ready);
   useEffect(
     () => () => {
@@ -88,8 +92,8 @@ export function AudioButton({
       }
     });
     if (ok) {
-      setPlayback("playing");
-      setMessage(slow ? audioCopy.playingSlowly : audioCopy.playing);
+      setPlayback("loading");
+      setMessage(audioCopy.loading);
     } else {
       setPlayback("idle");
       setMessage(audioCopy.unavailable);
