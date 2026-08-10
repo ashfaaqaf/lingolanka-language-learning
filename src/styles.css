@@ -10,14 +10,20 @@
   --muted: #5e7074;
   --line: #d8e4e1;
   --brand: #226e78;
-  --brand-2: #2f8290;
+  /* --brand-2 carries the transliteration <small>, which is small text and so
+     needs 4.5:1, not 3:1. #2f8290 measured 4.41:1 on the card. */
+  --brand-2: #2d7d8a;
   --brand-deep: #164b57;
   --brand-bright: #5faeb6;
   --brand-fill: #226e78;
   --brand-fill-2: #2f8290;
-  --accent-fill: #b86a16;
+  --accent-fill: #a96114;
   --teal-soft: #e3f1ef;
   --amber: #e7a63a;
+  /* Focus rings are non-text UI and need 3:1 (WCAG 1.4.11). --amber is tuned for
+     decorative fills and only reaches 2.10:1 on the light card, so the ring gets
+     its own darker token; in dark mode --amber already clears 9:1. */
+  --focus: #c38318;
   --coral: #d56d5c;
   --sky: #3b8fb8;
   --red: #b64343;
@@ -50,7 +56,7 @@
     --brand-bright: #b5e2e4;
     --brand-fill: #246773;
     --brand-fill-2: #2c7f8c;
-    --accent-fill: #a66320;
+    --accent-fill: #cd7a28;
     --teal-soft: #1c373d;
     --amber: #f3c265;
     --coral: #f09987;
@@ -66,6 +72,8 @@
     --glass-surface-strong: rgb(22 42 48 / 0.86);
     --glass-edge: rgb(212 241 239 / 0.2);
     --glass-shadow: 0 22px 56px rgb(0 0 0 / 0.32);
+    /* Dark --amber already measures 9:1 on the card, so the ring can use it. */
+    --focus: #f3c265;
   }
 }
 :root[data-theme="dark"] {
@@ -81,7 +89,7 @@
   --brand-bright: #b5e2e4;
   --brand-fill: #246773;
   --brand-fill-2: #2c7f8c;
-  --accent-fill: #a66320;
+  --accent-fill: #cd7a28;
   --teal-soft: #1c373d;
   --amber: #f3c265;
   --coral: #f09987;
@@ -97,6 +105,7 @@
   --glass-surface-strong: rgb(22 42 48 / 0.86);
   --glass-edge: rgb(212 241 239 / 0.2);
   --glass-shadow: 0 22px 56px rgb(0 0 0 / 0.32);
+  --focus: #f3c265;
 }
 :root[data-text-size="large"] {
   --font-scale: 1.1;
@@ -249,7 +258,7 @@ h3[lang="si"],
   letter-spacing: 0;
 }
 :focus-visible {
-  outline: 3px solid var(--amber);
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
   border-radius: 6px;
 }
