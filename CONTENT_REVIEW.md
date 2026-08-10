@@ -54,4 +54,14 @@ Five entries write `consonant + al-lakuna + ය/ර` without ZWJ, so the al-laku
 
 All 267 entries are NFC-normalised, no vowel sign appears without a base consonant, no stray ZWJ, and no conflicting transliteration for any repeated Sinhala string. The `මාළු`/`මාළුවා` (fish) and `දුරකථනය` (telephone/phone) pairs are plausible variants rather than contradictions and were not raised as findings.
 
+## Writing tool: shape scoring enabled, stroke order still gated — 2026-08-10
+
+Gating the unverified centrelines was right, but it left the trace tool unable to tell a learner anything: it showed the finished letter, said "trace this", and returned no feedback. Learners could copy a shape without ever learning whether they had drawn the letter.
+
+Judging _shape_ never needed the authored centrelines. The glyph in the bundled font is the authoritative letter form, so `src/lib/glyphTrace.ts` rasterises it and compares it with the learner's ink. That reports two things a shape comparison honestly supports — coverage (how much of the letter was drawn over) and control (how much of the drawing landed on the letter) — combined as a harmonic mean so neither can carry the other.
+
+**This still does not teach stroke order, and the UI says so** in both languages: stroke order, direction and pen lifts are explicitly excluded from the score. That remains blocked on educator sign-off, and the review pack in `artifacts/review/` is the critical path — no amount of pixel comparison substitutes for it.
+
+Verified in a real browser against `අ`, `ආ`, `ක` and `ම`: a faithful trace scores 100, and inking the whole pad scores 35–49 and never reaches the 70 that marks the letter written.
+
 Do not move these notes into the learner interface. Submit corrections with context and preserve all record IDs where possible.
