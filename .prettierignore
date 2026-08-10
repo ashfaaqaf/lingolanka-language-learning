@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+.vite/
+
+# Generated and scratch output — not source, must not gate `npm run format:check`.
+artifacts/
+outputs/
+work/
+.codex-progress/
+.codex-spreadsheets/
+.codex-spreadsheet-work/
+public/writing-guides/
+package-lock.json
