@@ -20,6 +20,7 @@ import {
   releaseLiquidGlass,
   resetLiquidGlass
 } from "../lib/liquidGlass";
+import { motionOr, springPress, springUI } from "../lib/motion";
 
 const typeLabels: Record<"en" | "si", Record<Exercise["type"], string>> = {
   en: {
@@ -146,6 +147,8 @@ export function ExerciseCard({
   const showTransliteration = profile.settings.transliteration !== "never";
   const sourceText = exercise.sourceLanguage === "si" ? support?.sinhala : support?.english;
   const targetText = exercise.targetLanguage === "si" ? support?.sinhala : support?.english;
+  const pronunciationText = support?.sinhala ?? exercise.audioText;
+  const pronunciationLanguage = support?.sinhala ? "si" : exercise.targetLanguage;
   const spokenForm =
     exercise.targetLanguage === "si" && support?.transliteration
       ? support.transliteration
@@ -183,7 +186,7 @@ export function ExerciseCard({
       onPointerLeave={resetLiquidGlass}
       initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 360, damping: 30 }}
+      transition={motionOr(reduceMotion, springUI)}
     >
       <span className="eyebrow">{typeLabel}</span>
 
@@ -218,8 +221,12 @@ export function ExerciseCard({
                 )}
             </div>
           </div>
-          {exercise.audioText && (
-            <AudioButton text={exercise.audioText} language={exercise.targetLanguage} />
+          {support.sinhala && (
+            <AudioButton
+              text={support.sinhala}
+              language="si"
+              label={`${isSinhalaUi ? "සිංහල වචනය අසන්න" : "Hear the Sinhala word"}: ${support.sinhala}`}
+            />
           )}
           <div className="learning-steps">
             <strong>{copy.followSteps}</strong>
@@ -238,8 +245,16 @@ export function ExerciseCard({
         <p>{exercise.instructions}</p>
       </div>
 
-      {!showLearningSupport && exercise.audioText && (
-        <AudioButton text={exercise.audioText} language={exercise.targetLanguage} />
+      {!showLearningSupport && pronunciationText && (
+        <AudioButton
+          text={pronunciationText}
+          language={pronunciationLanguage}
+          label={
+            pronunciationLanguage === "si"
+              ? `${isSinhalaUi ? "සිංහල වචනය අසන්න" : "Hear the Sinhala word"}: ${pronunciationText}`
+              : undefined
+          }
+        />
       )}
       {!showLearningSupport && exercise.hint && (
         <div className="pronunciation-support">
@@ -289,7 +304,7 @@ export function ExerciseCard({
                 disabled={submitted !== null}
                 onClick={() => setAnswer(optionText)}
                 whileTap={submitted === null && !reduceMotion ? { scale: 0.975 } : undefined}
-                transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                transition={springPress}
               >
                 <span className="choice-copy">
                   <span lang={exercise.targetLanguage}>{optionText}</span>
@@ -355,9 +370,7 @@ export function ExerciseCard({
             initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduceMotion ? undefined : { opacity: 0, y: 6, scale: 0.98 }}
-            transition={
-              reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 28 }
-            }
+            transition={motionOr(reduceMotion, springUI)}
           >
             <strong>
               {submitted ? <CheckCircle2 aria-hidden="true" /> : <XCircle aria-hidden="true" />}

@@ -4,6 +4,7 @@ import { MotionConfig } from "framer-motion";
 import { AppShell } from "./components/AppShell";
 import { useApp } from "./context/AppContext";
 import { speech } from "./lib/speech";
+import { springUI } from "./lib/motion";
 import { InstallPage } from "./pages/InstallPage";
 import { LandingPage } from "./pages/LandingPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
@@ -50,7 +51,7 @@ export default function App() {
   return (
     <MotionConfig
       reducedMotion={profile.settings.reducedMotion ? "always" : "user"}
-      transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.78 }}
+      transition={springUI}
     >
       <RouteSpeechStopper />
       <Routes>

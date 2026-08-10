@@ -29,6 +29,7 @@ import {
   releaseLiquidGlass,
   resetLiquidGlass
 } from "../lib/liquidGlass";
+import { instant, springUI } from "../lib/motion";
 
 const primaryNavigation = [
   ["/dashboard", { en: "Today", si: "අද" }, Gauge],
@@ -192,11 +193,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             exit={reduceMotion ? undefined : { opacity: 0, y: -5 }}
             transition={
               reduceMotion
-                ? { duration: 0 }
+                ? instant
                 : {
-                    // Enter on a critically damped spring; exit on a short tween so
+                    // Enter on the standard spring; exit on a short tween so
                     // mode="wait" does not spend a full settle before content appears.
-                    default: { type: "spring", stiffness: 420, damping: 38, mass: 0.7 },
+                    default: springUI,
                     opacity: { duration: 0.12, ease: "linear" }
                   }
             }

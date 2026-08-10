@@ -9,6 +9,7 @@ import {
   releaseLiquidGlass,
   resetLiquidGlass
 } from "../lib/liquidGlass";
+import { motionOr, springUI } from "../lib/motion";
 
 export function AudioButton({
   text,
@@ -59,9 +60,7 @@ export function AudioButton({
           pause: "Pause speech",
           stop: "Stop speech"
         };
-  const [playback, setPlayback] = useState<"idle" | "loading" | "playing" | "paused">(
-    "idle"
-  );
+  const [playback, setPlayback] = useState<"idle" | "loading" | "playing" | "paused">("idle");
   const [message, setMessage] = useState(audioCopy.ready);
   useEffect(
     () => () => {
@@ -130,7 +129,7 @@ export function AudioButton({
       onPointerCancel={resetLiquidGlass}
       onPointerLeave={resetLiquidGlass}
       animate={reduceMotion ? undefined : { scale: playback === "playing" ? 1.012 : 1 }}
-      transition={{ type: "spring", stiffness: 420, damping: 30 }}
+      transition={motionOr(reduceMotion, springUI)}
     >
       <span className="audio-group" role="group" aria-label={audioCopy.group}>
         <button

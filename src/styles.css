@@ -454,12 +454,24 @@ h3[lang="si"],
   background-size:
     100% 100%,
     220% 100%;
-  transform: translate3d(var(--glass-shift-x), var(--glass-shift-y), 0)
-    scale(var(--glass-flex-scale));
+  /* Split into individual transform properties so the two halves of this effect
+     can move on different clocks. The gradient centre (--glass-x/y) is a
+     background position and already tracks the pointer 1:1; the parallax drift
+     used to sit inside a transform transitioned over 0.5s, so half the highlight
+     followed the finger and half trailed it. Translate now tracks 1:1 to match,
+     and only the scale — which is a response to press, not a position — eases. */
+  translate: var(--glass-shift-x) var(--glass-shift-y);
+  scale: var(--glass-flex-scale);
   transition:
     opacity 0.36s var(--motion-spring),
-    transform 0.5s var(--motion-spring);
-  will-change: opacity, transform;
+    scale 0.5s var(--motion-spring);
+}
+/* Promote a layer when interaction is imminent rather than permanently: a
+   standing will-change on every glass surface keeps that many compositor layers
+   alive for the whole session. */
+.liquid-glass:hover::before,
+.liquid-glass:active::before {
+  will-change: opacity, scale;
 }
 .liquid-glass::after {
   inset: 1px;
@@ -4589,11 +4601,12 @@ h3[lang="si"],
         color-mix(in srgb, var(--brand-2) 20%, transparent),
         transparent 42%
       );
-    transform: translate3d(var(--glass-shift-x), var(--glass-shift-y), 0)
-      scale(var(--glass-flex-scale));
+    /* Same split as .liquid-glass::before: drift tracks the finger, scale eases. */
+    translate: var(--glass-shift-x) var(--glass-shift-y);
+    scale: var(--glass-flex-scale);
     transition:
       opacity 0.34s var(--motion-spring),
-      transform 0.48s var(--motion-spring);
+      scale 0.48s var(--motion-spring);
   }
   .bottom-nav::after {
     z-index: 0;
@@ -5080,8 +5093,13 @@ h3[lang="si"],
     filter: none !important;
     transform: none !important;
   }
-  .liquid-glass::before {
+  .liquid-glass::before,
+  .bottom-nav::before {
     transform: none !important;
+    /* The drift moved off transform onto translate/scale, so cancelling
+       transform alone would no longer stop it. */
+    translate: none !important;
+    scale: none !important;
     will-change: auto;
   }
   .stroke-demo-line,
@@ -5097,9 +5115,12 @@ h3[lang="si"],
   transition: none !important;
 }
 .reduced-motion .route-stage,
-.reduced-motion .liquid-glass::before {
+.reduced-motion .liquid-glass::before,
+.reduced-motion .bottom-nav::before {
   filter: none !important;
   transform: none !important;
+  translate: none !important;
+  scale: none !important;
   will-change: auto;
 }
 .reduced-motion .stroke-demo-line,
