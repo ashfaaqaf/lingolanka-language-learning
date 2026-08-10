@@ -19,7 +19,8 @@ Never add the password to a tracked file, workflow log, issue or pull request.
 1. Installs dependencies with `npm ci`.
 2. Runs linting, strict TypeScript checks and the complete test suite.
 3. Builds the PWA with Vite.
-4. Mirrors only `dist/` into `/htdocs/` over passive FTP.
+4. Mirrors only `dist/` into `/htdocs/` over passive FTP without unsupported
+   permission changes.
 
 The remote mirror uses `--delete`, so stale generated files are removed from
 `/htdocs/`. Files outside `/htdocs/`, including account-level configuration,
