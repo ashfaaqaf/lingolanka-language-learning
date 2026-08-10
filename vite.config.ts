@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 const repository = process.env.GITHUB_REPOSITORY?.split("/")[1];
-const base = repository ? `/${repository}/` : "/";
+const base = process.env.LINGOLANKA_BASE_PATH ?? (repository ? `/${repository}/` : "/");
 
 export default defineConfig({
   base,
