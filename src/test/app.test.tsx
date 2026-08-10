@@ -293,7 +293,7 @@ describe("critical application journeys", () => {
     expect(screen.getByRole("button", { name: "Undo stroke" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Redo stroke" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Clear drawing" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /Self-check/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Compare with letter/ })).toBeDisabled();
   });
 
   it("shows the full writing tutorial and controls in Sinhala when selected", () => {
@@ -302,7 +302,7 @@ describe("critical application journeys", () => {
     expect(screen.getByText("ආරම්භක පියවර තුන")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "නැවත පෙන්වන්න" })).toBeEnabled();
     expect(screen.getByLabelText("අකුර ලියන ප්‍රදේශය")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /ඔබම පරීක්ෂා කරන්න/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /පරීක්ෂා කරන්න/ })).toBeDisabled();
   });
 
   it("records a pointer stroke without crashing", () => {
