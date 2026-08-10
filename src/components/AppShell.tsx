@@ -187,13 +187,18 @@ export function AppShell({ children }: { children: ReactNode }) {
           <motion.div
             key={location.pathname}
             className="route-stage"
-            initial={reduceMotion ? false : { opacity: 0, y: 10, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={reduceMotion ? undefined : { opacity: 0, y: -5, filter: "blur(2px)" }}
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -5 }}
             transition={
               reduceMotion
                 ? { duration: 0 }
-                : { type: "spring", stiffness: 420, damping: 38, mass: 0.7 }
+                : {
+                    // Enter on a critically damped spring; exit on a short tween so
+                    // mode="wait" does not spend a full settle before content appears.
+                    default: { type: "spring", stiffness: 420, damping: 38, mass: 0.7 },
+                    opacity: { duration: 0.12, ease: "linear" }
+                  }
             }
           >
             {children}

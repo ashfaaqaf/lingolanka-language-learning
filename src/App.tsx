@@ -33,7 +33,9 @@ function RouteSpeechStopper() {
   const location = useLocation();
   useEffect(() => {
     speech.stop();
-    window.scrollTo(0, 0);
+    // html has scroll-behavior: smooth, so a plain scrollTo(0,0) animates the
+    // old page upward while the new route is already entering. Jump instead.
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [location.pathname]);
   return null;
 }

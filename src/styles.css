@@ -1,36 +1,36 @@
 :root {
   font-family: Manrope, "Noto Sans Sinhala", system-ui, sans-serif;
-  color: #1d2540;
-  background: #f7f6f2;
+  color: #18323a;
+  background: #fff9f0;
   font-synthesis: none;
-  --bg: #f7f6f2;
+  --bg: #fff9f0;
   --surface: #fffefa;
-  --surface-2: #eff1fb;
-  --ink: #1d2540;
-  --muted: #626c85;
-  --line: #dce1ee;
-  --brand: #4353b8;
-  --brand-2: #5367d5;
-  --brand-deep: #29357f;
-  --brand-bright: #7889f0;
-  --brand-fill: #4353b8;
-  --brand-fill-2: #596de1;
-  --accent-fill: #276b9c;
-  --teal-soft: #e9ecff;
-  --amber: #efa63c;
-  --coral: #e5677b;
-  --sky: #278dcc;
-  --red: #c43f57;
-  --success: #247f59;
-  --success-bright: #3cae78;
-  --draw-guide: rgb(83 103 213 / 0.14);
-  --draw-ink: #4b60cf;
-  --shadow: 0 20px 55px rgb(51 63 126 / 0.1);
-  --shadow-strong: 0 28px 80px rgb(36 48 112 / 0.18);
-  --glass-surface: rgb(255 254 250 / 0.72);
-  --glass-surface-strong: rgb(255 254 250 / 0.86);
+  --surface-2: #edf6f5;
+  --ink: #18323a;
+  --muted: #5e7074;
+  --line: #d8e4e1;
+  --brand: #226e78;
+  --brand-2: #2f8290;
+  --brand-deep: #164b57;
+  --brand-bright: #5faeb6;
+  --brand-fill: #226e78;
+  --brand-fill-2: #2f8290;
+  --accent-fill: #b86a16;
+  --teal-soft: #e3f1ef;
+  --amber: #e7a63a;
+  --coral: #d56d5c;
+  --sky: #3b8fb8;
+  --red: #b64343;
+  --success: #2f765b;
+  --success-bright: #4e9b76;
+  --draw-guide: rgb(47 130 144 / 0.14);
+  --draw-ink: #226e78;
+  --shadow: 0 20px 55px rgb(34 78 84 / 0.1);
+  --shadow-strong: 0 28px 80px rgb(22 75 87 / 0.17);
+  --glass-surface: rgb(255 254 250 / 0.74);
+  --glass-surface-strong: rgb(255 254 250 / 0.88);
   --glass-edge: rgb(255 255 255 / 0.68);
-  --glass-shadow: 0 18px 48px rgb(37 48 112 / 0.14);
+  --glass-shadow: 0 18px 48px rgb(22 75 87 / 0.14);
   --motion-spring: cubic-bezier(0.22, 1, 0.36, 1);
   --radius: 24px;
   --font-scale: 1;
@@ -38,64 +38,64 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0d1122;
-    --surface: #171c34;
-    --surface-2: #222947;
-    --ink: #f6f7ff;
-    --muted: #b3bad1;
-    --line: #353d60;
-    --brand: #aab4ff;
-    --brand-2: #92a1ff;
-    --brand-deep: #202d70;
-    --brand-bright: #c9ceff;
-    --brand-fill: #39489f;
-    --brand-fill-2: #5062ca;
-    --accent-fill: #285986;
-    --teal-soft: #272e52;
-    --amber: #ffc568;
-    --coral: #ff8ea0;
-    --sky: #79c6f5;
-    --red: #ff8497;
-    --success: #72d8a4;
-    --success-bright: #8be8b7;
-    --draw-guide: rgb(146 161 255 / 0.16);
-    --draw-ink: #9daaff;
+    --bg: #0e1d23;
+    --surface: #162a30;
+    --surface-2: #203a41;
+    --ink: #f8f1e7;
+    --muted: #b7c7c4;
+    --line: #31525a;
+    --brand: #94d0d4;
+    --brand-2: #6ebac2;
+    --brand-deep: #153f48;
+    --brand-bright: #b5e2e4;
+    --brand-fill: #246773;
+    --brand-fill-2: #2c7f8c;
+    --accent-fill: #a66320;
+    --teal-soft: #1c373d;
+    --amber: #f3c265;
+    --coral: #f09987;
+    --sky: #7cc2da;
+    --red: #ff9b8c;
+    --success: #86c8a5;
+    --success-bright: #9edbb9;
+    --draw-guide: rgb(110 186 194 / 0.17);
+    --draw-ink: #8bcbd1;
     --shadow: 0 20px 55px rgba(0, 0, 0, 0.26);
     --shadow-strong: 0 30px 85px rgba(0, 0, 0, 0.38);
-    --glass-surface: rgb(23 28 52 / 0.68);
-    --glass-surface-strong: rgb(23 28 52 / 0.84);
-    --glass-edge: rgb(223 228 255 / 0.2);
+    --glass-surface: rgb(22 42 48 / 0.7);
+    --glass-surface-strong: rgb(22 42 48 / 0.86);
+    --glass-edge: rgb(212 241 239 / 0.2);
     --glass-shadow: 0 22px 56px rgb(0 0 0 / 0.32);
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0d1122;
-  --surface: #171c34;
-  --surface-2: #222947;
-  --ink: #f6f7ff;
-  --muted: #b3bad1;
-  --line: #353d60;
-  --brand: #aab4ff;
-  --brand-2: #92a1ff;
-  --brand-deep: #202d70;
-  --brand-bright: #c9ceff;
-  --brand-fill: #39489f;
-  --brand-fill-2: #5062ca;
-  --accent-fill: #285986;
-  --teal-soft: #272e52;
-  --amber: #ffc568;
-  --coral: #ff8ea0;
-  --sky: #79c6f5;
-  --red: #ff8497;
-  --success: #72d8a4;
-  --success-bright: #8be8b7;
-  --draw-guide: rgb(146 161 255 / 0.16);
-  --draw-ink: #9daaff;
+  --bg: #0e1d23;
+  --surface: #162a30;
+  --surface-2: #203a41;
+  --ink: #f8f1e7;
+  --muted: #b7c7c4;
+  --line: #31525a;
+  --brand: #94d0d4;
+  --brand-2: #6ebac2;
+  --brand-deep: #153f48;
+  --brand-bright: #b5e2e4;
+  --brand-fill: #246773;
+  --brand-fill-2: #2c7f8c;
+  --accent-fill: #a66320;
+  --teal-soft: #1c373d;
+  --amber: #f3c265;
+  --coral: #f09987;
+  --sky: #7cc2da;
+  --red: #ff9b8c;
+  --success: #86c8a5;
+  --success-bright: #9edbb9;
+  --draw-guide: rgb(110 186 194 / 0.17);
+  --draw-ink: #8bcbd1;
   --shadow: 0 20px 55px rgba(0, 0, 0, 0.26);
   --shadow-strong: 0 30px 85px rgba(0, 0, 0, 0.38);
-  --glass-surface: rgb(23 28 52 / 0.68);
-  --glass-surface-strong: rgb(23 28 52 / 0.84);
-  --glass-edge: rgb(223 228 255 / 0.2);
+  --glass-surface: rgb(22 42 48 / 0.7);
+  --glass-surface-strong: rgb(22 42 48 / 0.86);
+  --glass-edge: rgb(212 241 239 / 0.2);
   --glass-shadow: 0 22px 56px rgb(0 0 0 / 0.32);
 }
 :root[data-text-size="large"] {
@@ -111,6 +111,18 @@
   --glass-surface-strong: var(--surface);
   --glass-edge: currentColor;
   --glass-shadow: none;
+}
+/* Honour the OS contrast setting, not only the in-app toggle: someone who has
+   asked their system for more contrast should not have to find Settings first. */
+@media (prefers-contrast: more) {
+  :root {
+    --line: currentColor;
+    --shadow: none;
+    --glass-surface: var(--surface);
+    --glass-surface-strong: var(--surface);
+    --glass-edge: currentColor;
+    --glass-shadow: none;
+  }
 }
 
 * {
@@ -189,11 +201,22 @@ h3,
 p {
   margin-top: 0;
 }
+/* Tracking and leading are size-specific, and the tag is not a proxy for size —
+   h2 runs from 17px (.settings-section) to 58px (.focus-card) in this app, so a
+   single per-tag value is wrong at one end or the other. These calc()s make both
+   a function of the element's own size, so every heading is right without the
+   ~35 size overrides each carrying its own pair.
+
+   Both are linear in font-size, anchored at the two extremes we actually ship:
+     tracking  -0.035em at 50px  →  +0.005em at 17px
+     leading    1.08    at 50px  →   1.36    at 17px
+   The rem term scales with the user's text-size setting; the em term with the
+   element. Change an anchor, re-solve both constants — don't nudge them singly. */
 h1,
 h2,
 h3 {
-  line-height: 1.16;
-  letter-spacing: -0.035em;
+  letter-spacing: calc(0.049rem - 0.05em);
+  line-height: calc(0.46rem + 0.933em);
 }
 h1 {
   font-size: clamp(2rem, 4vw, 3.5rem);
@@ -207,6 +230,22 @@ h3 {
 [lang="si"] {
   font-family: "Noto Sans Sinhala", Manrope, sans-serif;
   line-height: 1.85;
+  letter-spacing: 0;
+}
+/* Sinhala needs more leading than Latin for its ascenders and descenders, but
+   leading still tracks size inversely — the 1.85 above reads as a gap rather than
+   a line on a display heading. Same linear form, looser anchors: 1.45 at 50px →
+   1.70 at 17px, which stays well clear of clipping at every size we ship. */
+h1[lang="si"],
+h2[lang="si"],
+h3[lang="si"],
+[lang="si"] h1,
+[lang="si"] h2,
+[lang="si"] h3 {
+  line-height: calc(0.41rem + 1.32em);
+  /* The lang="si" rule above sets tracking to 0, but it only reaches headings by
+     inheritance and the h1/h2/h3 rule matches them directly, so it wins. Repeat it
+     here: negative tracking crowds Sinhala vowel signs and conjuncts. */
   letter-spacing: 0;
 }
 :focus-visible {
@@ -2734,7 +2773,39 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 1.2rem;
+}
+.letter-card-summary {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
   cursor: pointer;
+}
+.letter-card-summary > strong {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 2.8rem;
+}
+.letter-card-summary > strong small {
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+.letter-card-summary > span,
+.letter-card-summary p {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.letter-card-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 0.7rem;
+}
+.letter-card-actions .audio-control {
+  width: 100%;
 }
 .letter-card > strong {
   font-size: 2.8rem;
@@ -2953,6 +3024,12 @@ h3 {
 .writing-reference .giant-letter {
   font-size: 6rem;
 }
+.audio-language-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
 .writing-tool {
   margin-top: 1rem;
 }
@@ -3008,6 +3085,28 @@ h3 {
   gap: 0.5rem;
   flex: none;
 }
+.tutorial-target {
+  display: grid;
+  min-width: 92px;
+  min-height: 92px;
+  place-items: center;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--brand-2) 36%, var(--line));
+  border-radius: 18px;
+  color: var(--brand-deep);
+  background: color-mix(in srgb, var(--surface) 86%, var(--amber));
+}
+.tutorial-target small {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tutorial-target strong {
+  font-size: 2.5rem;
+  line-height: 1.25;
+}
 .button.compact {
   min-height: 44px;
   padding: 0.65rem 0.9rem;
@@ -3020,77 +3119,132 @@ h3 {
   gap: 1rem;
   align-items: stretch;
 }
-.letter-shape-preview {
+.animated-stroke-reference {
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+  min-width: 0;
+  margin: 0;
+}
+.stroke-animation-stage {
   position: relative;
-  display: grid;
-  min-height: 250px;
+  min-height: 300px;
   overflow: hidden;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--brand-2) 35%, var(--line));
-  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--brand-2) 34%, var(--line));
+  border-radius: 20px;
   background:
-    linear-gradient(color-mix(in srgb, var(--line) 38%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--line) 38%, transparent) 1px, transparent 1px),
-    color-mix(in srgb, var(--surface) 84%, transparent);
-  background-size: 50% 50%;
+    radial-gradient(
+      circle at 16% 12%,
+      color-mix(in srgb, var(--amber) 14%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--surface) 88%, transparent),
+      color-mix(in srgb, var(--teal-soft) 38%, var(--surface))
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 70%, transparent),
+    inset 0 -18px 50px color-mix(in srgb, var(--brand) 8%, transparent);
 }
-.tutorial-letter {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 0.2em;
-  font-size: clamp(7rem, 20vw, 10rem);
-  font-weight: 700;
-  line-height: 1;
-  user-select: none;
-}
-.tutorial-letter.ghost {
-  color: color-mix(in srgb, var(--brand-2) 13%, transparent);
-}
-.tutorial-letter.reveal {
-  color: var(--brand-2);
-  filter: drop-shadow(0 9px 18px color-mix(in srgb, var(--brand) 18%, transparent));
-  animation: letter-shape-reveal 4.8s cubic-bezier(0.22, 0.8, 0.2, 1) both;
-}
-.tutorial-pen {
-  position: absolute;
-  left: 10%;
-  top: 16%;
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--amber) 70%, var(--line));
-  border-radius: 50%;
-  color: var(--ink);
-  background: color-mix(in srgb, var(--surface) 92%, var(--amber));
-  box-shadow: 0 9px 24px color-mix(in srgb, var(--brand) 20%, transparent);
-  animation: tutorial-guide-pen 4.8s cubic-bezier(0.22, 0.8, 0.2, 1) both;
-}
-.tutorial-progress {
-  position: absolute;
-  left: 1rem;
-  right: 1rem;
-  bottom: 0.8rem;
-  height: 5px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--line) 72%, transparent);
-}
-.tutorial-progress span {
+.stroke-animation-stage svg {
   display: block;
   width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--brand-2), var(--amber));
-  transform-origin: left;
-  animation: tutorial-progress-fill 4.8s linear both;
+  height: 300px;
+  overflow: visible;
+  font-family: "Noto Sans Sinhala", "Iskoola Pota", sans-serif;
 }
-.letter-shape-preview.paused .tutorial-letter.reveal,
-.letter-shape-preview.paused .tutorial-pen,
-.letter-shape-preview.paused .tutorial-progress span {
+.stroke-grid-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--brand-2) 12%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 5 8;
+}
+.stroke-letter-ghost {
+  fill: color-mix(in srgb, var(--brand-2) 7%, transparent);
+  stroke: color-mix(in srgb, var(--brand-2) 11%, transparent);
+  stroke-width: 1;
+  font-size: 205px;
+  font-weight: 600;
+}
+.stroke-path-rail {
+  fill: none;
+  stroke: color-mix(in srgb, var(--brand-2) 17%, transparent);
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.stroke-demo-line {
+  fill: none;
+  stroke: var(--brand-2);
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 5px 8px color-mix(in srgb, var(--brand) 28%, transparent));
+  animation: tutorial-stroke-draw var(--stroke-duration) cubic-bezier(0.22, 0.75, 0.2, 1) forwards;
+  animation-delay: var(--stroke-delay);
+}
+.stroke-arrow-head {
+  fill: var(--amber);
+}
+.stroke-start-marker circle {
+  fill: color-mix(in srgb, var(--surface) 86%, var(--amber));
+  stroke: var(--amber);
+  stroke-width: 2;
+}
+.stroke-start-marker text {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 900;
+}
+.stroke-end-marker {
+  fill: var(--amber);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+.stroke-letter-outline-animation {
+  fill: transparent;
+  stroke: var(--brand-2);
+  stroke-width: 3;
+  stroke-dasharray: 1100;
+  stroke-dashoffset: 1100;
+  font-size: 205px;
+  font-weight: 600;
+  animation: tutorial-outline-draw var(--stroke-duration) ease-in-out forwards;
+}
+.stroke-order-chip {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.38rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--brand-2) 24%, var(--line));
+  border-radius: 999px;
+  color: var(--brand-deep);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--brand) 10%, transparent);
+  backdrop-filter: blur(12px);
+  font-size: 0.66rem;
+  font-weight: 850;
+}
+.stroke-animation-stage.paused .stroke-demo-line,
+.stroke-animation-stage.paused .stroke-letter-outline-animation {
   animation-play-state: paused;
+}
+.animated-stroke-reference figcaption {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+.animated-writing-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.animated-writing-controls .button {
+  justify-content: center;
+  min-width: 0;
 }
 .tutorial-steps-label {
   display: block;
@@ -3149,47 +3303,20 @@ h3 {
 .tutorial-ready svg {
   color: var(--brand-2);
 }
-@keyframes letter-shape-reveal {
-  0% {
-    clip-path: inset(0 100% 0 0);
-    opacity: 0.55;
-  }
-  18% {
-    opacity: 1;
-  }
-  100% {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
-}
-@keyframes tutorial-guide-pen {
-  0% {
-    left: 8%;
-    top: 15%;
-    transform: rotate(-8deg) scale(0.9);
-  }
-  34% {
-    left: 66%;
-    top: 28%;
-    transform: rotate(5deg) scale(1);
-  }
-  68% {
-    left: 34%;
-    top: 62%;
-    transform: rotate(-3deg) scale(1);
-  }
-  100% {
-    left: 78%;
-    top: 72%;
-    transform: rotate(5deg) scale(0.94);
-  }
-}
-@keyframes tutorial-progress-fill {
+@keyframes tutorial-stroke-draw {
   from {
-    transform: scaleX(0);
+    stroke-dashoffset: 1;
   }
   to {
-    transform: scaleX(1);
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes tutorial-outline-draw {
+  from {
+    stroke-dashoffset: 1100;
+  }
+  to {
+    stroke-dashoffset: 0;
   }
 }
 .writing-toolbar {
@@ -3226,6 +3353,119 @@ h3 {
   color: var(--muted);
   font-size: 0.78rem;
   margin: 0;
+}
+.trace-accuracy {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: clamp(1rem, 3vw, 1.3rem);
+  border: 1px solid color-mix(in srgb, var(--brand-2) 34%, var(--line));
+  border-radius: 20px;
+  background:
+    radial-gradient(
+      circle at 92% 12%,
+      color-mix(in srgb, var(--amber) 16%, transparent),
+      transparent 32%
+    ),
+    color-mix(in srgb, var(--surface) 86%, var(--teal-soft));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent);
+  animation: trace-feedback-arrive 0.48s var(--motion-spring);
+}
+.trace-accuracy header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.trace-accuracy h3 {
+  margin: 0.12rem 0 0;
+  font-size: 1.15rem;
+}
+.trace-score {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  place-items: center;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--brand-deep);
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+.trace-accuracy-excellent .trace-score,
+.trace-accuracy-close .trace-score {
+  color: var(--success);
+}
+.trace-accuracy-developing .trace-score {
+  color: var(--accent-fill);
+}
+.trace-accuracy-retry .trace-score {
+  color: var(--red);
+}
+.trace-accuracy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.trace-accuracy-metric {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+}
+.trace-accuracy-metric span {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.trace-accuracy-metric span strong {
+  color: var(--ink);
+}
+.trace-accuracy-metric progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  accent-color: var(--brand-2);
+}
+.trace-accuracy-metric progress::-webkit-progress-bar {
+  background: color-mix(in srgb, var(--line) 64%, transparent);
+  border-radius: 999px;
+}
+.trace-accuracy-metric progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright));
+}
+.trace-privacy-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+.trace-privacy-note svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  color: var(--success);
+}
+@keyframes trace-feedback-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .listening-card {
   text-align: center;
@@ -3692,7 +3932,7 @@ h3 {
   background: #fff;
 }
 .progress-overview .progress-ring div {
-  color: #1d2540;
+  color: #18323a;
 }
 .badge-grid {
   display: grid;
@@ -3804,13 +4044,13 @@ h3 {
   overflow: hidden;
   border: 1px solid rgb(0 0 0 / 0.12);
   border-radius: 10px;
-  background: #f7f6f2;
+  background: #fff9f0;
 }
 .theme-swatch i:first-child {
   position: absolute;
   inset: 0 auto 0 0;
   width: 28%;
-  background: #4353b8;
+  background: #226e78;
 }
 .theme-swatch i:last-child {
   position: absolute;
@@ -3820,23 +4060,23 @@ h3 {
   box-shadow: 0 4px 10px rgb(51 63 126 / 0.15);
 }
 .theme-swatch.dark {
-  background: #0d1122;
+  background: #0e1d23;
 }
 .theme-swatch.dark i:first-child {
-  background: #39489f;
+  background: #246773;
 }
 .theme-swatch.dark i:last-child {
-  background: #222947;
+  background: #203a41;
 }
 .theme-swatch.system {
-  background: linear-gradient(90deg, #f7f6f2 50%, #0d1122 50%);
+  background: linear-gradient(90deg, #fff9f0 50%, #0e1d23 50%);
 }
 .theme-swatch.system i:first-child {
   display: none;
 }
 .theme-swatch.system i:last-child {
   inset: 12px 10px;
-  background: linear-gradient(90deg, #fffefa 50%, #222947 50%);
+  background: linear-gradient(90deg, #fffefa 50%, #203a41 50%);
 }
 .settings-card label > span {
   display: flex;
@@ -4501,6 +4741,10 @@ h3 {
   .tutorial-heading {
     flex-direction: column;
   }
+  .tutorial-target {
+    width: 100%;
+    grid-template-columns: 1fr auto;
+  }
   .tutorial-controls {
     width: 100%;
   }
@@ -4510,8 +4754,10 @@ h3 {
   .tutorial-layout {
     grid-template-columns: 1fr;
   }
-  .letter-shape-preview {
-    min-height: 230px;
+  .stroke-animation-stage,
+  .stroke-animation-stage svg {
+    min-height: 250px;
+    height: 250px;
   }
 }
 
@@ -4654,8 +4900,13 @@ h3 {
     padding: 1rem;
     border-radius: 18px;
   }
-  .tutorial-letter {
-    font-size: 8rem;
+  .stroke-animation-stage,
+  .stroke-animation-stage svg {
+    min-height: 260px;
+    height: 260px;
+  }
+  .animated-writing-controls {
+    grid-template-columns: 1fr;
   }
   .tutorial-ready {
     margin: 0.9rem -1rem -1rem;
@@ -4670,6 +4921,9 @@ h3 {
   .writing-footer {
     flex-direction: column;
     align-items: stretch;
+  }
+  .trace-accuracy-grid {
+    grid-template-columns: 1fr;
   }
   .filter-bar {
     align-items: stretch;
@@ -4751,6 +5005,27 @@ h3 {
   }
 }
 
+/* Press feedback. Every tap target acknowledges pointer-down, not just release —
+   .button, .icon-button and the lesson choices already did, these did not. On a
+   touch-first PWA the :hover states below never fire, so this is the only
+   confirmation a learner gets that the tap registered. */
+.nav-link:active,
+.bottom-nav a:active,
+.module-lessons a:active,
+.card-heading a:active,
+.collapse-button:active,
+.option-list button:active:not(:disabled),
+.chip-options button:active:not(:disabled) {
+  transform: scale(0.97);
+  transition-duration: 0.08s;
+}
+.nav-link:active {
+  background: color-mix(in srgb, var(--teal-soft) 88%, transparent);
+}
+.collapse-button:active {
+  color: var(--brand);
+}
+
 @media (hover: none) {
   .button:hover:not(:disabled) {
     transform: none;
@@ -4758,9 +5033,12 @@ h3 {
   .direction-card:hover {
     transform: none;
   }
+  .nav-link:hover {
+    transform: none;
+  }
 }
 
-@media (prefers-reduced-transparency: reduce) {
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .sidebar,
   .bottom-nav,
   .lesson-header,
@@ -4768,12 +5046,14 @@ h3 {
   .audio-control,
   .button.secondary,
   .icon-button,
-  .course-pill {
+  .course-pill,
+  .choice {
     background: var(--surface);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  .liquid-glass::before {
+  .liquid-glass::before,
+  .liquid-choice::before {
     display: none;
   }
 }
@@ -4795,6 +5075,10 @@ h3 {
     transform: none !important;
     will-change: auto;
   }
+  .stroke-demo-line,
+  .stroke-letter-outline-animation {
+    stroke-dashoffset: 0 !important;
+  }
 }
 .reduced-motion *,
 .reduced-motion *::before,
@@ -4808,4 +5092,8 @@ h3 {
   filter: none !important;
   transform: none !important;
   will-change: auto;
+}
+.reduced-motion .stroke-demo-line,
+.reduced-motion .stroke-letter-outline-animation {
+  stroke-dashoffset: 0 !important;
 }
