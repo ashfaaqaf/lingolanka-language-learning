@@ -24,10 +24,13 @@ Run `node scripts/audit_sinhala_text.mjs` to reproduce. It audits 267 web and 8 
 
 Conjunct rules are taken from [The Unicode Standard ch. 13, "Sinhala"](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-13/): an al-lakuna (`U+0DCA`) is **always visible and does not join** unless combined with ZWJ (`U+200D`); the sequence `<al-lakuna, ZWJ>` produces ligated conjuncts such as the yansaya (post-base `ය`) and rakaransaya (below-base `ර`).
 
-### Tier 1 — self-evident, no Sinhala expertise required
+### Tier 1 — self-evident, no Sinhala expertise required — RESOLVED 2026-08-10
 
-- **`ද්‍ය` is encoded two different ways in the same corpus.** Three entries use `<al-lakuna, ZWJ>` — `වෛද්‍යවරයා` (doctor), `විද්‍යුත් තැපෑල` (email), `උද්‍යානය` (park) — while `උද්යෝගිමත්` (excited, `src/data/content.ts:259`) omits the ZWJ, so its al-lakuna renders visibly instead of ligating. Whichever spelling is correct, the corpus contradicts itself and the odd one out is the single entry. An educator should confirm the target form before either is changed.
-- **The two apps translate `කොහොමද?` differently.** Web teaches "how?"; mobile teaches "how are you?" (`mobile/src/data/curriculum.ts:40`). Both are defensible readings, but a learner using both apps is taught two different things. Pick one and align.
+- **`ද්‍ය` was encoded two different ways in the same corpus.** Three entries used `<al-lakuna, ZWJ>` — `වෛද්‍යවරයා` (doctor), `විද්‍යුත් තැපෑල` (email), `උද්‍යානය` (park) — while `උද්යෝගිමත්` (excited) omitted the ZWJ, so its al-lakuna rendered visibly instead of ligating. **Fixed:** ZWJ inserted, `U+0DAF U+0DCA U+0DBA` → `U+0DAF U+0DCA U+200D U+0DBA`, bringing the outlier into line with the other three.
+
+  **The basis for this fix is internal consistency only, and an educator should still confirm it.** Web sources cannot settle it: ZWJ is invisible, so a dictionary entry renders identically whether or not it is present, and searching for the word returns the same glyphs either way. What is certain is that the corpus previously contradicted itself; whether `උද්‍යෝගිමත්` or `උද්යෝගිමත්` is the standard spelling is still an open question, now applied consistently rather than inconsistently.
+
+- **The two apps translated `කොහොමද?` differently.** Web taught "how?"; mobile taught "how are you?". **Fixed** in favour of the web mapping, which the corpus supports directly: `src/data/content.ts:273` teaches `කොහොමද?` = "how?" and `:22` teaches `ඔබට කොහොමද?` = "how are you?", and the conversation at `:638` uses `ආයුබෝවන්! ඔබට කොහොමද?` for the greeting. Mobile now teaches `ඔබට කොහොමද?` / `obaṭa kohomada?` for "how are you?", so both apps keep the distinction between the question word and the greeting.
 
 ### Tier 2 — needs a Sinhala educator to decide
 

@@ -256,7 +256,7 @@ const wordGroups: Record<string, WordTuple[]> = {
     ["angry", "තරහ", "taraha"],
     ["afraid", "බය", "baya"],
     ["tired", "මහන්සි", "mahansi"],
-    ["excited", "උද්යෝගිමත්", "udyōgimat"],
+    ["excited", "උද්‍යෝගිමත්", "udyōgimat"],
     ["calm", "සන්සුන්", "sansun"],
     ["worried", "කනස්සල්ලෙන්", "kanassallen"],
     ["surprised", "පුදුමයෙන්", "pudumayen"],
