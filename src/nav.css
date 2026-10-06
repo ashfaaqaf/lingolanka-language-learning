@@ -1,0 +1,619 @@
+/* ============================================================
+   Navigation: a global bar across the top, the way apple.com does
+   it. Wide screens spread the sections across one thin translucent
+   strip; narrow screens fold them into a menu under the bar.
+   Imported after styles.css, so it has the final word on the header.
+   ============================================================ */
+
+:root {
+  --apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+  --out: cubic-bezier(0.22, 1, 0.36, 1);
+  --nav-ink-soft: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+
+html {
+  scroll-padding-top: calc(var(--header-h, 96px) + 16px);
+}
+body.menu-locked {
+  overflow: hidden;
+}
+
+/* ---------- the bar (all widths) ---------- */
+
+.globalnav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  transition: background-color 0.3s var(--apple);
+}
+.globalnav.menuOpen {
+  background: var(--bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  max-width: 1024px;
+  height: 52px;
+  margin: 0 auto;
+  padding: 0 clamp(12px, 4vw, 22px);
+}
+
+.globalnav .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.globalnav .brand-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(145deg, var(--brand-fill-2), var(--brand-fill));
+  color: #fff;
+}
+.globalnav .brand-mark svg {
+  width: 17px;
+  height: 17px;
+}
+.brandText {
+  display: grid;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.brandText small {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.siteNav {
+  display: none;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- the status strip ---------- */
+
+.island {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 clamp(12px, 4vw, 22px) 9px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+.islandCourse {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.islandCourse strong {
+  color: var(--brand);
+}
+.islandText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.islandText b {
+  color: var(--ink);
+  font-weight: 650;
+}
+.islandBar {
+  flex: none;
+  width: 72px;
+  height: 4px;
+  margin-left: auto;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--line);
+}
+.islandBar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand-2);
+  transition: width 0.6s var(--out);
+}
+
+/* ---------- inline links (wide) ---------- */
+
+@media (min-width: 900px) {
+  /* One row, 44px tall, everything spread edge to edge across 1024px. */
+  .topRow {
+    height: 44px;
+    padding: 0 8px;
+  }
+  .globalnav .brand {
+    flex: none;
+    padding: 0 8px;
+  }
+  .globalnav .brand-mark {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+  }
+  .globalnav .brand-mark svg {
+    width: 14px;
+    height: 14px;
+  }
+  .brandText {
+    display: none;
+  }
+
+  .siteNav {
+    display: block;
+    flex: 1;
+  }
+  .siteNav ul {
+    display: flex;
+    justify-content: space-between;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .navLink {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 8px;
+    color: var(--nav-ink-soft);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.3s var(--apple);
+  }
+  .navLink:hover,
+  .navLink.on {
+    color: var(--ink);
+  }
+  /* Weight as well as colour, so the current section is not shown by colour alone. */
+  .navLink.on {
+    font-weight: 650;
+  }
+  .navLink:focus-visible {
+    outline-offset: -6px;
+    border-radius: 6px;
+  }
+  [lang="si"] .navLink {
+    font-size: 12.5px;
+  }
+
+  .navIcon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    color: var(--nav-ink-soft);
+    transition: color 0.3s var(--apple);
+  }
+  .navIcon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .navIcon:hover,
+  .navIcon.on {
+    color: var(--ink);
+  }
+
+  /* The status strip sits under the bar, like a product's local nav. */
+  .island {
+    padding: 0 16px 8px;
+  }
+}
+
+/* ---------- dropdowns (wide, apple.com style) ---------- */
+
+.flyout,
+.flyScrim,
+.flyToggle {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .navItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Hidden until the link is focused, then a small chevron that opens the
+     panel from the keyboard, the same affordance apple.com uses. */
+  .flyToggle {
+    position: absolute;
+    right: -8px;
+    display: grid;
+    place-items: center;
+    width: 14px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .flyToggle svg {
+    width: 8px;
+    height: 6px;
+    transition: transform 0.3s var(--apple);
+  }
+  .flyToggle[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+  .navItem:focus-within .flyToggle {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* While a panel is open the bar turns solid, so bar and panel read as one sheet. */
+  .globalnav.flyOpen {
+    background: var(--bg);
+  }
+
+  .flyout {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    display: block;
+    height: 0;
+    overflow: hidden;
+    background: var(--bg);
+    transition: height 0.32s var(--apple) 0.06s;
+  }
+  .flyout.open {
+    height: var(--fly-h, 0px);
+    box-shadow: 0 1px 0 var(--line);
+    transition: height 0.36s var(--apple);
+  }
+
+  .flyInner {
+    display: flex;
+    gap: clamp(44px, 6vw, 88px);
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 38px 8px 64px 40px;
+    transition: opacity 0.18s ease;
+  }
+  .flyout:not(.open) .flyInner {
+    opacity: 0;
+  }
+
+  .flyCol ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .flyTitle {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  .flyout a {
+    display: block;
+    padding: 5px 0;
+    color: var(--nav-ink-soft);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+  .flyPrimary a {
+    padding: 4px 0 7px;
+    color: var(--ink);
+    font-size: 24px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  /* Sinhala needs the extra leading at display size. */
+  [lang="si"] .flyPrimary a {
+    font-size: 21px;
+    letter-spacing: 0;
+    line-height: 1.55;
+  }
+  .flyout a small {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+  .flyout a:hover {
+    color: var(--brand);
+  }
+  .flyout a:focus-visible {
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Each link drops in a moment after the one before it, down the columns. */
+  .flyout.open li {
+    animation: flyIn 0.42s var(--apple) calc(70ms + var(--i) * 16ms) both;
+  }
+  .flyout.open .flyTitle {
+    animation: flyIn 0.42s var(--apple) 40ms both;
+  }
+  @keyframes flyIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  /* The page behind steps back while a panel is open. */
+  .flyScrim {
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    display: block;
+    background: rgb(0 0 0 / 0.28);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.32s var(--apple),
+      visibility 0s linear 0.32s;
+  }
+  .flyScrim.open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.36s var(--apple);
+  }
+}
+
+/* ---------- menu button (narrow) ---------- */
+
+.menuBtn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 74%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    background-color 0.3s ease;
+}
+.menuBtn:active {
+  transform: scale(0.92);
+}
+
+/* Two lines that cross into an X. */
+.menuGlyph {
+  position: relative;
+  width: 18px;
+  height: 12px;
+}
+.menuGlyph i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.6px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform 0.45s var(--apple),
+    top 0.45s var(--apple);
+}
+.menuGlyph i:first-child {
+  top: 2px;
+}
+.menuGlyph i:last-child {
+  top: 8.4px;
+}
+.menuBtn.open .menuGlyph i:first-child {
+  top: 5.2px;
+  transform: rotate(45deg);
+}
+.menuBtn.open .menuGlyph i:last-child {
+  top: 5.2px;
+  transform: rotate(-45deg);
+}
+
+/* Declared after .menuBtn and .menuPanel on purpose: an earlier media block
+   loses to their later base rules at equal specificity. */
+@media (min-width: 900px) {
+  .menuBtn,
+  .menuPanel {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  /* Settings lives in the menu on narrow screens. */
+  .settingsGear {
+    display: none;
+  }
+}
+
+/* ---------- menu panel (narrow) ---------- */
+
+.menuPanel {
+  position: fixed;
+  inset: var(--header-h, 96px) 0 0;
+  z-index: 60;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px clamp(16px, 4.5vw, 28px) calc(28px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  clip-path: inset(0 0 100% 0);
+  visibility: hidden;
+  transition:
+    clip-path 0.5s var(--apple),
+    visibility 0s linear 0.5s;
+}
+.menuPanel.open {
+  clip-path: inset(0 0 0 0);
+  visibility: visible;
+  transition:
+    clip-path 0.6s var(--apple),
+    visibility 0s;
+}
+.menuPanel ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menuPanel nav > ul > li,
+.menuGroup {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s var(--apple);
+}
+.menuPanel.open nav > ul > li,
+.menuPanel.open .menuGroup {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.45s ease,
+    transform 0.6s var(--out);
+  transition-delay: calc(90ms + var(--i) * 40ms);
+}
+
+.menuLink {
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+  border-bottom: 1px solid var(--line);
+  color: var(--nav-ink-soft);
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+[lang="si"] .menuLink {
+  font-size: 22px;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+.menuLink.on {
+  color: var(--brand);
+}
+.menuLink:active {
+  opacity: 0.55;
+}
+
+.menuGroup {
+  margin-top: 26px;
+}
+.menuGroup h2 {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.menuGroup ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+}
+.menuGroup a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.menuGroup a.active {
+  color: var(--brand);
+}
+
+/* ---------- accessibility settings ---------- */
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .globalnav,
+  .flyScrim {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .flyScrim {
+    background: rgb(0 0 0 / 0.5);
+  }
+}
+:root.high-contrast .globalnav {
+  background: var(--bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flyout,
+  .flyInner,
+  .flyScrim,
+  .menuGlyph i,
+  .menuPanel,
+  .menuPanel nav > ul > li,
+  .menuGroup {
+    transition: none !important;
+  }
+  .flyout.open li,
+  .flyout.open .flyTitle {
+    animation: none;
+  }
+}

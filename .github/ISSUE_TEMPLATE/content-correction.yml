@@ -1,0 +1,21 @@
+name: Language content correction
+description: Suggest a Sinhala, English or transliteration correction
+title: "[Content]: "
+labels: ["content"]
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: Current entry and context
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Register, region and supporting rationale

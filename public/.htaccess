@@ -1,0 +1,11 @@
+# InfinityFree serves every file with a 30-day max-age by default, so browsers
+# kept an old index.html for weeks after a deploy. The entry page and the
+# service worker must always be revalidated; the hashed files under assets/
+# can stay cached, because a new build gives them new names.
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|sw\.js)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+</IfModule>

@@ -1,0 +1,83 @@
+name: Validate and deploy to InfinityFree
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infinityfree-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Validate, build and upload
+    runs-on: ubuntu-latest
+    environment:
+      name: infinityfree-production
+      url: https://lingolanka.page.gd/#/dashboard
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test -- --run
+
+      - name: Build production app
+        run: npm run build
+        env:
+          LINGOLANKA_BASE_PATH: /
+
+      - name: Install FTP client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes lftp
+
+      - name: Deploy dist to InfinityFree
+        env:
+          FTP_HOST: ${{ secrets.INFINITYFREE_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.INFINITYFREE_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.INFINITYFREE_FTP_PASSWORD }}
+          # lingolanka.page.gd is an addon domain on a hosting account that also
+          # serves other domains, so its document root is its own folder. The
+          # account-level /htdocs/ belongs to the account's main domain: deploying
+          # there went green on every run while the live site never changed.
+          REMOTE_DIR: /lingolanka.page.gd/htdocs/
+        run: |
+          test -n "$FTP_HOST"
+          test -n "$FTP_USERNAME"
+          test -n "$FTP_PASSWORD"
+
+          # `cls -d` fails the run if the target folder does not already exist.
+          # Without it, mirror would create a new folder and report success to
+          # nowhere again.
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_HOST" <<LFTP_COMMANDS
+          set cmd:fail-exit true
+          set ftp:passive-mode true
+          set ftp:ssl-allow false
+          set net:max-retries 3
+          set net:timeout 30
+          set xfer:clobber true
+          cls -d $REMOTE_DIR
+          mirror --reverse --delete --no-perms --parallel=4 --verbose dist/ $REMOTE_DIR
+          bye
+          LFTP_COMMANDS
