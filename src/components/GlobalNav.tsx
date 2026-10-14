@@ -480,7 +480,7 @@ export function GlobalNav() {
             )}
           </span>
           <span className="islandBar" aria-hidden="true">
-            <i style={{ width: `${course.percent}%` }} />
+            <i style={{ transform: `translateX(${(course.percent) - 100}%)` }} />
           </span>
         </div>
 

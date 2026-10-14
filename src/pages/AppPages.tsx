@@ -638,7 +638,7 @@ export function LessonPage() {
           <X />
         </button>
         <div className="lesson-progress">
-          <i style={{ width: `${Math.min(100, (step / lesson.exercises.length) * 100)}%` }} />
+          <i style={{ transform: `translateX(${Math.min(100, (step / lesson.exercises.length) * 100) - 100}%)` }} />
         </div>
         <span>
           {Math.min(step + 1, lesson.exercises.length)} / {lesson.exercises.length}
