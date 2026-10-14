@@ -40,6 +40,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = profile.settings.theme;
+    // Status bar follows the in-app theme; "system" lets each tag's media query pick.
+    const barColor = { light: "#fff9f0", dark: "#0e1d23" };
+    document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((meta) => {
+      const scheme = meta.media.includes("dark") ? "dark" : "light";
+      meta.content = barColor[profile.settings.theme === "system" ? scheme : profile.settings.theme];
+    });
     root.dataset.textSize = profile.settings.textSize;
     root.classList.toggle("high-contrast", profile.settings.highContrast);
     root.classList.toggle("reduced-motion", profile.settings.reducedMotion);

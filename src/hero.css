@@ -310,14 +310,18 @@
   z-index: 1;
   transition: transform 0.5s var(--apple);
 }
-.cineCta:hover {
-  transform: scale(1.04);
-  box-shadow:
-    0 18px 54px rgb(95 174 182 / 0.38),
-    0 0 0 1px rgb(255 255 255 / 0.2);
+@media (hover: hover) and (pointer: fine) {
+  .cineCta:hover {
+    transform: scale(1.04);
+    box-shadow:
+      0 18px 54px rgb(95 174 182 / 0.38),
+      0 0 0 1px rgb(255 255 255 / 0.2);
+  }
 }
-.cineCta:hover > span[aria-hidden] {
-  transform: translateX(4px);
+@media (hover: hover) and (pointer: fine) {
+  .cineCta:hover > span[aria-hidden] {
+    transform: translateX(4px);
+  }
 }
 .cineCta:active,
 .cineGhost:active {
@@ -337,10 +341,12 @@
   transform: translateX(-110%);
   animation: cineShine 1.1s var(--apple) 2.1s both;
 }
-.cineCta:hover .cineShine {
-  animation: none;
-  transform: translateX(110%);
-  transition: transform 0.8s var(--apple);
+@media (hover: hover) and (pointer: fine) {
+  .cineCta:hover .cineShine {
+    animation: none;
+    transform: translateX(110%);
+    transition: transform 0.8s var(--apple);
+  }
 }
 
 .cineGhost {
@@ -350,9 +356,11 @@
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
-.cineGhost:hover {
-  border-color: rgb(255 255 255 / 0.36);
-  background: rgb(255 255 255 / 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .cineGhost:hover {
+    border-color: rgb(255 255 255 / 0.36);
+    background: rgb(255 255 255 / 0.12);
+  }
 }
 
 .cine :focus-visible {
