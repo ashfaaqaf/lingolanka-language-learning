@@ -8,6 +8,7 @@ import type {
   Lesson,
   VocabularyItem
 } from "../types";
+import { advancedLevels } from "./advanced";
 
 type WordTuple = [english: string, sinhala: string, transliteration: string];
 
@@ -482,7 +483,7 @@ function createCourse(direction: LearningDirection): Course {
     "Beginner",
     "Elementary",
     "Everyday Communication",
-    "Intermediate Foundations"
+    "Confident Communication"
   ];
   return {
     id: direction,
@@ -500,10 +501,12 @@ function createCourse(direction: LearningDirection): Course {
   };
 }
 
-export const courses: Course[] = [
-  createCourse("english-to-sinhala"),
-  createCourse("sinhala-to-english")
-];
+const englishToSinhala = createCourse("english-to-sinhala");
+// Intermediate and Expert are grammar levels built from sourced sentences
+// (data/advanced.ts). They exist only for learners of Sinhala.
+englishToSinhala.levels.push(...advancedLevels);
+
+export const courses: Course[] = [englishToSinhala, createCourse("sinhala-to-english")];
 
 const sinhalaCharacters = [
   ["අ", "a", "a as in about", "අම්මා", "mother"],

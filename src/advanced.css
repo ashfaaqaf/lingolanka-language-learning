@@ -1,0 +1,193 @@
+/* ============================================================
+   Intermediate/Expert teaching screens and the Sources page.
+   Existing palette tokens only, so light, dark and high
+   contrast inherit their checked values.
+   ============================================================ */
+
+.lesson-teaching {
+  display: grid;
+  gap: 1.6rem;
+}
+.lesson-teaching > header {
+  text-align: center;
+}
+.lesson-teaching > header p {
+  max-width: 34rem;
+  margin: 0.4rem auto 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.lesson-teaching .lesson-teaching-form {
+  color: var(--brand);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.7;
+}
+.lesson-teaching section {
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.lesson-teaching h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.9rem;
+  font-size: 1.05rem;
+}
+.lesson-teaching h2 svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--brand);
+}
+.lesson-teaching [lang="si"] {
+  font-family: var(--font-sinhala);
+  line-height: 1.75;
+}
+.lesson-teaching > .button {
+  justify-self: center;
+}
+
+.teaching-points {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding-left: 1.3rem;
+}
+.teaching-points p {
+  margin: 0 0 0.2rem;
+  line-height: 1.6;
+}
+.teaching-points [lang="si"] {
+  font-weight: 700;
+}
+
+.teaching-examples {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.teaching-examples li {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand-fill);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--teal-soft) 35%, var(--surface));
+}
+.teaching-examples p {
+  margin: 0;
+}
+.teaching-si {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.teaching-translit {
+  color: var(--muted);
+  font-style: italic;
+}
+.teaching-en {
+  margin-top: 0.15rem;
+}
+.teaching-example-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+.teaching-note {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Citations: small, but a real link with a visible underline, so the source is
+   one tap away and never signalled by colour alone. */
+.cite {
+  display: inline-block;
+  color: var(--brand);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sources-list {
+  display: grid;
+  gap: 1rem;
+}
+.source-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  scroll-margin-top: 6rem;
+}
+.source-card > svg {
+  color: var(--brand);
+}
+.source-card h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+.source-card .source-meta {
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+}
+.source-card dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.3rem 0.9rem;
+  margin: 0 0 0.7rem;
+}
+.source-card dt {
+  font-weight: 800;
+}
+.source-card dd {
+  margin: 0;
+}
+.source-card a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--brand);
+  font-weight: 700;
+}
+.source-card a svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.sources-ledger {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+.sources-ledger table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.sources-ledger th,
+.sources-ledger td {
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+@media (max-width: 640px) {
+  .lesson-teaching section {
+    padding: 1rem;
+  }
+  .source-card {
+    grid-template-columns: 1fr;
+  }
+  .source-card dl {
+    grid-template-columns: 1fr;
+  }
+}

@@ -9,6 +9,7 @@ import { InstallPage } from "./pages/InstallPage";
 import { LandingPage } from "./pages/LandingPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { PronunciationPage } from "./pages/PronunciationPage";
+import { SourcesPage } from "./pages/SourcesPage";
 import {
   AboutPage,
   AchievementsPage,
@@ -191,6 +192,14 @@ export default function App() {
           element={
             <ShellRoute>
               <AboutPage />
+            </ShellRoute>
+          }
+        />
+        <Route
+          path="/sources"
+          element={
+            <ShellRoute>
+              <SourcesPage />
             </ShellRoute>
           }
         />

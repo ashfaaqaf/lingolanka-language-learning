@@ -82,7 +82,7 @@ These notes introduce Sinhala words the curriculum did not previously teach (for
 | සහෝදරයා / සහෝදරිය | How it's said | Formal; speech uses අයියා, මල්ලි, අක්කා, නංගි, also as friendly address                                    |
 | නැන්දා            | Meaning       | Father's sister (also mother's brother's wife, mother-in-law); mother's sister is පුංචි / ලොකු අම්මා       |
 | මාමා              | Meaning       | Mother's brother (also father's sister's husband, father-in-law); father's brother is බාප්පා / ලොකු තාත්තා |
-| කාන්තාව           | Use with care | Respectful; ගෑනි is blunt and can insult                                                                   |
+| කාන්තාව           | Use with care | Respectful; ගෑනි (singular) insulting, say මෙයා / එයා — FSI p. 83 §3.28                                    |
 | ගුරුවරයා          | How it's said | Students say "sir" / "miss"; respectful written form ගුරුතුමා                                              |
 | බල්ලා / වඳුරා     | Use with care | Insults when said to or about a person                                                                     |
 | කළු / සුදු        | Use with care | Skin-colour use is sensitive; සුද්දා can be disparaging                                                    |
@@ -96,3 +96,36 @@ These notes introduce Sinhala words the curriculum did not previously teach (for
 - **The corpus holds only 17 real sentences.** Conversation lines repeat across the 12 conversations, and every grammar topic shows the same two examples ("I read a book", "She is at home"). Both need authored, reviewed sentences.
 - **Part of speech:** `lonely = තනිකම` is a noun ("loneliness") and `sad = දුකෙන්` is adverbial ("sadly"), while the English glosses are adjectives.
 - **The "temple" card still glosses පන්සල as plain "temple"** above the note. Changing the English text would orphan its recorded audio clip, so the gloss should change together with a new recording.
+
+## Intermediate and Expert levels — pending educator review (2026-11-01)
+
+`src/data/advanced.ts` adds two grammar levels to the Sinhala course: **Intermediate** (8 lessons) and **Expert** (7 lessons). Unlike the word-list levels, each lesson explains a rule and practises it on real sentences.
+
+**Ledger rule.** Every Sinhala sentence is quoted from MacDougall & de Abrew, *Sinhala: Basic Course, Module 3: Sinhala Structures* (Foreign Service Institute, 1979; ERIC ED192571), a U.S. government work in the public domain, with its printed page. English translations are the course's own. Explanations are in LingoLanka's words and each cites the page or Wikipedia section (revision 1378840435) its fact comes from. `src/test/advanced.test.ts` fails if a sentence lacks a reusable source and page, if Sinhala is not NFC, or if a vowel sign is left without a consonant. Sentences whose English could not be confirmed on the scan were left out.
+
+**Spelling.** The 1979 typewriter print is normalised only where today's standard differs: පුලුවනි → පුළුවනි, එලවන්න/එලවලු → එළවන්න/එළවළු, නැ → නෑ, බැ → බෑ (බැරි kept), ලඟ → ළඟ, පොලොන්නරුව → පොළොන්නරුව. Everything else is as printed, including the course's spoken forms (උනා, වැඩියෙ, ඉස්කෝලේ). Please check each normalisation.
+
+**Left out on purpose** (no source in hand): literary verb endings, monastic and other honorific vocabulary, the තුමා suffix (its Wikipedia section is unreferenced), නම් conditionals (examples found but their translations were not confirmed).
+
+**For review:**
+
+- The course translates එයා as "he"; the lessons keep the course's English and add a note that එයා means "that person" and is used for anyone (FSI p. 83).
+- The FSI sentences reflect 1970s usage and an American-diplomat audience (මහත්තයා, "the gentleman", for the listener). Flag any that now sound dated.
+- Sentence audio uses the device's Sinhala voice; there are no recorded clips for these sentences yet.
+- Level 5 was renamed from "Intermediate Foundations" to "Confident Communication" so it is not confused with the new Intermediate level.
+
+### Transliteration is now generated
+
+`src/lib/transliterate.ts` produces the ISO 15919-style romanisation the curriculum uses, so new content does not need hand-typed transliteration. It matches 257 of the 264 hand-written entries. The 7 differences, for a decision on which form to keep:
+
+| Word    | Hand-written | Generated  | Difference                                            |
+| ------- | ------------ | ---------- | ----------------------------------------------------- |
+| පවුල    | paula        | pavula     | ව between vowels written or dropped                   |
+| ගවුම    | gauma        | gavuma     | same                                                  |
+| කවුද    | kauda        | kavuda     | same                                                  |
+| තැඹිලි  | tæmbili      | tæm̆bili    | prenasalised ඹ marked with a breve or not             |
+| හැන්ද   | hæn̆da        | hænda      | hand entry marks ඳ on a word spelled with න් + ද      |
+| බිංදුව  | binduva      | biṅduva    | anusvara ං: hand entry n, generated ṅ (it is /ŋ/)       |
+| බැංකුව  | bænkuva      | bæṅkuva    | same                                                  |
+
+The generator writes ව as v and ං as ṅ everywhere; the hand entries are not changed by this work.

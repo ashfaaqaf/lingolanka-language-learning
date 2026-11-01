@@ -12,11 +12,15 @@
  * it can be checked by someone who is not a programmer.
  */
 
+import type { Citation } from "./sources";
+
 export type UsageKind = "meaning" | "respect" | "register";
 
 export interface UsageNote {
   kind: UsageKind;
   note: string;
+  /** Where a published source says the same, when one does. */
+  cite?: Citation;
 }
 
 export const usageNotes: Record<string, UsageNote> = {
@@ -37,7 +41,8 @@ export const usageNotes: Record<string, UsageNote> = {
   },
   "ඔබට කොහොමද?": {
     kind: "register",
-    note: "ඔබ (oba) is the polite “you”, but it sounds formal in conversation. Many speakers avoid “you” altogether and use the person's name or a family word such as අක්කා (akkā) or අයියා (ayiyā). Never use උඹ (umba) or තෝ (tō) with strangers or elders: they are intimate at best and rude at worst."
+    note: "ඔබ (oba) is the polite “you”, but it sounds formal in conversation. Sinhala has no neutral “you” that suits everyone, so many speakers avoid it and use the person's name, their role, or a family word such as අක්කා (akkā) or අයියා (ayiyā). Never use උඹ (umba) or තෝ (tō) with strangers or elders: they are intimate at best and rude at worst.",
+    cite: { source: "fsi-structures", at: "p. 83, §3.28" }
   },
   කරුණාකර: {
     kind: "register",
@@ -65,7 +70,8 @@ export const usageNotes: Record<string, UsageNote> = {
   // ---- people ------------------------------------------------------------
   කාන්තාව: {
     kind: "respect",
-    note: "The respectful word. Avoid ගෑනි (gǣni) about anyone you do not know well: it is blunt and can be insulting."
+    note: "The respectful word. ගෑනි (gǣni), said of one woman, is considered insulting. When talking about a woman, say මෙයා (meyā, “this person”) or එයා (eyā, “that person”).",
+    cite: { source: "fsi-structures", at: "p. 83, §3.28" }
   },
   ගුරුවරයා: {
     kind: "register",

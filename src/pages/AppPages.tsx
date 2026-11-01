@@ -40,6 +40,8 @@ import { db, exportBackup, importBackup, loadProfile, resetDatabase } from "../l
 import { speech } from "../lib/speech";
 import { RealExample, UsageNote } from "../components/UsageNote";
 import { usageNoteFor } from "../data/usageNotes";
+import { advancedLessonById } from "../data/advanced";
+import { LessonTeaching } from "../components/LessonTeaching";
 import { calculateStreak, scheduleReview, todayKey, type ReviewRating } from "../lib/utils";
 import type { AlphabetEntry, Exercise, LearningDirection, VocabularyState } from "../types";
 import { AudioButton } from "../components/AudioButton";
@@ -601,6 +603,11 @@ export function LearnPage() {
 
 export function LessonPage() {
   const { lessonId } = useParams();
+  // Keyed so moving from one lesson to the next starts fresh, not mid-way.
+  return <LessonRun key={lessonId} lessonId={lessonId} />;
+}
+
+function LessonRun({ lessonId }: { lessonId: string | undefined }) {
   const { completeLesson } = useApp();
   const navigate = useNavigate();
   const lesson = courses
@@ -608,6 +615,9 @@ export function LessonPage() {
     .flatMap((level) => level.modules)
     .flatMap((module) => module.lessons)
     .find((item) => item.id === lessonId);
+  // Intermediate and Expert lessons explain their rule before any question.
+  const teaching = advancedLessonById(lessonId);
+  const [reading, setReading] = useState(Boolean(teaching));
   const [step, setStep] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [answered, setAnswered] = useState(false);
@@ -651,7 +661,9 @@ export function LessonPage() {
         </span>
       </header>
       <main className="lesson-content">
-        {!finished && exercise ? (
+        {reading && teaching ? (
+          <LessonTeaching lesson={teaching} onStart={() => setReading(false)} />
+        ) : !finished && exercise ? (
           <>
             <div className="lesson-title">
               <span className="eyebrow">{lesson.title}</span>
@@ -660,7 +672,7 @@ export function LessonPage() {
             <ExerciseCard
               key={exercise.id}
               exercise={exercise}
-              guided
+              guided={!teaching}
               onAnswered={(isCorrect) => {
                 setAnswered(true);
                 if (isCorrect) setCorrect((value) => value + 1);
@@ -2198,8 +2210,9 @@ export function AboutPage() {
           <BookOpen />
           <h2>Practical by design</h2>
           <p>
-            Forty lessons across five levels use useful topics: family, food, travel, school, work,
-            health and everyday help.
+            Forty core lessons across five levels use useful topics: family, food, travel, school,
+            work, health and everyday help. Learners of Sinhala can go on to Intermediate and Expert
+            grammar.
           </p>
         </article>
         <article className="card">

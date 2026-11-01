@@ -12,7 +12,7 @@ Use a warm ivory/emerald/teal/amber system with mature cards, restrained motion,
 
 ## Content
 
-Keep curriculum and schemas outside UI components. Both directions contain five levels and at least eight modules. Validate curriculum and imported backups with Zod. Centralize transliteration. Add uncertain linguistic entries to `CONTENT_REVIEW.md`, never to learner UI.
+Keep curriculum and schemas outside UI components. Both directions contain the five core levels and at least eight modules; the Sinhala course adds Intermediate and Expert grammar levels (`src/data/advanced.ts`), where every Sinhala sentence must cite a reusable source and page (see `src/data/sources.ts`). Validate curriculum and imported backups with Zod. Centralize transliteration. Add uncertain linguistic entries to `CONTENT_REVIEW.md`, never to learner UI.
 
 ## Accessibility
 

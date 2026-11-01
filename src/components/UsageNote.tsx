@@ -1,11 +1,13 @@
 import { BookOpenText, HandHeart, MessageCircle, Quote } from "lucide-react";
+import { Link } from "react-router-dom";
+import { citationLabel } from "../data/sources";
 import { usageLabels, usageNoteFor } from "../data/usageNotes";
 import { realExampleFor } from "../lib/examples";
 
 const SINHALA_RUN = /([඀-෿‍]+(?:\s+[඀-෿‍]+)*)/;
 
 /** Wraps each run of Sinhala inside an English note in its own lang="si". */
-function MixedText({ text }: { text: string }) {
+export function MixedText({ text }: { text: string }) {
   return (
     <>
       {text.split(SINHALA_RUN).map((part, index) =>
@@ -41,6 +43,11 @@ export function UsageNote({ sinhala }: { sinhala: string }) {
       <p>
         <MixedText text={note.note} />
       </p>
+      {note.cite && (
+        <Link className="cite" to={`/sources#${note.cite.source}`}>
+          {citationLabel(note.cite)}
+        </Link>
+      )}
     </aside>
   );
 }

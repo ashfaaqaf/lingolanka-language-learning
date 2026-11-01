@@ -15,6 +15,7 @@ import "./styles.css";
 import "./nav.css";
 import "./hero.css";
 import "./usage.css";
+import "./advanced.css";
 
 registerSW({
   immediate: true,

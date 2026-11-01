@@ -1,3 +1,4 @@
+import { advancedLessons } from "../data/advanced";
 import { describe, expect, it } from "vitest";
 import {
   conversations,
@@ -12,7 +13,7 @@ import audioProvenance from "../data/audioProvenance.json";
 import { englishPronunciation, sinhalaPronunciation } from "../data/pronunciation";
 
 describe("curriculum content", () => {
-  it("ships both learning directions and forty complete lessons", () => {
+  it("ships both learning directions: forty core lessons plus the grammar levels", () => {
     expect(courses.map((course) => course.id)).toEqual([
       "english-to-sinhala",
       "sinhala-to-english"
@@ -24,7 +25,7 @@ describe("curriculum content", () => {
       courses.flatMap((course) =>
         course.levels.flatMap((level) => level.modules.flatMap((module) => module.lessons))
       )
-    ).toHaveLength(40);
+    ).toHaveLength(40 + advancedLessons.length);
   });
 
   it("contains the required content quantities with unique identifiers", () => {

@@ -81,6 +81,7 @@ const MORE: [string, Copy][] = [
   ["/settings", { en: "Settings", si: "සැකසුම්" }],
   ["/install", { en: "Install app", si: "යෙදුම ස්ථාපනය" }],
   ["/about", { en: "About", si: "අප ගැන" }],
+  ["/sources", { en: "Sources & credits", si: "මූලාශ්‍ර" }],
   ["/privacy", { en: "Privacy", si: "පෞද්ගලිකත්වය" }]
 ];
 
@@ -480,7 +481,7 @@ export function GlobalNav() {
             )}
           </span>
           <span className="islandBar" aria-hidden="true">
-            <i style={{ transform: `translateX(${(course.percent) - 100}%)` }} />
+            <i style={{ transform: `translateX(${course.percent - 100}%)` }} />
           </span>
         </div>
 

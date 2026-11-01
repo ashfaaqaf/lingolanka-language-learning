@@ -16,7 +16,8 @@ The finished application includes a responsive public landing page, onboarding, 
 
 ## Main features
 
-- Two independent learning paths with five levels, eight modules per course and 40 lessons total
+- Two independent learning paths with five core levels, eight modules per course and 40 core lessons
+- Intermediate and Expert grammar levels for Sinhala (15 lessons), every sentence quoted with its page from a public-domain FSI course; see Sources & credits in the app
 - 264 bilingual vocabulary entries, 12 grammar guides and 12 role-play conversations
 - Sinhala script and English alphabet/phonics libraries
 - Bundled native-speaker Sinhala pronunciation plus English audio with normal/slow playback
