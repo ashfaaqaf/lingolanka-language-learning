@@ -1,0 +1,100 @@
+/* ============================================================
+   Usage notes and real examples: the context a one-word
+   translation leaves out. Uses only existing palette tokens,
+   which are contrast-checked in light, dark and high contrast.
+   ============================================================ */
+
+.usage-note {
+  margin: 0.7rem 0 0.2rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand-2);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  color: var(--ink);
+  text-align: left;
+}
+/* "Use with care" gets the warm accent; the label text says why, so the
+   colour is never the only signal. */
+.usage-note.usage-respect {
+  border-left-color: var(--accent-fill);
+  background: color-mix(in srgb, var(--amber) 10%, var(--surface));
+}
+.usage-note strong {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+  color: var(--brand);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* Nudged toward the ink colour: plain --accent-fill measured 4.40:1 on this
+   tinted panel in light mode. Mixing toward --ink darkens it in light mode and
+   lightens it in dark mode, so contrast rises in both. */
+.usage-note.usage-respect strong {
+  color: color-mix(in srgb, var(--accent-fill) 74%, var(--ink));
+}
+.usage-note strong svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+.usage-note p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+.usage-note [lang="si"] {
+  line-height: 1.75;
+  font-weight: 600;
+}
+
+.real-example {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.55rem;
+  margin: 0.6rem 0 0.2rem;
+  text-align: left;
+}
+.real-example > svg {
+  grid-row: span 2;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.3rem;
+  color: var(--brand-2);
+}
+.real-example blockquote {
+  margin: 0;
+}
+.real-example blockquote p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.real-example blockquote p[lang="si"] {
+  font-weight: 650;
+  line-height: 1.75;
+}
+.real-example blockquote p[lang="en"] {
+  color: var(--muted);
+}
+.real-example figcaption {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+:root.high-contrast .usage-note,
+:root.high-contrast .usage-note.usage-respect {
+  border: 2px solid currentColor;
+  background: var(--surface);
+}
+@media (prefers-contrast: more) {
+  .usage-note,
+  .usage-note.usage-respect {
+    border: 2px solid currentColor;
+    background: var(--surface);
+  }
+}

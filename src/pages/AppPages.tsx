@@ -38,6 +38,8 @@ import {
 } from "../data/content";
 import { db, exportBackup, importBackup, loadProfile, resetDatabase } from "../lib/db";
 import { speech } from "../lib/speech";
+import { RealExample, UsageNote } from "../components/UsageNote";
+import { usageNoteFor } from "../data/usageNotes";
 import { calculateStreak, scheduleReview, todayKey, type ReviewRating } from "../lib/utils";
 import type { AlphabetEntry, Exercise, LearningDirection, VocabularyState } from "../types";
 import { AudioButton } from "../components/AudioButton";
@@ -638,7 +640,11 @@ export function LessonPage() {
           <X />
         </button>
         <div className="lesson-progress">
-          <i style={{ transform: `translateX(${Math.min(100, (step / lesson.exercises.length) * 100) - 100}%)` }} />
+          <i
+            style={{
+              transform: `translateX(${Math.min(100, (step / lesson.exercises.length) * 100) - 100}%)`
+            }}
+          />
         </div>
         <span>
           {Math.min(step + 1, lesson.exercises.length)} / {lesson.exercises.length}
@@ -978,7 +984,8 @@ export function VocabularyPage() {
       stateFilter === "All" ||
       (stateFilter === "Learned" && state?.learned) ||
       (stateFilter === "Favourites" && state?.favourite) ||
-      (stateFilter === "Difficult" && state?.difficult);
+      (stateFilter === "Difficult" && state?.difficult) ||
+      (stateFilter === "Usage notes" && Boolean(usageNoteFor(word.sinhala)));
     return (
       (category === "All" || word.category === category) &&
       (difficulty === "All" || word.difficulty === difficulty) &&
@@ -1045,7 +1052,7 @@ export function VocabularyPage() {
           value={stateFilter}
           onChange={(event) => setStateFilter(event.target.value)}
         >
-          {["All", "Learned", "Favourites", "Difficult"].map((item) => (
+          {["All", "Learned", "Favourites", "Difficult", "Usage notes"].map((item) => (
             <option key={item}>{item}</option>
           ))}
         </select>
@@ -1087,6 +1094,8 @@ export function VocabularyPage() {
               <>
                 <h3>{flash.english}</h3>
                 <AudioButton text={flash.sinhala} language="si" />
+                <UsageNote sinhala={flash.sinhala} />
+                <RealExample sinhala={flash.sinhala} />
               </>
             ) : (
               <p>Tap to reveal</p>
@@ -1126,7 +1135,8 @@ export function VocabularyPage() {
                 <h2 lang="si">{word.sinhala}</h2>
                 <p className="transliteration">{word.transliteration}</p>
                 <h3>{word.english}</h3>
-                <p>{word.examples[0]?.english}</p>
+                <UsageNote sinhala={word.sinhala} />
+                <RealExample sinhala={word.sinhala} />
                 <div className="vocab-actions">
                   <AudioButton text={word.sinhala} language="si" />
                   <button
@@ -1627,7 +1637,8 @@ export function ReviewPage() {
         {revealed ? (
           <>
             <h3>{word.english}</h3>
-            <p>{word.examples[0]?.english}</p>
+            <UsageNote sinhala={word.sinhala} />
+            <RealExample sinhala={word.sinhala} />
             <div className="rating-row">
               {(["again", "difficult", "good", "easy"] as const).map((rating) => (
                 <button onClick={() => rate(rating)} key={rating}>

@@ -339,13 +339,10 @@ export const vocabulary: VocabularyItem[] = Object.entries(wordGroups).flatMap(
             : categoryIndex < 18
               ? "elementary"
               : "intermediate",
-      examples: [
-        {
-          english: `Use “${english}” in everyday conversation.`,
-          sinhala: `“${sinhala}” එදිනෙදා කතාබහේ භාවිත කරන්න.`,
-          transliteration: `"${transliteration}" edinēdā katābahē bhāvita karanna.`
-        }
-      ],
+      // No generated sentence: "Use X in everyday conversation" said nothing
+      // about any word. Real uses are found in the app's own sentences at
+      // render time (lib/examples.ts); a word with none shows none.
+      examples: [],
       tags: [category.toLowerCase(), english.toLowerCase()],
       audioText: { english, sinhala }
     }))

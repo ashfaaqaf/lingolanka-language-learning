@@ -65,3 +65,34 @@ Judging _shape_ never needed the authored centrelines. The glyph in the bundled 
 Verified in a real browser against `අ`, `ආ`, `ක` and `ම`: a faithful trace scores 100, and inking the whole pad scores 35–49 and never reaches the 70 that marks the letter written.
 
 Do not move these notes into the learner interface. Submit corrections with context and preserve all record IDs where possible.
+
+## Usage notes — pending educator review (2026-11-01)
+
+One-word translations were misleading learners in ways that can cause offence. `src/data/usageNotes.ts` now attaches a short plain-English note to 19 words, shown on Wordbook cards, flashcards, Review cards and in the lesson's "Learn this first" panel. Each is labelled **Meaning** (the gloss is narrower than the Sinhala), **Use with care** (safe in one use, insulting or loaded in another) or **How it's said** (correct, but not what people say aloud).
+
+These notes introduce Sinhala words the curriculum did not previously teach (for example කෝවිල, අයියා, බාප්පා, සහල්). They were limited to well-established usage, but every one needs sign-off. Correct the wording in `usageNotes.ts`; a test fails if a note's key stops matching a taught word.
+
+| Word              | Kind          | What the note says                                                                                         |
+| ----------------- | ------------- | ---------------------------------------------------------------------------------------------------------- |
+| පන්සල             | Meaning       | Buddhist temple specifically; Hindu temple කෝවිල, church or mosque පල්ලිය                                  |
+| ආයුබෝවන්          | Meaning       | "May you live long"; hello and goodbye; Tamil speakers say "vanakkam"                                      |
+| ගිහින් එන්නම්     | Meaning       | "I will go and come"; a bare මම යනවා can sound abrupt or final                                             |
+| ඔබට කොහොමද?       | How it's said | ඔබ is formal in speech; names or kin words preferred; never උඹ / තෝ with strangers or elders               |
+| කරුණාකර           | How it's said | Formal, common on signs; speech relies on the polite verb ending                                           |
+| සහෝදරයා / සහෝදරිය | How it's said | Formal; speech uses අයියා, මල්ලි, අක්කා, නංගි, also as friendly address                                    |
+| නැන්දා            | Meaning       | Father's sister (also mother's brother's wife, mother-in-law); mother's sister is පුංචි / ලොකු අම්මා       |
+| මාමා              | Meaning       | Mother's brother (also father's sister's husband, father-in-law); father's brother is බාප්පා / ලොකු තාත්තා |
+| කාන්තාව           | Use with care | Respectful; ගෑනි is blunt and can insult                                                                   |
+| ගුරුවරයා          | How it's said | Students say "sir" / "miss"; respectful written form ගුරුතුමා                                              |
+| බල්ලා / වඳුරා     | Use with care | Insults when said to or about a person                                                                     |
+| කළු / සුදු        | Use with care | Skin-colour use is sensitive; සුද්දා can be disparaging                                                    |
+| ආඩම්බර            | Meaning       | Often "vain", not only "proud of"                                                                          |
+| බත්               | Meaning       | Cooked rice; uncooked සහල්, growing වී                                                                     |
+| මාළු / මාළුවා     | Meaning       | Fish as food / a living fish                                                                               |
+
+### Also found while writing these
+
+- **The generated example sentence is gone.** Every word showed "Use X in everyday conversation." It now shows a real sentence from the app's conversations or grammar guides when the word appears in one as a whole word (19 of 264 words), and nothing otherwise.
+- **The corpus holds only 17 real sentences.** Conversation lines repeat across the 12 conversations, and every grammar topic shows the same two examples ("I read a book", "She is at home"). Both need authored, reviewed sentences.
+- **Part of speech:** `lonely = තනිකම` is a noun ("loneliness") and `sad = දුකෙන්` is adverbial ("sadly"), while the English glosses are adjectives.
+- **The "temple" card still glosses පන්සල as plain "temple"** above the note. Changing the English text would orphan its recorded audio clip, so the gloss should change together with a new recording.

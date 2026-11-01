@@ -14,6 +14,7 @@ import "./styles.css";
 // After styles.css, so the navigation and hero have the final word.
 import "./nav.css";
 import "./hero.css";
+import "./usage.css";
 
 registerSW({
   immediate: true,

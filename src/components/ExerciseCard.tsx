@@ -14,6 +14,7 @@ import type { Exercise } from "../types";
 import { useApp } from "../context/AppContext";
 import { isCorrectAnswer, shuffleUnique } from "../lib/utils";
 import { AudioButton } from "./AudioButton";
+import { UsageNote } from "./UsageNote";
 import {
   moveLiquidGlass,
   pressLiquidGlass,
@@ -228,6 +229,8 @@ export function ExerciseCard({
               label={`${isSinhalaUi ? "සිංහල වචනය අසන්න" : "Hear the Sinhala word"}: ${support.sinhala}`}
             />
           )}
+          {/* Before the learner says the word, tell them what it really covers. */}
+          {support.sinhala && <UsageNote sinhala={support.sinhala} />}
           <div className="learning-steps">
             <strong>{copy.followSteps}</strong>
             <ol>
