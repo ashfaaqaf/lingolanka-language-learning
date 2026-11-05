@@ -81,21 +81,34 @@ const wsUrl = await new Promise<string>((resolve, reject) => {
 // Minimal DevTools protocol client over the browser's WebSocket, with one flattened page session.
 const ws = new WebSocket(wsUrl);
 await new Promise((r) => ws.addEventListener("open", r, { once: true }));
+// The few fields of DevTools protocol messages this script reads.
+interface CdpResult {
+  targetId?: string;
+  sessionId?: string;
+  result?: { value: { fill: number; rowFill: number; overflow: boolean } };
+}
+interface CdpMessage {
+  id?: number;
+  method?: string;
+  sessionId?: string;
+  error?: { message: string };
+  result?: CdpResult;
+}
 let nextId = 0;
-const pending = new Map<number, (v: any) => void>();
-const listeners: ((m: any) => void)[] = [];
+const pending = new Map<number, (v: CdpMessage) => void>();
+const listeners: ((m: CdpMessage) => void)[] = [];
 ws.addEventListener("message", (e) => {
-  const m = JSON.parse(String(e.data));
+  const m = JSON.parse(String(e.data)) as CdpMessage;
   if (m.id && pending.has(m.id)) {
     pending.get(m.id)!(m);
     pending.delete(m.id);
   } else listeners.forEach((l) => l(m));
 });
 const send = (method: string, params: object = {}, sessionId?: string) =>
-  new Promise<any>((resolve, reject) => {
+  new Promise<CdpResult>((resolve, reject) => {
     const id = ++nextId;
     pending.set(id, (m) =>
-      m.error ? reject(new Error(`${method}: ${m.error.message}`)) : resolve(m.result)
+      m.error ? reject(new Error(`${method}: ${m.error.message}`)) : resolve(m.result ?? {})
     );
     ws.send(JSON.stringify({ id, method, params, sessionId }));
   });
@@ -112,7 +125,7 @@ async function load(url: string, width: number) {
     mobile: width < 768
   });
   const loaded = new Promise<void>((r) => {
-    const l = (m: any) => {
+    const l = (m: CdpMessage) => {
       if (m.method === "Page.loadEventFired" && m.sessionId === sessionId) {
         listeners.splice(listeners.indexOf(l), 1);
         r();
