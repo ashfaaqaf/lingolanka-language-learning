@@ -31,17 +31,19 @@ describe("critical application journeys", () => {
   it("switches every onboarding decision and app navigation into Sinhala", async () => {
     const user = userEvent.setup();
     renderApp("/onboarding");
+    // The side rail repeats the learner's choices, so read the step card itself.
+    const card = () => document.querySelector<HTMLElement>(".onboarding-card")!;
     try {
       await user.click(screen.getByRole("button", { name: /සිංහල/ }));
 
       expect(
         screen.getByRole("heading", { name: "ඔබට හොඳින් තේරෙන භාෂාව කුමක්ද?" })
       ).toBeInTheDocument();
-      expect(screen.getByText("පියවර 6 න් 1")).toBeInTheDocument();
+      expect(within(card()).getByText("පියවර 6 න් 1")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /ආපසු/ })).toBeDisabled();
 
       await user.click(screen.getByRole("button", { name: /ඉදිරියට/ }));
-      expect(screen.getByText("සිංහල → ඉංග්‍රීසි")).toBeInTheDocument();
+      expect(within(card()).getByText("සිංහල → ඉංග්‍රීසි")).toBeInTheDocument();
       expect(screen.getByText(/ප්‍රගතිය අහිමි නොකර/)).toBeInTheDocument();
 
       await user.click(screen.getByRole("button", { name: /ඉදිරියට/ }));
@@ -64,7 +66,7 @@ describe("critical application journeys", () => {
       expect(
         screen.getByRole("heading", { name: "ඔබ ඉගෙනීම ආරම්භ කිරීමට සූදානම්" })
       ).toBeInTheDocument();
-      expect(screen.getByText("මධ්‍යම මට්ටම")).toBeInTheDocument();
+      expect(within(card()).getByText("මධ්‍යම මට්ටම")).toBeInTheDocument();
       expect(screen.getByText("දිනකට මිනිත්තු 15 · ඉගෙනුම් ඉලක්ක 1")).toBeInTheDocument();
 
       await user.click(screen.getByRole("button", { name: /දැන් ඉගෙනීම අරඹන්න/ }));

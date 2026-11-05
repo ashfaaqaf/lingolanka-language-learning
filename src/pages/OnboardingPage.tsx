@@ -42,170 +42,219 @@ export function OnboardingPage() {
       <div className="onboarding-brand">
         <Languages /> LingoLanka
       </div>
-      <section className="onboarding-card">
-        <div className="step-meta">
-          <span>{copy.stepOf(step)}</span>
-          <div className="steps" aria-label={copy.stepOf(step)}>
-            {Array.from({ length: 6 }, (_, index) => (
-              <i className={index < step ? "done" : ""} key={index} />
-            ))}
-          </div>
-        </div>
-
-        {step === 1 && (
-          <div className="step-content">
-            <span className="eyebrow">{copy.beginEyebrow}</span>
-            <h1>{copy.languageQuestion}</h1>
-            <p>{copy.languageHelp}</p>
-            <div className="big-options">
-              <button
-                type="button"
-                className={known === "en" ? "selected" : ""}
-                aria-pressed={known === "en"}
-                onClick={() => setKnown("en")}
-              >
-                <strong>{copy.english}</strong>
-                <span>{copy.englishChoice}</span>
-              </button>
-              <button
-                type="button"
-                className={known === "si" ? "selected" : ""}
-                aria-pressed={known === "si"}
-                onClick={() => setKnown("si")}
-              >
-                <strong>{copy.sinhala}</strong>
-                <span>{copy.sinhalaChoice}</span>
-              </button>
+      <div className="onboarding-layout page-split rail-left">
+        <aside className="split-rail rail-only" aria-label={copy.stepOf(step)}>
+          <div className="rail-stick">
+            <div className="rail-card">
+              <ol className="rail-list">
+                {[
+                  copy.beginEyebrow,
+                  copy.courseEyebrow,
+                  copy.levelEyebrow,
+                  copy.goalsEyebrow,
+                  copy.targetEyebrow,
+                  copy.readyEyebrow
+                ].map((label, index) => (
+                  <li className={index + 1 < step ? "done" : ""} key={label}>
+                    <span
+                      className="rail-item"
+                      aria-current={index + 1 === step ? "step" : undefined}
+                    >
+                      <span className="rail-mark">
+                        {index + 1 < step ? <Check aria-hidden="true" /> : index + 1}
+                      </span>
+                      {label}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div className="rail-card">
+              <dl className="rail-dl">
+                <dt>{copy.courseEyebrow}</dt>
+                <dd>{copy.courseDirection}</dd>
+                <dt>{copy.levelEyebrow}</dt>
+                <dd>{selectedLevelLabel}</dd>
+                <dt>{copy.targetEyebrow}</dt>
+                <dd>
+                  {dailyTarget} {copy.minutes}
+                </dd>
+                <dt>{copy.goalsEyebrow}</dt>
+                <dd>
+                  {onboardingGoals
+                    .filter((goal) => selectedGoals.includes(goal.value))
+                    .map((goal) => goal.label[known])
+                    .join(", ") || "—"}
+                </dd>
+              </dl>
             </div>
           </div>
-        )}
-
-        {step === 2 && (
-          <div className="step-content">
-            <span className="eyebrow">{copy.courseEyebrow}</span>
-            <h1>{copy.courseTitle}</h1>
-            <div className="course-confirm">
-              <Languages />
-              <div>
-                <strong>{copy.courseDirection}</strong>
-                <p>{copy.courseHelp}</p>
-              </div>
-              <Check />
-            </div>
-            <p>{copy.directionNote}</p>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="step-content">
-            <span className="eyebrow">{copy.levelEyebrow}</span>
-            <h1>{copy.levelQuestion}</h1>
-            <div className="option-list">
-              {onboardingLevels.map((item) => (
-                <button
-                  type="button"
-                  className={level === item.value ? "selected" : ""}
-                  aria-pressed={level === item.value}
-                  onClick={() => setLevel(item.value)}
-                  key={item.value}
-                >
-                  {item.label[known]}
-                  {level === item.value && <Check />}
-                </button>
+        </aside>
+        <section className="onboarding-card split-main">
+          <div className="step-meta">
+            <span>{copy.stepOf(step)}</span>
+            <div className="steps" aria-label={copy.stepOf(step)}>
+              {Array.from({ length: 6 }, (_, index) => (
+                <i className={index < step ? "done" : ""} key={index} />
               ))}
             </div>
           </div>
-        )}
 
-        {step === 4 && (
-          <div className="step-content">
-            <span className="eyebrow">{copy.goalsEyebrow}</span>
-            <h1>{copy.goalsQuestion}</h1>
-            <p>{copy.goalsHelp}</p>
-            <div className="chip-options">
-              {onboardingGoals.map((goal) => (
+          {step === 1 && (
+            <div className="step-content">
+              <span className="eyebrow">{copy.beginEyebrow}</span>
+              <h1>{copy.languageQuestion}</h1>
+              <p>{copy.languageHelp}</p>
+              <div className="big-options">
                 <button
                   type="button"
-                  className={selectedGoals.includes(goal.value) ? "selected" : ""}
-                  aria-pressed={selectedGoals.includes(goal.value)}
-                  onClick={() =>
-                    setSelectedGoals((current) =>
-                      current.includes(goal.value)
-                        ? current.filter((item) => item !== goal.value)
-                        : [...current, goal.value]
-                    )
-                  }
-                  key={goal.value}
+                  className={known === "en" ? "selected" : ""}
+                  aria-pressed={known === "en"}
+                  onClick={() => setKnown("en")}
                 >
-                  {goal.label[known]}
+                  <strong>{copy.english}</strong>
+                  <span>{copy.englishChoice}</span>
                 </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="step-content">
-            <span className="eyebrow">{copy.targetEyebrow}</span>
-            <h1>{copy.targetQuestion}</h1>
-            <div className="big-options four">
-              {[5, 10, 15, 20].map((minutes) => (
                 <button
                   type="button"
-                  className={dailyTarget === minutes ? "selected" : ""}
-                  aria-pressed={dailyTarget === minutes}
-                  onClick={() => setDailyTarget(minutes)}
-                  key={minutes}
+                  className={known === "si" ? "selected" : ""}
+                  aria-pressed={known === "si"}
+                  onClick={() => setKnown("si")}
                 >
-                  <strong>{minutes}</strong>
-                  <span>{copy.minutes}</span>
+                  <strong>{copy.sinhala}</strong>
+                  <span>{copy.sinhalaChoice}</span>
                 </button>
-              ))}
-            </div>
-            <p>{copy.targetHelp}</p>
-          </div>
-        )}
-
-        {step === 6 && (
-          <div className="step-content celebration">
-            <Sparkles />
-            <span className="eyebrow">{copy.readyEyebrow}</span>
-            <h1>{copy.readyTitle}</h1>
-            <p>{copy.readyHelp}</p>
-            <div className="course-confirm">
-              <Check />
-              <div>
-                <strong>{selectedLevelLabel}</strong>
-                <p>{copy.summary(dailyTarget, selectedGoals.length)}</p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="onboarding-actions">
-          <button
-            type="button"
-            className="button ghost"
-            disabled={step === 1}
-            onClick={() => setStep((value) => value - 1)}
-          >
-            <ArrowLeft /> {copy.back}
-          </button>
-          {step < 6 ? (
+          {step === 2 && (
+            <div className="step-content">
+              <span className="eyebrow">{copy.courseEyebrow}</span>
+              <h1>{copy.courseTitle}</h1>
+              <div className="course-confirm">
+                <Languages />
+                <div>
+                  <strong>{copy.courseDirection}</strong>
+                  <p>{copy.courseHelp}</p>
+                </div>
+                <Check />
+              </div>
+              <p>{copy.directionNote}</p>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="step-content">
+              <span className="eyebrow">{copy.levelEyebrow}</span>
+              <h1>{copy.levelQuestion}</h1>
+              <div className="option-list">
+                {onboardingLevels.map((item) => (
+                  <button
+                    type="button"
+                    className={level === item.value ? "selected" : ""}
+                    aria-pressed={level === item.value}
+                    onClick={() => setLevel(item.value)}
+                    key={item.value}
+                  >
+                    {item.label[known]}
+                    {level === item.value && <Check />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="step-content">
+              <span className="eyebrow">{copy.goalsEyebrow}</span>
+              <h1>{copy.goalsQuestion}</h1>
+              <p>{copy.goalsHelp}</p>
+              <div className="chip-options">
+                {onboardingGoals.map((goal) => (
+                  <button
+                    type="button"
+                    className={selectedGoals.includes(goal.value) ? "selected" : ""}
+                    aria-pressed={selectedGoals.includes(goal.value)}
+                    onClick={() =>
+                      setSelectedGoals((current) =>
+                        current.includes(goal.value)
+                          ? current.filter((item) => item !== goal.value)
+                          : [...current, goal.value]
+                      )
+                    }
+                    key={goal.value}
+                  >
+                    {goal.label[known]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="step-content">
+              <span className="eyebrow">{copy.targetEyebrow}</span>
+              <h1>{copy.targetQuestion}</h1>
+              <div className="big-options four">
+                {[5, 10, 15, 20].map((minutes) => (
+                  <button
+                    type="button"
+                    className={dailyTarget === minutes ? "selected" : ""}
+                    aria-pressed={dailyTarget === minutes}
+                    onClick={() => setDailyTarget(minutes)}
+                    key={minutes}
+                  >
+                    <strong>{minutes}</strong>
+                    <span>{copy.minutes}</span>
+                  </button>
+                ))}
+              </div>
+              <p>{copy.targetHelp}</p>
+            </div>
+          )}
+
+          {step === 6 && (
+            <div className="step-content celebration">
+              <Sparkles />
+              <span className="eyebrow">{copy.readyEyebrow}</span>
+              <h1>{copy.readyTitle}</h1>
+              <p>{copy.readyHelp}</p>
+              <div className="course-confirm">
+                <Check />
+                <div>
+                  <strong>{selectedLevelLabel}</strong>
+                  <p>{copy.summary(dailyTarget, selectedGoals.length)}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="onboarding-actions">
             <button
               type="button"
-              className="button primary"
-              onClick={() => setStep((value) => value + 1)}
+              className="button ghost"
+              disabled={step === 1}
+              onClick={() => setStep((value) => value - 1)}
             >
-              {copy.continue} <ArrowRight />
+              <ArrowLeft /> {copy.back}
             </button>
-          ) : (
-            <button type="button" className="button primary" onClick={complete}>
-              {copy.start} <ArrowRight />
-            </button>
-          )}
-        </div>
-      </section>
+            {step < 6 ? (
+              <button
+                type="button"
+                className="button primary"
+                onClick={() => setStep((value) => value + 1)}
+              >
+                {copy.continue} <ArrowRight />
+              </button>
+            ) : (
+              <button type="button" className="button primary" onClick={complete}>
+                {copy.start} <ArrowRight />
+              </button>
+            )}
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

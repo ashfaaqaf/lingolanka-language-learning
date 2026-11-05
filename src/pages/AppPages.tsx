@@ -38,10 +38,11 @@ import {
 } from "../data/content";
 import { db, exportBackup, importBackup, loadProfile, resetDatabase } from "../lib/db";
 import { speech } from "../lib/speech";
-import { RealExample, UsageNote } from "../components/UsageNote";
+import { MixedText, RealExample, UsageNote } from "../components/UsageNote";
 import { usageNoteFor } from "../data/usageNotes";
 import { advancedLessonById } from "../data/advanced";
 import { LessonTeaching } from "../components/LessonTeaching";
+import { citationLabel } from "../data/sources";
 import { calculateStreak, scheduleReview, todayKey, type ReviewRating } from "../lib/utils";
 import type { AlphabetEntry, Exercise, LearningDirection, VocabularyState } from "../types";
 import { AudioButton } from "../components/AudioButton";
@@ -631,6 +632,7 @@ function LessonRun({ lessonId }: { lessonId: string | undefined }) {
     );
   const exercise = lesson.exercises[step];
   const finished = step >= lesson.exercises.length;
+  const lessonWords = vocabulary.filter((word) => lesson.vocabularyIds.includes(word.id));
   const complete = async () => {
     const score = Math.round((correct / lesson.exercises.length) * 100);
     await completeLesson({
@@ -660,64 +662,164 @@ function LessonRun({ lessonId }: { lessonId: string | undefined }) {
           {Math.min(step + 1, lesson.exercises.length)} / {lesson.exercises.length}
         </span>
       </header>
-      <main className="lesson-content">
-        {reading && teaching ? (
-          <LessonTeaching lesson={teaching} onStart={() => setReading(false)} />
-        ) : !finished && exercise ? (
-          <>
-            <div className="lesson-title">
-              <span className="eyebrow">{lesson.title}</span>
-              <h1>{lesson.titleSi}</h1>
+      <main className="lesson-content page-split three">
+        <aside className="split-rail rail-only" aria-label="Lesson steps">
+          <div className="rail-stick">
+            <div className="rail-card">
+              <h2>Steps</h2>
+              <ol className="rail-list">
+                {teaching && (
+                  <li className={reading ? "" : "done"}>
+                    <span className="rail-item" aria-current={reading ? "step" : undefined}>
+                      <span className="rail-mark">
+                        {reading ? <BookOpen aria-hidden="true" /> : <Check aria-hidden="true" />}
+                      </span>
+                      Learn the rule
+                    </span>
+                  </li>
+                )}
+                {lesson.exercises.map((item, itemIndex) => {
+                  const done = itemIndex < step;
+                  const current = !reading && itemIndex === step;
+                  return (
+                    <li className={done ? "done" : ""} key={item.id}>
+                      <span className="rail-item" aria-current={current ? "step" : undefined}>
+                        <span className="rail-mark">
+                          {done ? <Check aria-hidden="true" /> : itemIndex + 1}
+                        </span>
+                        Question {itemIndex + 1}
+                        {done && <span className="sr-only"> (done)</span>}
+                      </span>
+                    </li>
+                  );
+                })}
+                <li className={finished ? "done" : ""}>
+                  <span className="rail-item" aria-current={finished ? "step" : undefined}>
+                    <span className="rail-mark">
+                      <Award aria-hidden="true" />
+                    </span>
+                    Save your progress
+                  </span>
+                </li>
+              </ol>
             </div>
-            <ExerciseCard
-              key={exercise.id}
-              exercise={exercise}
-              guided={!teaching}
-              onAnswered={(isCorrect) => {
-                setAnswered(true);
-                if (isCorrect) setCorrect((value) => value + 1);
-              }}
-            />
-            <div className="lesson-next">
+            <div className="rail-card">
+              <h2>{lesson.title}</h2>
+              <p>{lesson.description}</p>
+              <p>About {lesson.minutes} minutes.</p>
+            </div>
+          </div>
+        </aside>
+        <div className="split-main">
+          {reading && teaching ? (
+            <LessonTeaching lesson={teaching} onStart={() => setReading(false)} />
+          ) : !finished && exercise ? (
+            <>
+              <div className="lesson-title">
+                <span className="eyebrow">{lesson.title}</span>
+                <h1>{lesson.titleSi}</h1>
+              </div>
+              <ExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                guided={!teaching}
+                onAnswered={(isCorrect) => {
+                  setAnswered(true);
+                  if (isCorrect) setCorrect((value) => value + 1);
+                }}
+              />
+              <div className="lesson-next">
+                <button
+                  className="button primary large"
+                  disabled={!answered}
+                  onClick={() => {
+                    setStep((value) => value + 1);
+                    setAnswered(false);
+                  }}
+                >
+                  Continue <ChevronRight />
+                </button>
+              </div>
+            </>
+          ) : (
+            <section className="completion-card">
+              <Award />
+              <span className="eyebrow">Lesson complete</span>
+              <h1>Beautiful progress</h1>
+              <p>
+                You answered {correct} of {lesson.exercises.length} activities correctly. Mistakes
+                stay available for review; they never lock you out.
+              </p>
+              <div className="completion-stats">
+                <strong>+{correct * 10 + 20} XP</strong>
+                <strong>{Math.round((correct / lesson.exercises.length) * 100)}% score</strong>
+              </div>
+              <button className="button primary large" onClick={complete}>
+                Save & continue
+              </button>
               <button
-                className="button primary large"
-                disabled={!answered}
+                className="button ghost"
                 onClick={() => {
-                  setStep((value) => value + 1);
-                  setAnswered(false);
+                  setStep(0);
+                  setCorrect(0);
                 }}
               >
-                Continue <ChevronRight />
+                Repeat lesson
               </button>
-            </div>
-          </>
-        ) : (
-          <section className="completion-card">
-            <Award />
-            <span className="eyebrow">Lesson complete</span>
-            <h1>Beautiful progress</h1>
-            <p>
-              You answered {correct} of {lesson.exercises.length} activities correctly. Mistakes
-              stay available for review; they never lock you out.
-            </p>
-            <div className="completion-stats">
-              <strong>+{correct * 10 + 20} XP</strong>
-              <strong>{Math.round((correct / lesson.exercises.length) * 100)}% score</strong>
-            </div>
-            <button className="button primary large" onClick={complete}>
-              Save & continue
-            </button>
-            <button
-              className="button ghost"
-              onClick={() => {
-                setStep(0);
-                setCorrect(0);
-              }}
-            >
-              Repeat lesson
-            </button>
-          </section>
-        )}
+            </section>
+          )}
+        </div>
+        <aside className="split-rail rail-only" aria-label="In this lesson">
+          <div className="rail-stick">
+            {teaching ? (
+              <>
+                {!reading && (
+                  <div className="rail-card">
+                    <h2>The rule</h2>
+                    <ul>
+                      {teaching.points.map((point) => (
+                        <li key={point.text}>
+                          <MixedText text={point.text} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div className="rail-card">
+                  <h2>Sources</h2>
+                  <ul className="rail-list">
+                    {[
+                      ...new Set(
+                        [...teaching.points, ...teaching.examples].flatMap((item) =>
+                          item.cite ? [citationLabel(item.cite)] : []
+                        )
+                      )
+                    ].map((label) => (
+                      <li key={label}>
+                        <Link to="/sources">{label}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <div className="rail-card">
+                <h2>Words in this lesson</h2>
+                <ul className="rail-words">
+                  {lessonWords.map((word) => (
+                    <li key={word.id}>
+                      <span lang="si">{word.sinhala}</span>
+                      {word.transliteration && (
+                        <p className="transliteration">{word.transliteration}</p>
+                      )}
+                      <span>{word.english}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </aside>
       </main>
       {exit && (
         <div className="dialog-backdrop" role="presentation">
@@ -927,30 +1029,51 @@ export function ListeningPage() {
         title="Hear the useful details"
         copy="Use the normal and slow buttons, repeat the phrase once, then move to the next one."
       />
-      <section className="card listening-card">
-        <Headphones />
-        <span>
-          Phrase {index + 1} of {words.length}
-        </span>
-        <h2 lang={language}>{target}</h2>
-        {profile.settings.transliteration !== "never" && (
-          <p className="transliteration">{word.transliteration}</p>
-        )}
-        <p>{language === "si" ? word.english : word.sinhala}</p>
-        <div className="button-row center">
-          <AudioButton text={target} language={language} />
-          <AudioButton text={target} language={language} slow />
-        </div>
-        <div className="feedback neutral">
-          Listen once at normal speed, then slowly. Repeat aloud before revealing the meaning.
-        </div>
-        <button
-          className="button primary large"
-          onClick={() => setIndex((value) => (value + 1) % words.length)}
-        >
-          Next phrase <ChevronRight />
-        </button>
-      </section>
+      <div className="page-split">
+        <section className="card listening-card split-main">
+          <Headphones />
+          <span>
+            Phrase {index + 1} of {words.length}
+          </span>
+          <h2 lang={language}>{target}</h2>
+          {profile.settings.transliteration !== "never" && (
+            <p className="transliteration">{word.transliteration}</p>
+          )}
+          <p>{language === "si" ? word.english : word.sinhala}</p>
+          <div className="button-row center">
+            <AudioButton text={target} language={language} />
+            <AudioButton text={target} language={language} slow />
+          </div>
+          <div className="feedback neutral">
+            Listen once at normal speed, then slowly. Repeat aloud before revealing the meaning.
+          </div>
+          <button
+            className="button primary large"
+            onClick={() => setIndex((value) => (value + 1) % words.length)}
+          >
+            Next phrase <ChevronRight />
+          </button>
+        </section>
+        <aside className="split-rail" aria-label="Phrases in this set">
+          <div className="rail-card rail-stick">
+            <h2>Phrases in this set</h2>
+            <ol className="rail-list">
+              {words.map((item, itemIndex) => (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    aria-current={itemIndex === index ? "true" : undefined}
+                    onClick={() => setIndex(itemIndex)}
+                  >
+                    <span className="rail-mark">{itemIndex + 1}</span>
+                    <span lang={language}>{language === "si" ? item.sinhala : item.english}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
@@ -966,10 +1089,37 @@ export function SpeakingPage() {
         title="Your voice, kept private"
         copy="Use approximate recognition where supported, or record and compare locally."
       />
-      <SpeakingPractice
-        phrase={phrase}
-        language={profile.settings.direction === "english-to-sinhala" ? "si" : "en"}
-      />
+      <div className="page-split">
+        <div className="split-main">
+          <SpeakingPractice
+            phrase={phrase}
+            language={profile.settings.direction === "english-to-sinhala" ? "si" : "en"}
+          />
+        </div>
+        <aside className="split-rail" aria-label="About this phrase">
+          <div className="rail-stick">
+            <div className="rail-card">
+              <h2>How it works</h2>
+              <ol>
+                <li>Play the phrase and listen once.</li>
+                <li>Say it aloud, or record yourself.</li>
+                <li>Compare, then try again as often as you like.</li>
+              </ol>
+              <p>
+                Recordings stay in this browser tab and are never uploaded or kept. Recognition is
+                approximate and depends on your device.
+              </p>
+            </div>
+            {usageNoteFor(phrase) && (
+              <div className="rail-card">
+                <h2>Before you say it</h2>
+                <UsageNote sinhala={phrase} />
+                <RealExample sinhala={phrase} />
+              </div>
+            )}
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
@@ -1547,7 +1697,38 @@ export function PracticePage() {
           <span>{interfaceLanguage === "si" ? "2. පිළිතුරු දෙන්න" : "2. Answer"}</span>
           <span>{interfaceLanguage === "si" ? "3. ඉඟිය බලන්න" : "3. Use the hint"}</span>
         </div>
-        <ExerciseCard key={exercise.id} exercise={exercise} />
+        <div className="page-split">
+          <div className="split-main">
+            <ExerciseCard key={exercise.id} exercise={exercise} />
+          </div>
+          <aside
+            className="split-rail"
+            aria-label={interfaceLanguage === "si" ? "වෙනත් පුහුණු" : "Other practice"}
+          >
+            <nav className="rail-card rail-stick">
+              <h2>{interfaceLanguage === "si" ? "වෙනත් පුහුණු" : "Switch practice"}</h2>
+              <ul className="rail-list">
+                {practiceModes.map((mode) => (
+                  <li key={mode.id}>
+                    <button
+                      type="button"
+                      aria-current={mode.id === selectedMode.id ? "page" : undefined}
+                      onClick={() =>
+                        mode.route ? navigate(mode.route) : setSearchParams({ mode: mode.id })
+                      }
+                    >
+                      <mode.icon aria-hidden="true" className="rail-icon" />
+                      <span>
+                        {mode.title[interfaceLanguage]}
+                        <small>{mode.copy[interfaceLanguage]}</small>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        </div>
       </div>
     );
   return (
@@ -1639,41 +1820,76 @@ export function ReviewPage() {
         title="Spaced review"
         copy="Overdue, difficult and low-confidence items come first. Ratings schedule the next review locally."
       />
-      <section className="review-card">
-        <span className="eyebrow">
-          Card {(index % queue.length) + 1} of {queue.length}
-        </span>
-        <h2 lang="si">{word.sinhala}</h2>
-        <p className="transliteration">{word.transliteration}</p>
-        <AudioButton text={word.sinhala} language="si" />
-        {revealed ? (
-          <>
-            <h3>{word.english}</h3>
-            <UsageNote sinhala={word.sinhala} />
-            <RealExample sinhala={word.sinhala} />
-            <div className="rating-row">
-              {(["again", "difficult", "good", "easy"] as const).map((rating) => (
-                <button onClick={() => rate(rating)} key={rating}>
-                  <strong>{rating}</strong>
-                  <span>
-                    {rating === "again"
-                      ? "10 min"
-                      : rating === "difficult"
-                        ? "1 day"
-                        : rating === "good"
-                          ? "2 days"
-                          : "4 days"}
-                  </span>
-                </button>
-              ))}
+      <div className="page-split">
+        <section className="review-card split-main">
+          <span className="eyebrow">
+            Card {(index % queue.length) + 1} of {queue.length}
+          </span>
+          <h2 lang="si">{word.sinhala}</h2>
+          <p className="transliteration">{word.transliteration}</p>
+          <AudioButton text={word.sinhala} language="si" />
+          {revealed ? (
+            <>
+              <h3>{word.english}</h3>
+              <UsageNote sinhala={word.sinhala} />
+              <RealExample sinhala={word.sinhala} />
+              <div className="rating-row">
+                {(["again", "difficult", "good", "easy"] as const).map((rating) => (
+                  <button onClick={() => rate(rating)} key={rating}>
+                    <strong>{rating}</strong>
+                    <span>
+                      {rating === "again"
+                        ? "10 min"
+                        : rating === "difficult"
+                          ? "1 day"
+                          : rating === "good"
+                            ? "2 days"
+                            : "4 days"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <button className="button primary large" onClick={() => setRevealed(true)}>
+              Reveal meaning
+            </button>
+          )}
+        </section>
+        <aside className="split-rail" aria-label="Review queue">
+          <div className="rail-stick">
+            <div className="rail-card">
+              <h2>Coming up</h2>
+              <ol className="rail-list">
+                {Array.from({ length: Math.min(6, queue.length - 1) }, (_, offset) => {
+                  const next = queue[(index + offset + 1) % queue.length]!;
+                  return (
+                    <li key={`${next.id}-${offset}`}>
+                      <span className="rail-item">
+                        <span className="rail-mark">{offset + 1}</span>
+                        <span lang="si">{next.sinhala}</span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
-          </>
-        ) : (
-          <button className="button primary large" onClick={() => setRevealed(true)}>
-            Reveal meaning
-          </button>
-        )}
-      </section>
+            <div className="rail-card">
+              <h2>What the ratings do</h2>
+              <dl className="rail-dl">
+                <dt>Again</dt>
+                <dd>back in 10 minutes</dd>
+                <dt>Difficult</dt>
+                <dd>tomorrow</dd>
+                <dt>Good</dt>
+                <dd>in 2 days</dd>
+                <dt>Easy</dt>
+                <dd>in 4 days</dd>
+              </dl>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

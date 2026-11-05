@@ -1,0 +1,316 @@
+/* ============================================================
+   Full-width layout. Pages fill wide screens instead of sitting
+   in a centred strip: the shell spans the viewport with one
+   gutter, and single-column pages gain side rails that carry
+   real content (a lesson's steps and words, a phrase list, what
+   is up next). npm run check:layout fails a page that slips back
+   to a strip at 1920px or scrolls sideways at 360px.
+   Loaded last so it overrides the older fixed widths.
+   ============================================================ */
+
+:root {
+  --gutter: clamp(16px, 2.6vw, 48px);
+}
+
+/* ---------- shell ---------- */
+
+.page,
+.narrow-page,
+.info-page,
+.install-page {
+  width: 100%;
+  max-width: none;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.globalnav .topRow,
+.globalnav .island,
+.globalnav .flyInner {
+  max-width: none;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.lesson-header {
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+/* ---------- pages made of several cards ---------- */
+
+.info-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+.privacy-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+}
+.sources-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+  align-items: start;
+}
+
+/* ---------- main column + rail ---------- */
+
+.page-split {
+  display: grid;
+  gap: clamp(1.25rem, 2.4vw, 2.5rem);
+  align-items: start;
+}
+.split-rail {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  min-width: 0;
+}
+.split-main {
+  min-width: 0;
+}
+.rail-card {
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.rail-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rail-card p,
+.rail-card li {
+  line-height: 1.55;
+}
+.rail-card > p:last-child {
+  margin-bottom: 0;
+}
+.rail-list {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rail-list button,
+.rail-list a,
+.rail-list .rail-item {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+.rail-list button {
+  cursor: pointer;
+}
+.rail-list button:hover,
+.rail-list a:hover {
+  background: color-mix(in srgb, var(--teal-soft) 45%, transparent);
+}
+/* The current item is marked by a bar and weight, not colour alone. */
+.rail-list [aria-current] {
+  background: color-mix(in srgb, var(--teal-soft) 60%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--brand-fill);
+  font-weight: 800;
+}
+.rail-list small {
+  margin-left: auto;
+  color: var(--muted);
+  font-weight: 500;
+}
+.rail-list [lang="si"] {
+  font-family: var(--font-sinhala);
+  font-weight: 700;
+  line-height: 1.7;
+}
+.rail-mark {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.rail-mark svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+.done > .rail-mark,
+.done .rail-mark {
+  border-color: var(--brand-fill);
+  background: var(--brand-fill);
+  color: #fff;
+}
+.rail-words {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rail-words li {
+  display: grid;
+  gap: 0.05rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+.rail-words li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.rail-words [lang="si"] {
+  font-family: var(--font-sinhala);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.7;
+}
+.rail-words .transliteration {
+  margin: 0;
+  color: var(--muted);
+  font-style: italic;
+}
+.rail-only {
+  display: none;
+}
+
+@media (min-width: 62rem) {
+  .page-split {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 25vw);
+  }
+  .page-split.rail-left {
+    grid-template-columns: minmax(16rem, 22vw) minmax(0, 1fr);
+  }
+  .page-split.three {
+    grid-template-columns: minmax(14rem, 18vw) minmax(0, 1fr) minmax(16rem, 22vw);
+  }
+  .rail-stick {
+    position: sticky;
+    top: 7rem;
+    display: grid;
+    gap: 1rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .rail-only {
+    display: grid;
+  }
+}
+
+/* ---------- lessons ---------- */
+
+.lesson-content.page-split {
+  width: 100%;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.lesson-content .rail-stick {
+  top: 6.5rem;
+}
+
+/* ---------- onboarding ---------- */
+
+.onboarding-layout {
+  width: 100%;
+}
+.onboarding-layout .onboarding-card {
+  width: 100%;
+}
+.rail-dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 0.8rem;
+  margin: 0;
+}
+.rail-dl dt {
+  color: var(--muted);
+}
+.rail-dl dd {
+  margin: 0;
+  font-weight: 700;
+}
+.onboarding {
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.rail-list span > small {
+  display: block;
+  margin: 0;
+}
+.rail-icon {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--brand);
+  align-self: center;
+}
+
+/* ---------- phones: nothing may push the page sideways ---------- */
+
+/* A plain 1fr track will not shrink below its content, so long words and
+   audio controls widened these grids past a 360px screen. */
+.split-layout > *,
+.dialogue > article > *,
+.writing-reference > * {
+  min-width: 0;
+}
+.dialogue > article {
+  grid-template-columns: 44px minmax(0, 1fr);
+}
+.writing-reference {
+  flex-wrap: wrap;
+}
+@media (max-width: 760px) {
+  .split-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .topic-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .alphabet-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .letter-card {
+    min-width: 0;
+  }
+}
+
+/* Cards that were centred at a fixed width now fill their column. */
+.review-card.split-main {
+  width: auto;
+  margin: 0;
+}
+.audio-control {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+.dialogue .speaking-practice {
+  min-width: 0;
+}
+
+/* Onboarding steps use the card's full width; the heading and help text keep
+   a readable line length, the choices spread across. */
+.onboarding-layout .step-content {
+  max-width: none;
+  padding-left: clamp(0.5rem, 2vw, 2rem);
+  padding-right: clamp(0.5rem, 2vw, 2rem);
+}
+.onboarding-layout .step-content > h1,
+.onboarding-layout .step-content > p {
+  max-width: 42rem;
+}
+.onboarding-layout .big-options {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
