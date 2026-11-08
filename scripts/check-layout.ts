@@ -1,4 +1,5 @@
-// Layout check over every route, so no page quietly goes back to a narrow strip on wide screens.
+// Layout check over every route: on wide screens each page must fill the shared centred column
+// (the nav bar sets its width) rather than leaving it half empty, and no page may scroll sideways.
 // Ported from Nenarivu. Serves dist/, drives headless Chrome over the DevTools protocol (no extra
 // packages) and:
 //   - at 1920px wide, fails a page whose visible content spans under 75% of the usable width, or whose
@@ -145,8 +146,8 @@ async function load(url: string, width: number) {
 const MEASURE = `(() => {
   const main = document.querySelector('main') ?? document.body;
   const vw = document.documentElement.clientWidth;
-  // The header bar spans the site's full layout width, so it is the yardstick for "filled".
-  const bar = document.querySelector('.globalnav .topRow') ?? main;
+  // The page column (nav bar, lesson grid or onboarding grid) is the yardstick for "filled".
+  const bar = document.querySelector('.globalnav .topRow, .lesson-content, .onboarding-layout') ?? main;
   const bs = getComputedStyle(bar);
   const usable = bar.getBoundingClientRect().width - parseFloat(bs.paddingLeft) - parseFloat(bs.paddingRight);
   let left = Infinity, right = -Infinity;
@@ -225,4 +226,4 @@ if (wide.length || narrow.length) {
   console.log(`${wide.length + narrow.length} layout problems.`);
   process.exit(1);
 }
-console.log("Every page fills wide screens and fits a phone.");
+console.log("Every page fills its column on wide screens and fits a phone.");

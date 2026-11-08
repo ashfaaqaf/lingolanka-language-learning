@@ -1,15 +1,22 @@
 /* ============================================================
-   Full-width layout. Pages fill wide screens instead of sitting
-   in a centred strip: the shell spans the viewport with one
-   gutter, and single-column pages gain side rails that carry
+   Page width, apple.com style: one centred column of a
+   comfortable width shared by the navigation and every page, so
+   lines stay readable and the eye never travels edge to edge on
+   a wide monitor. Single-column pages keep side rails that carry
    real content (a lesson's steps and words, a phrase list, what
-   is up next). npm run check:layout fails a page that slips back
-   to a strip at 1920px or scrolls sideways at 360px.
+   is up next), sized to sit inside that column. npm run
+   check:layout fails a page whose content leaves the column half
+   empty, or that scrolls sideways at 360px.
    Loaded last so it overrides the older fixed widths.
    ============================================================ */
 
 :root {
-  --gutter: clamp(16px, 2.6vw, 48px);
+  --gutter: clamp(16px, 4vw, 44px);
+  /* Content width: Apple's large layout is about 980-1070px; the rails
+     need a little more room than a marketing page. */
+  --page-max: 1120px;
+  /* Lessons carry a rail on each side. */
+  --page-max-wide: 1240px;
 }
 
 /* ---------- shell ---------- */
@@ -19,14 +26,17 @@
 .info-page,
 .install-page {
   width: 100%;
-  max-width: none;
+  max-width: calc(var(--page-max) + 2 * var(--gutter));
+  margin-left: auto;
+  margin-right: auto;
   padding-left: var(--gutter);
   padding-right: var(--gutter);
 }
+/* The bar lines up with the page beneath it. */
 .globalnav .topRow,
 .globalnav .island,
 .globalnav .flyInner {
-  max-width: none;
+  max-width: calc(var(--page-max) + 2 * var(--gutter));
   padding-left: var(--gutter);
   padding-right: var(--gutter);
 }
@@ -187,13 +197,13 @@
 
 @media (min-width: 62rem) {
   .page-split {
-    grid-template-columns: minmax(0, 1fr) minmax(18rem, 25vw);
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 18.5rem);
   }
   .page-split.rail-left {
-    grid-template-columns: minmax(16rem, 22vw) minmax(0, 1fr);
+    grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr);
   }
   .page-split.three {
-    grid-template-columns: minmax(14rem, 18vw) minmax(0, 1fr) minmax(16rem, 22vw);
+    grid-template-columns: minmax(12rem, 14.5rem) minmax(0, 1fr) minmax(14rem, 17rem);
   }
   .rail-stick {
     position: sticky;
@@ -213,6 +223,9 @@
 
 .lesson-content.page-split {
   width: 100%;
+  max-width: calc(var(--page-max-wide) + 2 * var(--gutter));
+  margin-left: auto;
+  margin-right: auto;
   padding-left: var(--gutter);
   padding-right: var(--gutter);
 }
@@ -224,22 +237,27 @@
 
 .onboarding-layout {
   width: 100%;
+  max-width: var(--page-max);
 }
 .onboarding-layout .onboarding-card {
   width: 100%;
 }
+/* Label above value: a rail is too narrow for two columns. */
 .rail-dl {
   display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 0.35rem 0.8rem;
+  gap: 0.1rem;
   margin: 0;
 }
 .rail-dl dt {
   color: var(--muted);
+  font-size: 0.82rem;
 }
 .rail-dl dd {
-  margin: 0;
+  margin: 0 0 0.55rem;
   font-weight: 700;
+}
+.rail-dl dd:last-child {
+  margin-bottom: 0;
 }
 .onboarding {
   padding-left: var(--gutter);
@@ -313,4 +331,24 @@
 }
 .onboarding-layout .big-options {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+/* The lesson bar's controls line up with the lesson column beneath. */
+.lesson-header {
+  padding-left: max(var(--gutter), calc((100% - var(--page-max-wide)) / 2));
+  padding-right: max(var(--gutter), calc((100% - var(--page-max-wide)) / 2));
+}
+
+/* Landing: the cinematic hero stays full-bleed, as on apple.com; the
+   sections beneath share the app's column. */
+.direction-section,
+.promise-section {
+  max-width: calc(var(--page-max) + 2 * var(--gutter));
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.feature-section,
+.landing footer {
+  padding-left: max(var(--gutter), calc((100% - var(--page-max)) / 2));
+  padding-right: max(var(--gutter), calc((100% - var(--page-max)) / 2));
 }
